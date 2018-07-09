@@ -15,9 +15,6 @@ import javafx.scene.PointLight;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.Box;
-import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
@@ -29,6 +26,7 @@ import javafx.stage.Stage;
 public class Main extends Application {
     private static final double WIDTH = 1000;
     private static final double HEIGHT = 600;
+    private static final double MAX_WELL_SIZE = 260;
     
     private Group root;
     private Well well;
@@ -40,15 +38,19 @@ public class Main extends Application {
         root = new Group();
         
         well = new Well(5,5,10);
+        
+        double scaleFactor = MAX_WELL_SIZE/(well.FIELD_DIMENSION * 
+                ((well.getHeight()>well.getWidth()? well.getHeight() : well.getWidth())+1));
 
-        well.getTransforms().setAll(new Scale(3, 3, 4.5));
+        well.getTransforms().setAll(new Scale(scaleFactor, scaleFactor, 1.5*scaleFactor));
         
         root.getChildren().add(well);
         
+        AmbientLight ambientLight = new AmbientLight(Color.color(0.1, 0.1, 0.1));
         PointLight topLight = new PointLight(Color.WHITE);
-        topLight.setTranslateZ(-30);
+        topLight.setTranslateZ(-40);
         PointLight bottomLight = new PointLight(Color.DARKGREY);
-        bottomLight.setTranslateZ(300);
+        bottomLight.setTranslateZ(500);
         
         
         root.getChildren().addAll(topLight, bottomLight);

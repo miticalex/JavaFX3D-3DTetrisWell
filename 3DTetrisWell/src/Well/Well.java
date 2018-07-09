@@ -10,11 +10,15 @@ import javafx.scene.shape.Box;
  * @author AM
  */
 public class Well extends Group{
-    public static final double  UNIT = 10.0;
-    public static final double  BOX_DIMENSION = UNIT-0.2;
+    public static final double  FIELD_DIMENSION = 10.0;
+    public static final double  BOX_DIMENSION = FIELD_DIMENSION-0.2;
     public static final double  WALL_WIDTH = 0.4;
     
-    private int width, height, depth;
+    private final int width, height, depth;
+    public int getWidth() { return width;}
+    public int getHeight() { return height;}
+    public int getDepth() { return depth;}
+    
     //private Box[][][] stones;
     private Box[][] leftWall, rightWall;
     private Box[][] frontWall, rearWall;
@@ -29,7 +33,7 @@ public class Well extends Group{
         depth = z>40 ? 40 : (z<6 ? 6 : z);;
         //stones = new Box[x][y][z];
         
-        PhongMaterial wallMaterial = new PhongMaterial(Color.color(0, 0, 1, 0.4));
+        PhongMaterial wallMaterial = new PhongMaterial(Color.color(0, 0.1, 1, 0.5));
         
         leftWall = new Box[height][depth];
         rightWall = new Box[height][depth];
@@ -41,13 +45,13 @@ public class Well extends Group{
                 leftWall[i][j].setMaterial(wallMaterial);
                 rightWall[i][j].setMaterial(wallMaterial);
                 
-                leftWall[i][j].setTranslateX(-(UNIT*width/2 + WALL_WIDTH/2));
-                leftWall[i][j].setTranslateY(-UNIT*height/2 + (i+0.5)*UNIT);
-                leftWall[i][j].setTranslateZ(UNIT/2 + j*UNIT);
+                leftWall[i][j].setTranslateX(-(FIELD_DIMENSION*width/2 + WALL_WIDTH/2));
+                leftWall[i][j].setTranslateY(-FIELD_DIMENSION*height/2 + (i+0.5)*FIELD_DIMENSION);
+                leftWall[i][j].setTranslateZ(FIELD_DIMENSION/2 + j*FIELD_DIMENSION);
                 
-                rightWall[i][j].setTranslateX(UNIT*width/2 + WALL_WIDTH/2);
-                rightWall[i][j].setTranslateY(-UNIT*height/2 + (i+0.5)*UNIT);
-                rightWall[i][j].setTranslateZ(UNIT/2 + j*UNIT);
+                rightWall[i][j].setTranslateX(FIELD_DIMENSION*width/2 + WALL_WIDTH/2);
+                rightWall[i][j].setTranslateY(-FIELD_DIMENSION*height/2 + (i+0.5)*FIELD_DIMENSION);
+                rightWall[i][j].setTranslateZ(FIELD_DIMENSION/2 + j*FIELD_DIMENSION);
                 
                 this.getChildren().addAll(leftWall[i][j], rightWall[i][j]);
             }
@@ -63,13 +67,13 @@ public class Well extends Group{
                 frontWall[i][j].setMaterial(wallMaterial);
                 rearWall[i][j].setMaterial(wallMaterial);
                 
-                frontWall[i][j].setTranslateX(-UNIT*width/2 + (i+0.5)*UNIT);
-                frontWall[i][j].setTranslateY(UNIT*height/2 + WALL_WIDTH/2);
-                frontWall[i][j].setTranslateZ(UNIT/2 + j*UNIT);
+                frontWall[i][j].setTranslateX(-FIELD_DIMENSION*width/2 + (i+0.5)*FIELD_DIMENSION);
+                frontWall[i][j].setTranslateY(FIELD_DIMENSION*height/2 + WALL_WIDTH/2);
+                frontWall[i][j].setTranslateZ(FIELD_DIMENSION/2 + j*FIELD_DIMENSION);
                 
-                rearWall[i][j].setTranslateX(-UNIT*width/2 + (i+0.5)*UNIT);
-                rearWall[i][j].setTranslateY(-(UNIT*height/2 + WALL_WIDTH/2));
-                rearWall[i][j].setTranslateZ(UNIT/2 + j*UNIT);
+                rearWall[i][j].setTranslateX(-FIELD_DIMENSION*width/2 + (i+0.5)*FIELD_DIMENSION);
+                rearWall[i][j].setTranslateY(-(FIELD_DIMENSION*height/2 + WALL_WIDTH/2));
+                rearWall[i][j].setTranslateZ(FIELD_DIMENSION/2 + j*FIELD_DIMENSION);
                 
                 this.getChildren().addAll(rearWall[i][j], frontWall[i][j]);
             }   
@@ -81,41 +85,64 @@ public class Well extends Group{
                 bottom[i][j] = new Box(BOX_DIMENSION, BOX_DIMENSION, WALL_WIDTH);
                 bottom[i][j].setMaterial(wallMaterial);
                 
-                bottom[i][j].setTranslateX(-UNIT*width/2 + (i+0.5)*UNIT);
-                bottom[i][j].setTranslateY(-UNIT*height/2 + (j+0.5)*UNIT);
-                bottom[i][j].setTranslateZ(UNIT*depth + WALL_WIDTH/2);
+                bottom[i][j].setTranslateX(-FIELD_DIMENSION*width/2 + (i+0.5)*FIELD_DIMENSION);
+                bottom[i][j].setTranslateY(-FIELD_DIMENSION*height/2 + (j+0.5)*FIELD_DIMENSION);
+                bottom[i][j].setTranslateZ(FIELD_DIMENSION*depth + WALL_WIDTH/2);
                 
                 this.getChildren().addAll(bottom[i][j]);
             }   
         }
         
-        for (int i = 0; i < width+2; i++) {
-            Box rearEdge = new Box(BOX_DIMENSION, BOX_DIMENSION, WALL_WIDTH);
+        for (int i = 1; i <= width; i++) {
+            Box rearEdge = new Box(BOX_DIMENSION, BOX_DIMENSION/2, WALL_WIDTH);
             rearEdge.setMaterial(wallMaterial);
-            rearEdge.setTranslateX(-UNIT*(width+2)/2 + (i+0.5)*UNIT);
-            rearEdge.setTranslateY(-UNIT*(height+1)/2);
+            rearEdge.setTranslateX(-FIELD_DIMENSION*(width+2)/2 + (i+0.5)*FIELD_DIMENSION);
+            rearEdge.setTranslateY(-FIELD_DIMENSION*(height+0.5)/2);
             
-            Box frontEdge = new Box(BOX_DIMENSION, BOX_DIMENSION, WALL_WIDTH);
+            Box frontEdge = new Box(BOX_DIMENSION, BOX_DIMENSION/2, WALL_WIDTH);
             frontEdge.setMaterial(wallMaterial);
-            frontEdge.setTranslateX(-UNIT*(width+2)/2 + (i+0.5)*UNIT);
-            frontEdge.setTranslateY(UNIT*(height+1)/2);
+            frontEdge.setTranslateX(-FIELD_DIMENSION*(width+2)/2 + (i+0.5)*FIELD_DIMENSION);
+            frontEdge.setTranslateY(FIELD_DIMENSION*(height+0.5)/2);
             
             edge.getChildren().addAll(rearEdge, frontEdge);      
         }
         
-        for (int i = 0; i < height+2; i++) {
-            Box leftEdge = new Box(BOX_DIMENSION, BOX_DIMENSION, WALL_WIDTH);
+        for (int i = 1; i <= height; i++) {
+            Box leftEdge = new Box(BOX_DIMENSION/2, BOX_DIMENSION, WALL_WIDTH);
             leftEdge.setMaterial(wallMaterial);
-            leftEdge.setTranslateX(-UNIT*(width+1)/2);
-            leftEdge.setTranslateY(-UNIT*(height+2)/2 + (i+0.5)*UNIT);
+            leftEdge.setTranslateX(-FIELD_DIMENSION*(width+0.5)/2);
+            leftEdge.setTranslateY(-FIELD_DIMENSION*(height+2)/2 + (i+0.5)*FIELD_DIMENSION);
             
-            Box rightEdge = new Box(BOX_DIMENSION, BOX_DIMENSION, WALL_WIDTH);
+            Box rightEdge = new Box(BOX_DIMENSION/2, BOX_DIMENSION, WALL_WIDTH);
             rightEdge.setMaterial(wallMaterial);
-            rightEdge.setTranslateX(UNIT*(width+1)/2);
-            rightEdge.setTranslateY(-UNIT*(height+2)/2 + (i+0.5)*UNIT);
+            rightEdge.setTranslateX(FIELD_DIMENSION*(width+0.5)/2);
+            rightEdge.setTranslateY(-FIELD_DIMENSION*(height+2)/2 + (i+0.5)*FIELD_DIMENSION);
             
             edge.getChildren().addAll(leftEdge, rightEdge);      
         }
+        
+        Box corner0 = new Box(BOX_DIMENSION/2, BOX_DIMENSION/2, WALL_WIDTH);
+        corner0.setMaterial(new PhongMaterial(Color.BLUE));
+        corner0.setTranslateX(-FIELD_DIMENSION*(width+0.5)/2);
+        corner0.setTranslateY(-FIELD_DIMENSION*(height+0.5)/2);
+        
+        Box corner1 = new Box(BOX_DIMENSION/2, BOX_DIMENSION/2, WALL_WIDTH);
+        corner1.setMaterial(new PhongMaterial(Color.BLUE));
+        corner1.setTranslateX(-FIELD_DIMENSION*(width+0.5)/2);
+        corner1.setTranslateY(FIELD_DIMENSION*(height+0.5)/2);
+        
+        Box corner2 = new Box(BOX_DIMENSION/2, BOX_DIMENSION/2, WALL_WIDTH);
+        corner2.setMaterial(new PhongMaterial(Color.BLUE));
+        corner2.setTranslateX(FIELD_DIMENSION*(width+0.5)/2);
+        corner2.setTranslateY(-FIELD_DIMENSION*(height+0.5)/2);
+        
+        Box corner3 = new Box(BOX_DIMENSION/2, BOX_DIMENSION/2, WALL_WIDTH);
+        corner3.setMaterial(new PhongMaterial(Color.BLUE));
+        corner3.setTranslateX(FIELD_DIMENSION*(width+0.5)/2);
+        corner3.setTranslateY(FIELD_DIMENSION*(height+0.5)/2);
+        
+        edge.getChildren().addAll(corner0, corner1, corner2, corner3);
+        
         
         this.getChildren().add(edge);
     }
