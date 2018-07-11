@@ -1,4 +1,4 @@
-package Tetriminoes;
+package Well.Tetriminoes;
 
 /**
  *
