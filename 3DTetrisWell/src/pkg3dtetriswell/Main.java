@@ -39,7 +39,7 @@ public class Main extends Application {
         
         well = new Well(5,5,10);
         
-        double scaleFactor = MAX_WELL_SIZE/(well.FIELD_DIMENSION * 
+        double scaleFactor = MAX_WELL_SIZE/(well.FIELD_SIZE * 
                 ((well.getHeight()>well.getWidth()? well.getHeight() : well.getWidth())+1));
 
         well.getTransforms().setAll(new Scale(scaleFactor, scaleFactor, 1.5*scaleFactor));
