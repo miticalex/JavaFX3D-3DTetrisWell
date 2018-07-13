@@ -1,9 +1,12 @@
 package Well;
 
+import Well.Tetriminoes.ITetrimino;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
+import javafx.scene.shape.Shape3D;
 
 /**
  *
@@ -24,15 +27,15 @@ public class Well extends Group{
     private Box[][] frontWall, rearWall;
     private Box[][] bottom;
     
-    private Group edge = new Group();
-    
-
     public Well(int x, int y, int z) {
         width = x>8 ? 8 : (x<3 ? 3 : x);
         height = y>8 ? 8 : (y<3 ? 3 : y);
         depth = z>40 ? 40 : (z<6 ? 6 : z);;
-        //stones = new Box[x][y][z];
         
+        makeWellWalls();
+    }
+    
+    private void makeWellWalls() {
         PhongMaterial wallMaterial = new PhongMaterial(Color.color(0, 0.1, 1, 0.5));
         
         leftWall = new Box[height][depth];
@@ -42,18 +45,8 @@ public class Well extends Group{
                 leftWall[i][j] = new Box(WALL_WIDTH, BOX_SIZE, BOX_SIZE);
                 rightWall[i][j] = new Box(WALL_WIDTH, BOX_SIZE, BOX_SIZE);
                 
-                leftWall[i][j].setMaterial(wallMaterial);
-                rightWall[i][j].setMaterial(wallMaterial);
-                
-                leftWall[i][j].setTranslateX(-(FIELD_SIZE*width/2 + WALL_WIDTH/2));
-                leftWall[i][j].setTranslateY(-FIELD_SIZE*height/2 + (i+0.5)*FIELD_SIZE);
-                leftWall[i][j].setTranslateZ(FIELD_SIZE/2 + j*FIELD_SIZE);
-                
-                rightWall[i][j].setTranslateX(FIELD_SIZE*width/2 + WALL_WIDTH/2);
-                rightWall[i][j].setTranslateY(-FIELD_SIZE*height/2 + (i+0.5)*FIELD_SIZE);
-                rightWall[i][j].setTranslateZ(FIELD_SIZE/2 + j*FIELD_SIZE);
-                
-                this.getChildren().addAll(leftWall[i][j], rightWall[i][j]);
+                this.addNodeToXYZ(leftWall[i][j], -0.5 -0.5*WALL_WIDTH/FIELD_SIZE, i, j);
+                this.addNodeToXYZ(rightWall[i][j], width -0.5 +0.5*WALL_WIDTH/FIELD_SIZE, i, j);
             }
         }
         
@@ -64,18 +57,8 @@ public class Well extends Group{
                 frontWall[i][j] = new Box(BOX_SIZE, WALL_WIDTH, BOX_SIZE);
                 rearWall[i][j] = new Box(BOX_SIZE, WALL_WIDTH, BOX_SIZE);
                 
-                frontWall[i][j].setMaterial(wallMaterial);
-                rearWall[i][j].setMaterial(wallMaterial);
-                
-                frontWall[i][j].setTranslateX(-FIELD_SIZE*width/2 + (i+0.5)*FIELD_SIZE);
-                frontWall[i][j].setTranslateY(FIELD_SIZE*height/2 + WALL_WIDTH/2);
-                frontWall[i][j].setTranslateZ(FIELD_SIZE/2 + j*FIELD_SIZE);
-                
-                rearWall[i][j].setTranslateX(-FIELD_SIZE*width/2 + (i+0.5)*FIELD_SIZE);
-                rearWall[i][j].setTranslateY(-(FIELD_SIZE*height/2 + WALL_WIDTH/2));
-                rearWall[i][j].setTranslateZ(FIELD_SIZE/2 + j*FIELD_SIZE);
-                
-                this.getChildren().addAll(rearWall[i][j], frontWall[i][j]);
+                this.addNodeToXYZ(frontWall[i][j], i, height -0.5 +0.5*WALL_WIDTH/FIELD_SIZE, j);
+                this.addNodeToXYZ(rearWall[i][j], i, -0.5 -0.5*WALL_WIDTH/FIELD_SIZE, j);
             }   
         }
         
@@ -83,67 +66,53 @@ public class Well extends Group{
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 bottom[i][j] = new Box(BOX_SIZE, BOX_SIZE, WALL_WIDTH);
-                bottom[i][j].setMaterial(wallMaterial);
                 
-                bottom[i][j].setTranslateX(-FIELD_SIZE*width/2 + (i+0.5)*FIELD_SIZE);
-                bottom[i][j].setTranslateY(-FIELD_SIZE*height/2 + (j+0.5)*FIELD_SIZE);
-                bottom[i][j].setTranslateZ(FIELD_SIZE*depth + WALL_WIDTH/2);
-                
-                this.getChildren().addAll(bottom[i][j]);
+                this.addNodeToXYZ(bottom[i][j], i, j, depth - 0.5 + 0.5*WALL_WIDTH/FIELD_SIZE);
             }   
         }
         
-        for (int i = 1; i <= width; i++) {
+        for (int i = 0; i < width; i++) {
             Box rearEdge = new Box(BOX_SIZE, BOX_SIZE/2, WALL_WIDTH);
-            rearEdge.setMaterial(wallMaterial);
-            rearEdge.setTranslateX(-FIELD_SIZE*(width+2)/2 + (i+0.5)*FIELD_SIZE);
-            rearEdge.setTranslateY(-FIELD_SIZE*(height+0.5)/2);
-            
             Box frontEdge = new Box(BOX_SIZE, BOX_SIZE/2, WALL_WIDTH);
-            frontEdge.setMaterial(wallMaterial);
-            frontEdge.setTranslateX(-FIELD_SIZE*(width+2)/2 + (i+0.5)*FIELD_SIZE);
-            frontEdge.setTranslateY(FIELD_SIZE*(height+0.5)/2);
             
-            edge.getChildren().addAll(rearEdge, frontEdge);      
+            this.addNodeToXYZ(rearEdge, i, -0.75, -0.5);
+            this.addNodeToXYZ(frontEdge, i, height - 0.25, -0.5);
         }
         
-        for (int i = 1; i <= height; i++) {
+        for (int i = 0; i < height; i++) {
             Box leftEdge = new Box(BOX_SIZE/2, BOX_SIZE, WALL_WIDTH);
-            leftEdge.setMaterial(wallMaterial);
-            leftEdge.setTranslateX(-FIELD_SIZE*(width+0.5)/2);
-            leftEdge.setTranslateY(-FIELD_SIZE*(height+2)/2 + (i+0.5)*FIELD_SIZE);
-            
             Box rightEdge = new Box(BOX_SIZE/2, BOX_SIZE, WALL_WIDTH);
-            rightEdge.setMaterial(wallMaterial);
-            rightEdge.setTranslateX(FIELD_SIZE*(width+0.5)/2);
-            rightEdge.setTranslateY(-FIELD_SIZE*(height+2)/2 + (i+0.5)*FIELD_SIZE);
             
-            edge.getChildren().addAll(leftEdge, rightEdge);      
+            this.addNodeToXYZ(leftEdge, -0.75, i, -0.5);
+            this.addNodeToXYZ(rightEdge, width - 0.25, i, -0.5);
         }
+        
+        this.getChildren().forEach(node -> ((Shape3D) node).setMaterial(wallMaterial));
         
         Box corner0 = new Box(BOX_SIZE/2, BOX_SIZE/2, WALL_WIDTH);
-        corner0.setMaterial(new PhongMaterial(Color.BLUE));
-        corner0.setTranslateX(-FIELD_SIZE*(width+0.5)/2);
-        corner0.setTranslateY(-FIELD_SIZE*(height+0.5)/2);
-        
         Box corner1 = new Box(BOX_SIZE/2, BOX_SIZE/2, WALL_WIDTH);
-        corner1.setMaterial(new PhongMaterial(Color.BLUE));
-        corner1.setTranslateX(-FIELD_SIZE*(width+0.5)/2);
-        corner1.setTranslateY(FIELD_SIZE*(height+0.5)/2);
-        
         Box corner2 = new Box(BOX_SIZE/2, BOX_SIZE/2, WALL_WIDTH);
-        corner2.setMaterial(new PhongMaterial(Color.BLUE));
-        corner2.setTranslateX(FIELD_SIZE*(width+0.5)/2);
-        corner2.setTranslateY(-FIELD_SIZE*(height+0.5)/2);
-        
         Box corner3 = new Box(BOX_SIZE/2, BOX_SIZE/2, WALL_WIDTH);
+        
+        corner0.setMaterial(new PhongMaterial(Color.BLUE));
+        corner1.setMaterial(new PhongMaterial(Color.BLUE));
+        corner2.setMaterial(new PhongMaterial(Color.BLUE));
         corner3.setMaterial(new PhongMaterial(Color.BLUE));
-        corner3.setTranslateX(FIELD_SIZE*(width+0.5)/2);
-        corner3.setTranslateY(FIELD_SIZE*(height+0.5)/2);
         
-        edge.getChildren().addAll(corner0, corner1, corner2, corner3);
-        
-        
-        this.getChildren().add(edge);
+        this.addNodeToXYZ(corner0, -0.75,           -0.75,          -0.5);
+        this.addNodeToXYZ(corner1, width - 0.25,    -0.75,          -0.5);
+        this.addNodeToXYZ(corner2, -0.75,           height - 0.25,  -0.5);
+        this.addNodeToXYZ(corner3, width - 0.25,    height - 0.25,  -0.5);
+    }
+    
+    public final void setNodeToXYZ(Node node, double x, double y, double z){
+        node.setTranslateX(-FIELD_SIZE*width/2 + (x+0.5)*FIELD_SIZE);
+        node.setTranslateY(-FIELD_SIZE*height/2 + (y+0.5)*FIELD_SIZE);
+        node.setTranslateZ(FIELD_SIZE/2 + z*FIELD_SIZE);
+    }
+    
+    public final void addNodeToXYZ(Node node, double x, double y, double z){
+        setNodeToXYZ(node, x, y, z);       
+        this.getChildren().add(node);
     }
 }
