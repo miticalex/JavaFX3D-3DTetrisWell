@@ -11,7 +11,7 @@ import javafx.scene.shape.Shape3D;
  *
  * @author AM
  */
-public class Well extends Group{
+public class Well extends Group implements Updateable{
     public static final double  FIELD_SIZE = 10.0;
     public static final double  BOX_SIZE = FIELD_SIZE-0.2;
     public static final double  WALL_WIDTH = 0.4;
@@ -32,6 +32,11 @@ public class Well extends Group{
         depth = z>40 ? 40 : (z<6 ? 6 : z);;
         
         makeWellWalls();
+    }
+    
+    @Override
+    public void update() {
+        //TODO: WRITE CODE HERE
     }
     
     private void makeWellWalls() {

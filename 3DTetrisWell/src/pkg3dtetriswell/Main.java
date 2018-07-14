@@ -5,7 +5,9 @@
  */
 package pkg3dtetriswell;
 
+import Well.Updateable;
 import Well.Well;
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.AmbientLight;
 import javafx.scene.Camera;
@@ -23,7 +25,7 @@ import javafx.stage.Stage;
  *
  * @author AM
  */
-public class Main extends Application {
+public class Main extends Application implements Updateable{
     private static final double WIDTH = 1000;
     private static final double HEIGHT = 600;
     private static final double MAX_WELL_SIZE = 260;
@@ -65,13 +67,24 @@ public class Main extends Application {
         window.setTitle("3D Tetris Well");
         window.setScene(scene);
         window.show();
+        
+        new AnimationTimer(){
+            @Override
+            public void handle(long now) {
+                update();
+            }  
+        };
     }
 
+    @Override
+    public void update() {
+        //TODO: WRITE CODE HERE
+    }
+    
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
         launch(args);
     }
-    
 }
