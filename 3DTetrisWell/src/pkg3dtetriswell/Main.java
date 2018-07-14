@@ -60,7 +60,7 @@ public class Main extends Application {
         
         Scene scene = new Scene(root, WIDTH, HEIGHT, false, SceneAntialiasing.BALANCED);
         scene.setCamera(frontCamera);
-        scene.setFill(Color.color(0.4, 0.15, 0));
+        scene.setFill(Color.color(0.2, 0.1, 0));
         
         window.setTitle("3D Tetris Well");
         window.setScene(scene);
