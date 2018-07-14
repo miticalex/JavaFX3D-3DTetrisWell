@@ -73,12 +73,12 @@ public class Main extends Application implements Updateable{
             public void handle(long now) {
                 update();
             }  
-        };
+        }.start();
     }
 
     @Override
     public void update() {
-        //TODO: WRITE CODE HERE
+        well.update();
     }
     
     /**

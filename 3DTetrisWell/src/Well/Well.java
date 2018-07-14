@@ -109,14 +109,14 @@ public class Well extends Group implements Updateable{
         this.addNodeToXYZ(corner3, width - 0.25,    height - 0.25,  -0.5);
     }
     
-    public final void setNodeToXYZ(Node node, double x, double y, double z){
+    public final void moveNodeToXYZ(Node node, double x, double y, double z){
         node.setTranslateX(-FIELD_SIZE*width/2 + (x+0.5)*FIELD_SIZE);
         node.setTranslateY(-FIELD_SIZE*height/2 + (y+0.5)*FIELD_SIZE);
         node.setTranslateZ(FIELD_SIZE/2 + z*FIELD_SIZE);
     }
     
     public final void addNodeToXYZ(Node node, double x, double y, double z){
-        setNodeToXYZ(node, x, y, z);       
+        moveNodeToXYZ(node, x, y, z);       
         this.getChildren().add(node);
     }
 }
