@@ -1,5 +1,12 @@
 package Well;
 
+import Well.Tetriminoes.ITetrimino;
+import Well.Tetriminoes.LTetrimino;
+import Well.Tetriminoes.OTetrimino;
+import Well.Tetriminoes.TTetrimino;
+import Well.Tetriminoes.Tetrimino;
+import Well.Tetriminoes.ZTetrimino;
+import java.util.Random;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
@@ -15,6 +22,11 @@ public class Well extends Group implements Updateable{
     public static final double  FIELD_SIZE = 10.0;
     public static final double  BOX_SIZE = FIELD_SIZE-0.2;
     public static final double  WALL_WIDTH = 0.4;
+    public static final Random  RANDOM = new Random();
+    
+    public static final Tetrimino[] tetriminoes = {
+        new ITetrimino(), new LTetrimino(), new OTetrimino(), new TTetrimino(), new ZTetrimino() //list of basic 2D tetriminoes
+    };
     
     private final int width, height, depth;
     public int getWidth() { return width;}
@@ -26,6 +38,8 @@ public class Well extends Group implements Updateable{
     private Box[][] frontWall, rearWall;
     private Box[][] bottom;
     
+    private Tetrimino falling = null;
+    
     public Well(int x, int y, int z) {
         width = x>8 ? 8 : (x<3 ? 3 : x);
         height = y>8 ? 8 : (y<3 ? 3 : y);
@@ -36,7 +50,10 @@ public class Well extends Group implements Updateable{
     
     @Override
     public void update() {
-        //TODO: WRITE CODE HERE
+        if (falling == null){
+            falling = tetriminoes[RANDOM.nextInt(tetriminoes.length)];
+            this.addNodeToXYZ(falling, (width-1)/2, (height-1)/2, 0);
+        }
     }
     
     private void makeWellWalls() {
