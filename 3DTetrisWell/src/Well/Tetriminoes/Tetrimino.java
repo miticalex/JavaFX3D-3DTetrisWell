@@ -4,6 +4,7 @@ import javafx.scene.Group;
 import javafx.scene.shape.Box;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
+import javafx.scene.shape.CullFace;
 
 /**
  *
@@ -21,10 +22,11 @@ public abstract class Tetrimino extends Group {
     
     protected final void addBox(int posX, int posY, int posZ){
         PhongMaterial boxMaterial = new PhongMaterial
-            (Color.color(0, 1, 0, 0.2));
+            (Color.color(0.4, 0.5, 0.4, 0.2));
         
         Box box = new Box(0.99*fieldSize, 0.99*fieldSize, 0.99*fieldSize);
         box.setMaterial(boxMaterial);
+        box.setCullFace(CullFace.NONE);
         
         box.setTranslateX(posX * fieldSize); 
         box.setTranslateY(posY * fieldSize);
