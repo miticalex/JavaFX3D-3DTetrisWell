@@ -37,7 +37,7 @@ public class Main extends Application {
     public void start(Stage window) {
         root = new Group();
         
-        well = new Well(7,7,1);
+        well = new Well(5,5,10);
         
         double scaleFactor = MAX_WELL_SIZE/(well.FIELD_SIZE * 
                 ((well.getHeight()>well.getWidth()? well.getHeight() : well.getWidth())+1));
@@ -49,13 +49,11 @@ public class Main extends Application {
         AmbientLight ambientLight = new AmbientLight(Color.color(0.1, 0.1, 0.1));
         PointLight topLight = new PointLight(Color.WHITE);
         topLight.setTranslateZ(-40);
-        PointLight bottomLight = new PointLight(Color.DARKGRAY);
+        PointLight bottomLight = new PointLight(Color.DARKGREY);
         bottomLight.setTranslateZ(500);
         
         
-        root.getChildren().addAll(topLight);
-        root.getChildren().addAll(bottomLight);
-        //root.getChildren().addAll(ambientLight);
+        root.getChildren().addAll(topLight, bottomLight);
         
         frontCamera.setFarClip(20000);       
         frontCamera.getTransforms().addAll(new Translate(0,0,-500));
