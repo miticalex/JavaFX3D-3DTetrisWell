@@ -7,7 +7,11 @@ import Well.Tetriminoes.TTetrimino;
 import Well.Tetriminoes.Tetrimino;
 import Well.Tetriminoes.ZTetrimino;
 import java.util.Random;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.event.EventHandler;
+import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.input.KeyEvent;
@@ -15,6 +19,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.Shape3D;
+import javafx.scene.transform.Rotate;
+import javafx.util.Duration;
 
 /**
  *
@@ -41,6 +47,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     private Box[][] bottom;
     
     private Tetrimino falling = null;
+    private boolean fallingRotates = false;
     
     public Well(int x, int y, int z) {
         width = x>8 ? 8 : (x<3 ? 3 : x);
@@ -59,7 +66,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     }
     
     private void makeWellWalls() {
-        PhongMaterial wallMaterial = new PhongMaterial(Color.color(0, 0.1, 1, 0.5));
+        PhongMaterial wallMaterial = new PhongMaterial(Color.color(0, 0.1, 1, 0.5)); // TRANSPARENT BLUE
         
         leftWall = new Box[height][depth];
         rightWall = new Box[height][depth];
@@ -206,9 +213,29 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
                         moveNodeByXYZ(falling, 0, 0, +1);
                 }
                 break;
-            default:
-                //DO_NOTHING
-                break;
+                
+            case U: rotateTetrimino(falling, Rotate.Z_AXIS, 90); break;
+            case J: rotateTetrimino(falling, Rotate.Z_AXIS, -90); break; 
+            case I: rotateTetrimino(falling, Rotate.Y_AXIS, 90); break;
+            case K: rotateTetrimino(falling, Rotate.Y_AXIS, -90); break;
+            case O: rotateTetrimino(falling, Rotate.X_AXIS, 90); break;
+            case L: rotateTetrimino(falling, Rotate.X_AXIS, -90); break;
+            default: break;
+        }
+    }
+
+    private void rotateTetrimino(Tetrimino tetrimino, Point3D axis, double angle) {
+        if (!fallingRotates){
+            Rotate rotate = new Rotate(0, axis);
+            tetrimino.getTransforms().add(0, rotate);
+
+            KeyValue startAngle = new KeyValue(rotate.angleProperty(), 0);
+            KeyValue endAngle = new KeyValue(rotate.angleProperty(), angle);
+            Timeline timeline = new Timeline(new KeyFrame(Duration.millis(100), startAngle, endAngle));
+
+            fallingRotates = true;
+            timeline.play();
+            timeline.setOnFinished(e -> fallingRotates = false);
         }
     }
 }
