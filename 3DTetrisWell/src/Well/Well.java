@@ -7,8 +7,10 @@ import Well.Tetriminoes.TTetrimino;
 import Well.Tetriminoes.Tetrimino;
 import Well.Tetriminoes.ZTetrimino;
 import java.util.Random;
+import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
@@ -18,7 +20,7 @@ import javafx.scene.shape.Shape3D;
  *
  * @author AM
  */
-public class Well extends Group implements Updateable{
+public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     public static final double  FIELD_SIZE = 10.0;
     public static final double  BOX_SIZE = FIELD_SIZE-0.2;
     public static final double  WALL_WIDTH = 0.4;
@@ -127,13 +129,86 @@ public class Well extends Group implements Updateable{
     }
     
     public final void moveNodeToXYZ(Node node, double x, double y, double z){
+        if (node == null) return;
+        
         node.setTranslateX(-FIELD_SIZE*width/2 + (x+0.5)*FIELD_SIZE);
         node.setTranslateY(-FIELD_SIZE*height/2 + (y+0.5)*FIELD_SIZE);
         node.setTranslateZ(FIELD_SIZE/2 + z*FIELD_SIZE);
     }
     
+    public final double getNodeX(Node node){
+        return ( node.getTranslateX() + FIELD_SIZE*width/2 )/FIELD_SIZE  -  0.5;
+    }
+    
+    public final double getNodeY(Node node){
+        return ( node.getTranslateY() + FIELD_SIZE*height/2 )/FIELD_SIZE  -  0.5;
+    }
+    
+    public final double getNodeZ(Node node){
+        return ( node.getTranslateZ() - FIELD_SIZE/2 )/FIELD_SIZE;
+    }
+    
+    public final void moveNodeByXYZ(Node node, double x, double y, double z){
+        if (node == null) return;
+        
+        node.setTranslateX(node.getTranslateX() + x*FIELD_SIZE);
+        node.setTranslateY(node.getTranslateY() + y*FIELD_SIZE);
+        node.setTranslateZ(node.getTranslateZ() + z*FIELD_SIZE);
+    }
+    
     public final void addNodeToXYZ(Node node, double x, double y, double z){
+        if (node == null) return;
+        
         moveNodeToXYZ(node, x, y, z);       
         this.getChildren().add(node);
+    }
+
+    @Override
+    public void handle(KeyEvent event) {
+        int fallingX = (int)(getNodeX(falling));
+        int fallingY = (int)(getNodeY(falling));
+        int fallingZ = (int)(getNodeZ(falling));
+        
+        switch (event.getCode()) {
+            case LEFT:
+                if ((falling.getBoundsInParent().getMinX() - FIELD_SIZE) >
+                    (leftWall[fallingY][fallingZ].getBoundsInParent().getMaxX())) {
+                        moveNodeByXYZ(falling, -1, 0, 0);
+                }
+                break;
+            case RIGHT:
+                if ((falling.getBoundsInParent().getMaxX() + FIELD_SIZE) < 
+                    (rightWall[fallingY][fallingZ].getBoundsInParent().getMinX())){
+                        moveNodeByXYZ(falling, +1, 0, 0);
+                }
+                break;
+            case UP:
+                if ((falling.getBoundsInParent().getMinY() - FIELD_SIZE) > 
+                    (rearWall[fallingX][fallingZ].getBoundsInParent().getMaxY())){
+                        moveNodeByXYZ(falling, 0, -1, 0);
+                }
+                break;
+            case DOWN:
+                if ((falling.getBoundsInParent().getMaxY() + FIELD_SIZE) < 
+                    (frontWall[fallingX][fallingZ].getBoundsInParent().getMinY())){
+                        moveNodeByXYZ(falling, 0, +1, 0);
+                }
+                break;
+            case CONTROL:
+                if ((falling.getBoundsInParent().getMaxZ() + FIELD_SIZE) < 
+                    (bottom[fallingX][fallingY].getBoundsInParent().getMinZ())){
+                        moveNodeByXYZ(falling, 0, 0, +1);
+                }
+                break;
+            case SPACE:
+                while ((falling.getBoundsInParent().getMaxZ() + FIELD_SIZE) < 
+                    (bottom[fallingX][fallingY].getBoundsInParent().getMinZ())){
+                        moveNodeByXYZ(falling, 0, 0, +1);
+                }
+                break;
+            default:
+                //DO_NOTHING
+                break;
+        }
     }
 }

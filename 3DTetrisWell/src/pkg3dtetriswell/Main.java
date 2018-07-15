@@ -30,6 +30,7 @@ public class Main extends Application implements Updateable{
     private static final double HEIGHT = 600;
     private static final double MAX_WELL_SIZE = 260;
     
+    private Scene gameScene;
     private Group root;
     private Well well;
     
@@ -60,12 +61,12 @@ public class Main extends Application implements Updateable{
         frontCamera.setFarClip(20000);       
         frontCamera.getTransforms().addAll(new Translate(0,0,-500));
         
-        Scene scene = new Scene(root, WIDTH, HEIGHT, false, SceneAntialiasing.BALANCED);
-        scene.setCamera(frontCamera);
-        scene.setFill(Color.color(0.2, 0.1, 0));
+        gameScene = new Scene(root, WIDTH, HEIGHT, false, SceneAntialiasing.BALANCED);
+        gameScene.setCamera(frontCamera);
+        gameScene.setFill(Color.color(0.2, 0.1, 0));
         
         window.setTitle("3D Tetris Well");
-        window.setScene(scene);
+        window.setScene(gameScene);
         window.show();
         
         new AnimationTimer(){
@@ -74,11 +75,20 @@ public class Main extends Application implements Updateable{
                 update();
             }  
         }.start();
+        
+        eventHandling();
     }
 
     @Override
     public void update() {
+        root.getChildren().remove(well);
         well.update();
+        
+        root.getChildren().add(well);
+    }
+    
+    private void eventHandling() {
+        gameScene.setOnKeyPressed(well);
     }
     
     /**
@@ -87,4 +97,6 @@ public class Main extends Application implements Updateable{
     public static void main(String[] args) {
         launch(args);
     }
+
+    
 }
