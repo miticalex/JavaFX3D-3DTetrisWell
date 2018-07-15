@@ -10,6 +10,7 @@ import java.util.Random;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.animation.TranslateTransition;
 import javafx.event.EventHandler;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
@@ -143,16 +144,16 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         node.setTranslateZ(FIELD_SIZE/2 + z*FIELD_SIZE);
     }
     
-    public final double getNodeX(Node node){
-        return ( node.getTranslateX() + FIELD_SIZE*width/2 )/FIELD_SIZE  -  0.5;
+    public final int getGridIndexX(double positionX){
+        return (int) Math.floor(( positionX + FIELD_SIZE*width/2 )/FIELD_SIZE);
     }
     
-    public final double getNodeY(Node node){
-        return ( node.getTranslateY() + FIELD_SIZE*height/2 )/FIELD_SIZE  -  0.5;
+    public final int getGridIndexY(double positionY){
+        return (int) Math.floor(( positionY + FIELD_SIZE*height/2 )/FIELD_SIZE);
     }
     
-    public final double getNodeZ(Node node){
-        return ( node.getTranslateZ() - FIELD_SIZE/2 )/FIELD_SIZE;
+    public final int getGridIndexZ(double positionZ){
+        return (int) Math.floor(positionZ/FIELD_SIZE);
     }
     
     public final void moveNodeByXYZ(Node node, double x, double y, double z){
@@ -172,46 +173,46 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
 
     @Override
     public void handle(KeyEvent event) {
-        int fallingX = (int)(getNodeX(falling));
-        int fallingY = (int)(getNodeY(falling));
-        int fallingZ = (int)(getNodeZ(falling));
+        int fallingX = getGridIndexX(falling.getTranslateX());
+        int fallingY = getGridIndexY(falling.getTranslateY());
+        int fallingZ = getGridIndexZ(falling.getTranslateZ());
+        
+        int fallingMinX = getGridIndexX(falling.getBoundsInParent().getMinX());
+        int fallingMaxX = getGridIndexX(falling.getBoundsInParent().getMaxX());
+        int fallingMinY = getGridIndexY(falling.getBoundsInParent().getMinY());
+        int fallingMaxY = getGridIndexY(falling.getBoundsInParent().getMaxY());
+        int fallingMinZ = getGridIndexZ(falling.getBoundsInParent().getMinZ());
+        int fallingMaxZ = getGridIndexZ(falling.getBoundsInParent().getMaxZ());
+        
         
         switch (event.getCode()) {
             case LEFT:
-                if ((falling.getBoundsInParent().getMinX() - FIELD_SIZE) >
-                    (leftWall[fallingY][fallingZ].getBoundsInParent().getMaxX())) {
+                if (fallingMinX > 0) {
                         moveNodeByXYZ(falling, -1, 0, 0);
                 }
                 break;
             case RIGHT:
-                if ((falling.getBoundsInParent().getMaxX() + FIELD_SIZE) < 
-                    (rightWall[fallingY][fallingZ].getBoundsInParent().getMinX())){
+                if (fallingMaxX < width-1){
                         moveNodeByXYZ(falling, +1, 0, 0);
                 }
                 break;
             case UP:
-                if ((falling.getBoundsInParent().getMinY() - FIELD_SIZE) > 
-                    (rearWall[fallingX][fallingZ].getBoundsInParent().getMaxY())){
+                if (fallingMinY > 0) {
                         moveNodeByXYZ(falling, 0, -1, 0);
                 }
                 break;
             case DOWN:
-                if ((falling.getBoundsInParent().getMaxY() + FIELD_SIZE) < 
-                    (frontWall[fallingX][fallingZ].getBoundsInParent().getMinY())){
+                if (fallingMaxY < height-1) {
                         moveNodeByXYZ(falling, 0, +1, 0);
                 }
                 break;
             case CONTROL:
-                if ((falling.getBoundsInParent().getMaxZ() + FIELD_SIZE) < 
-                    (bottom[fallingX][fallingY].getBoundsInParent().getMinZ())){
+                if (fallingMaxZ < depth-1){
                         moveNodeByXYZ(falling, 0, 0, +1);
                 }
                 break;
             case SPACE:
-                while ((falling.getBoundsInParent().getMaxZ() + FIELD_SIZE) < 
-                    (bottom[fallingX][fallingY].getBoundsInParent().getMinZ())){
-                        moveNodeByXYZ(falling, 0, 0, +1);
-                }
+                moveNodeByXYZ(falling, 0, 0, depth-1 - fallingMaxZ);
                 break;
                 
             case U: rotateTetrimino(falling, Rotate.Z_AXIS, 90); break;
