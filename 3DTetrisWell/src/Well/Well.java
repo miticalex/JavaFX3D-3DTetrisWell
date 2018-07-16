@@ -195,7 +195,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             int boxY = getGridIndexY(boxCoordinatesInWell.getY());
             int boxZ = getGridIndexZ(boxCoordinatesInWell.getZ());
             
-            if (fallen[boxX][boxY][boxZ] != null) 
+            if (boxX>=0 && boxX<width && boxY>=0 && boxY<height && boxZ>=0 && boxZ<depth &&
+                    (fallen[boxX][boxY][boxZ] != null)) 
                 return true; // A COLLISION EXISTS IFF AT LEAST ONE BOX OVERLAPS ONE OF THE FALLEN BOXES
         }
         
@@ -213,8 +214,10 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             int boxY = getGridIndexY(boxCoordinatesInWell.getY());
             int boxZ = getGridIndexZ(boxCoordinatesInWell.getZ());
             
-            fallen[boxX][boxY][boxZ] = new Box(BOX_SIZE, BOX_SIZE, BOX_SIZE);
-            this.addNodeToXYZ(fallen[boxX][boxY][boxZ], boxX, boxY, boxZ);
+            if (boxX>=0 && boxX<width && boxY>=0 && boxY<height && boxZ>=0 && boxZ<depth){
+                fallen[boxX][boxY][boxZ] = new Box(BOX_SIZE, BOX_SIZE, BOX_SIZE);
+                this.addNodeToXYZ(fallen[boxX][boxY][boxZ], boxX, boxY, boxZ);
+            }
         }
 
         this.getChildren().remove(falling);
@@ -276,20 +279,24 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     }
 
     private void rotateTetrimino(Tetrimino tetrimino, Point3D axis, double angle) {
-    if (fallingRotates) return;
+        // PERFORM NO ROTATION IF ONE IS CURRENTLY BEING PERFORMED
+        if (fallingRotates) return;
         
         Tetrimino futureTetrimino = new Tetrimino(tetrimino);
         futureTetrimino.getTransforms().add(0, new Rotate(angle, axis));
         
-        //BOUNDS OF A TETRIMINO AFTER ROTATION
+        // BOUNDS OF A TETRIMINO AFTER ROTATION
         int futureMinX = getGridIndexX(futureTetrimino.getBoundsInParent().getMinX());
         int futureMaxX = getGridIndexX(futureTetrimino.getBoundsInParent().getMaxX());
         int futureMinY = getGridIndexY(futureTetrimino.getBoundsInParent().getMinY());
         int futureMaxY = getGridIndexY(futureTetrimino.getBoundsInParent().getMaxY());
         int futureMaxZ = getGridIndexZ(futureTetrimino.getBoundsInParent().getMaxZ()); 
         
-    //PERFORM NO ROTATION IF IT CAUSES A TETRIMINO TO FALL BELOW THE BOTTOM OF THE WELL
-    if (futureMaxZ >= depth) return; 
+        // PERFORM NO ROTATION IF IT CAUSES A TETRIMINO TO FALL BELOW THE BOTTOM OF THE WELL
+        if (futureMaxZ >= depth) return; 
+        
+        // PERFORM NO ROTATION IF IT CAUSES A COLLISION WITH ANY OF THE FALLEN BLOCKS
+        if (collidesWithFallen(futureTetrimino)) return;
         
         Rotate rotate = new Rotate(0, axis);
         tetrimino.getTransforms().add(0, rotate);
@@ -300,7 +307,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
 
         fallingRotates = true;
         
-        //PERFORM A TRANSLATION ALSO IF A ROTATION CAUSES COLLISIONS
+        // PERFORM A TRANSLATION ALSO IF A ROTATION CAUSES COLLISIONS WITH WALLS
         TranslateTransition translateTransition = new TranslateTransition(Duration.millis(100), tetrimino);
         
         if (futureMinX < 0)         translateTransition.setByX(-futureMinX*FIELD_SIZE);
