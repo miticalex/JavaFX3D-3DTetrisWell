@@ -232,6 +232,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             if (boxX>=0 && boxX<width && boxY>=0 && boxY<height && boxZ>=0 && boxZ<depth){
                 PhongMaterial blockMaterial = new PhongMaterial(fallenBlocksColor[(depth-1 - boxZ) % fallenBlocksColor.length]);
                 blockMaterial.setSpecularColor(Color.color(0.25, 0.25, 0.25));
+                blockMaterial.setBumpMap(new Image("resources/cubeBumpMap.png"));
                 
                 fallen[boxX][boxY][boxZ] = new Box(BOX_SIZE, BOX_SIZE, BOX_SIZE);
                 fallen[boxX][boxY][boxZ].setMaterial(blockMaterial);

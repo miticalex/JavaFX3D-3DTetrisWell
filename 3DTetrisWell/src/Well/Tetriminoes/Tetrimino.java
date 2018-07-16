@@ -2,6 +2,7 @@ package Well.Tetriminoes;
 
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.image.Image;
 import javafx.scene.shape.Box;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
@@ -42,6 +43,7 @@ public class Tetrimino extends Group {
     protected final void addBox(int posX, int posY, int posZ){
         PhongMaterial boxMaterial = new PhongMaterial
             (Color.color(0.3, 0.4, 0.3, 0.4));
+        boxMaterial.setBumpMap(new Image("resources/cubeBumpMap.png"));
         
         Box box = new Box(0.98*fieldSize, 0.98*fieldSize, 0.98*fieldSize);
         box.setMaterial(boxMaterial);
