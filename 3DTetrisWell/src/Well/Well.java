@@ -7,8 +7,10 @@ import Well.Tetriminoes.TTetrimino;
 import Well.Tetriminoes.Tetrimino;
 import Well.Tetriminoes.ZTetrimino;
 import java.util.Random;
+import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
+import javafx.animation.ParallelTransition;
 import javafx.animation.Timeline;
 import javafx.animation.TranslateTransition;
 import javafx.event.EventHandler;
@@ -226,17 +228,42 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     }
 
     private void rotateTetrimino(Tetrimino tetrimino, Point3D axis, double angle) {
-        if (!fallingRotates){
-            Rotate rotate = new Rotate(0, axis);
-            tetrimino.getTransforms().add(0, rotate);
+    if (fallingRotates) return;
+        
+        Tetrimino futureTetrimino = new Tetrimino(tetrimino);
+        futureTetrimino.getTransforms().add(new Rotate(angle, axis));
+        
+        //BOUNDS OF A TETRIMINO AFTER ROTATION
+        int futureMinX = getGridIndexX(futureTetrimino.getBoundsInParent().getMinX());
+        int futureMaxX = getGridIndexX(futureTetrimino.getBoundsInParent().getMaxX());
+        int futureMinY = getGridIndexY(futureTetrimino.getBoundsInParent().getMinY());
+        int futureMaxY = getGridIndexY(futureTetrimino.getBoundsInParent().getMaxY());
+        int futureMinZ = getGridIndexZ(futureTetrimino.getBoundsInParent().getMinZ());
+        int futureMaxZ = getGridIndexZ(futureTetrimino.getBoundsInParent().getMaxZ()); 
+        
+    //PERFORM NO ROTATION IF IT CAUSES A TETRIMINO TO FALL BELOW THE BOTTOM OF THE WELL
+    if (futureMaxZ >= depth) return; 
+        
+        Rotate rotate = new Rotate(0, axis);
+        tetrimino.getTransforms().add(0, rotate);
 
-            KeyValue startAngle = new KeyValue(rotate.angleProperty(), 0);
-            KeyValue endAngle = new KeyValue(rotate.angleProperty(), angle);
-            Timeline timeline = new Timeline(new KeyFrame(Duration.millis(100), startAngle, endAngle));
+        KeyValue startAngle = new KeyValue(rotate.angleProperty(), 0);
+        KeyValue endAngle = new KeyValue(rotate.angleProperty(), angle);
+        Timeline rotateTimeline = new Timeline(new KeyFrame(Duration.millis(100), startAngle, endAngle));
 
-            fallingRotates = true;
-            timeline.play();
-            timeline.setOnFinished(e -> fallingRotates = false);
-        }
+        fallingRotates = true;
+        
+        //PERFORM A TRANSLATION ALSO IF A ROTATION CAUSES COLLISIONS
+        TranslateTransition translateTransition = new TranslateTransition(Duration.millis(100), tetrimino);
+        
+        if (futureMinX < 0)         translateTransition.setByX(-futureMinX*FIELD_SIZE);
+        if (futureMaxX >= width)    translateTransition.setByX((width-1 - futureMaxX)*FIELD_SIZE);
+        if (futureMinY < 0)         translateTransition.setByY(-futureMinY*FIELD_SIZE);
+        if (futureMaxY >= height)   translateTransition.setByY((height-1 - futureMaxY)*FIELD_SIZE);
+        
+        ParallelTransition parallelTransition = new ParallelTransition(rotateTimeline, translateTransition);
+        parallelTransition.setInterpolator(Interpolator.LINEAR);
+        parallelTransition.play();
+        parallelTransition.setOnFinished(e -> fallingRotates = false);
     }
 }
