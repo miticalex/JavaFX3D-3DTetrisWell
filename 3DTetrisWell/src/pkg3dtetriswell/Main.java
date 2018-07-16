@@ -40,7 +40,7 @@ public class Main extends Application implements Updateable{
     public void start(Stage window) {
         root = new Group();
         
-        well = new Well(5,5,10);
+        well = new Well(5,5,12);
         
         double scaleFactor = MAX_WELL_SIZE/(well.FIELD_SIZE * 
                 ((well.getHeight()>well.getWidth()? well.getHeight() : well.getWidth())+1));

@@ -39,6 +39,11 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         new ITetrimino(), new LTetrimino(), new OTetrimino(), new TTetrimino(), new ZTetrimino() //list of basic 2D tetriminoes
     };
     
+    public static final Color[] fallenBlocksColor = {
+        Color.color(0.2, 0.1, 0), Color.LIME, Color.RED, Color.PURPLE, Color.color(0.6, 0.4, 0), 
+        Color.YELLOW, Color.VIOLET, Color.AQUA 
+    };
+    
     private final int width, height, depth;
     public int getWidth() { return width;}
     public int getHeight() { return height;}
@@ -215,7 +220,12 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             int boxZ = getGridIndexZ(boxCoordinatesInWell.getZ());
             
             if (boxX>=0 && boxX<width && boxY>=0 && boxY<height && boxZ>=0 && boxZ<depth){
+                PhongMaterial blockMaterial = new PhongMaterial(fallenBlocksColor[(depth-1 - boxZ) % fallenBlocksColor.length]);
+                blockMaterial.setSpecularColor(Color.color(0.25, 0.25, 0.25));
+                
                 fallen[boxX][boxY][boxZ] = new Box(BOX_SIZE, BOX_SIZE, BOX_SIZE);
+                fallen[boxX][boxY][boxZ].setMaterial(blockMaterial);
+                
                 this.addNodeToXYZ(fallen[boxX][boxY][boxZ], boxX, boxY, boxZ);
             }
         }
