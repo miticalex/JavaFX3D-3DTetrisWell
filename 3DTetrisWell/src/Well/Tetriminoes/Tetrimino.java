@@ -41,11 +41,11 @@ public class Tetrimino extends Group {
     
     protected final void addBox(int posX, int posY, int posZ){
         PhongMaterial boxMaterial = new PhongMaterial
-            (Color.color(0.3, 0.4, 0.3, 0.2));
+            (Color.color(0.3, 0.4, 0.3, 0.4));
         
-        Box box = new Box(0.99*fieldSize, 0.99*fieldSize, 0.99*fieldSize);
+        Box box = new Box(0.98*fieldSize, 0.98*fieldSize, 0.98*fieldSize);
         box.setMaterial(boxMaterial);
-        box.setCullFace(CullFace.NONE);
+        box.setCullFace(CullFace.BACK);
         
         box.setTranslateX(posX * fieldSize); 
         box.setTranslateY(posY * fieldSize);

@@ -61,7 +61,7 @@ public class Main extends Application implements Updateable{
         frontCamera.setFarClip(20000);       
         frontCamera.getTransforms().addAll(new Translate(0,0,-500));
         
-        gameScene = new Scene(root, WIDTH, HEIGHT, false, SceneAntialiasing.BALANCED);
+        gameScene = new Scene(root, WIDTH, HEIGHT, true, SceneAntialiasing.BALANCED);
         gameScene.setCamera(frontCamera);
         gameScene.setFill(Color.color(0.2, 0.1, 0));
         
