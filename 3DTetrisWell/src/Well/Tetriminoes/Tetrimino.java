@@ -1,16 +1,18 @@
 package Well.Tetriminoes;
 
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.shape.Box;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.CullFace;
+import javafx.scene.transform.Transform;
 
 /**
  *
  * @author AM
  */
-public abstract class Tetrimino extends Group {
+public class Tetrimino extends Group {
     final protected double fieldSize;
     
     public Tetrimino(double fieldSize) {
@@ -18,6 +20,19 @@ public abstract class Tetrimino extends Group {
     }
     public Tetrimino(){
         this(Well.Well.FIELD_SIZE);
+    }
+    public Tetrimino(Tetrimino tetrimino){
+        this(tetrimino.fieldSize);
+        
+        for (Node node : tetrimino.getChildren()) {
+            addBox( (int)Math.floor(node.getTranslateX()/fieldSize), 
+                    (int)Math.floor(node.getTranslateY()/fieldSize), 
+                    (int)Math.floor(node.getTranslateZ()/fieldSize));
+        }
+        
+        for (Transform transform : tetrimino.getTransforms()) {
+            this.getTransforms().add(transform);
+        }
     }
     
     protected final void addBox(int posX, int posY, int posZ){
