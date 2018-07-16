@@ -17,6 +17,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
@@ -49,6 +50,9 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     public int getHeight() { return height;}
     public int getDepth() { return depth;}
     
+    PhongMaterial wallMaterial; // TRANSPARENT BLUE
+    PhongMaterial shiningWallMaterial; // SAME COLOR - WITH RED SELF ILLUMINATION
+    
     private Box[][][] fallen;
     private Box[][] leftWall, rightWall;
     private Box[][] frontWall, rearWall;
@@ -71,11 +75,15 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         if (falling == null){
             falling = tetriminoes[RANDOM.nextInt(tetriminoes.length)];
             this.addNodeToXYZ(falling, (width-1)/2, (height-1)/2, 0);
+            
+            setWallProjection(falling, true);
         }
     }
     
     private void makeWellWalls() {
-        PhongMaterial wallMaterial = new PhongMaterial(Color.color(0, 0.1, 1, 0.5)); // TRANSPARENT BLUE
+        wallMaterial = new PhongMaterial(Color.color(0, 0.1, 1, 0.5)); // TRANSPARENT BLUE
+        shiningWallMaterial = new PhongMaterial(Color.color(0, 0.1, 1, 0.5));
+        shiningWallMaterial.setSelfIlluminationMap(new Image("resources/red.png"));
         
         leftWall = new Box[height][depth];
         rightWall = new Box[height][depth];
@@ -184,9 +192,11 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         
         if (collidesWithFallen(futureTetrimino)) return false;
         
+        setWallProjection(tetrimino, false);
         tetrimino.setTranslateX(tetrimino.getTranslateX() + x*FIELD_SIZE);
         tetrimino.setTranslateY(tetrimino.getTranslateY() + y*FIELD_SIZE);
         tetrimino.setTranslateZ(tetrimino.getTranslateZ() + z*FIELD_SIZE);
+        setWallProjection(tetrimino, true);
         
         return true;
     }
@@ -230,11 +240,31 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             }
         }
 
+        setWallProjection(falling, false);
         this.getChildren().remove(falling);
         falling.getTransforms().setAll();
         falling = null;
         
         return true;
+    }
+    
+    public void setWallProjection(Tetrimino tetrimino, boolean set){
+        for (Node node : tetrimino.getChildren()) {
+            Box box = (Box)node;
+            Point3D boxCoordinatesInWell = falling.localToParent(box.getTranslateX(), box.getTranslateY(), box.getTranslateZ());
+            
+            int boxX = getGridIndexX(boxCoordinatesInWell.getX());
+            int boxY = getGridIndexY(boxCoordinatesInWell.getY());
+            int boxZ = getGridIndexZ(boxCoordinatesInWell.getZ());
+            
+            if (boxX>=0 && boxX<width && boxY>=0 && boxY<height && boxZ>=0 && boxZ<depth){
+                PhongMaterial material = set ? shiningWallMaterial : wallMaterial;
+                leftWall[boxY][boxZ].setMaterial(material);
+                rightWall[boxY][boxZ].setMaterial(material);
+                frontWall[boxX][boxZ].setMaterial(material);
+                rearWall[boxX][boxZ].setMaterial(material);
+            }
+        }
     }
     
     @Override
@@ -308,6 +338,9 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         // PERFORM NO ROTATION IF IT CAUSES A COLLISION WITH ANY OF THE FALLEN BLOCKS
         if (collidesWithFallen(futureTetrimino)) return;
         
+        fallingRotates = true;
+        setWallProjection(tetrimino, false);
+        
         Rotate rotate = new Rotate(0, axis);
         tetrimino.getTransforms().add(0, rotate);
 
@@ -315,8 +348,6 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         KeyValue endAngle = new KeyValue(rotate.angleProperty(), angle);
         Timeline rotateTimeline = new Timeline(new KeyFrame(Duration.millis(100), startAngle, endAngle));
 
-        fallingRotates = true;
-        
         // PERFORM A TRANSLATION ALSO IF A ROTATION CAUSES COLLISIONS WITH WALLS
         TranslateTransition translateTransition = new TranslateTransition(Duration.millis(100), tetrimino);
         
@@ -328,6 +359,9 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         ParallelTransition parallelTransition = new ParallelTransition(rotateTimeline, translateTransition);
         parallelTransition.setInterpolator(Interpolator.LINEAR);
         parallelTransition.play();
-        parallelTransition.setOnFinished(e -> fallingRotates = false);
+        parallelTransition.setOnFinished(e -> {
+            fallingRotates = false;
+            setWallProjection(tetrimino, true);
+        });
     }
 }
