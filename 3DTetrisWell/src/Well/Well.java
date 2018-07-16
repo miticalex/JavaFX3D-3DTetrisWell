@@ -231,7 +231,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     if (fallingRotates) return;
         
         Tetrimino futureTetrimino = new Tetrimino(tetrimino);
-        futureTetrimino.getTransforms().add(new Rotate(angle, axis));
+        futureTetrimino.getTransforms().add(0, new Rotate(angle, axis));
         
         //BOUNDS OF A TETRIMINO AFTER ROTATION
         int futureMinX = getGridIndexX(futureTetrimino.getBoundsInParent().getMinX());
