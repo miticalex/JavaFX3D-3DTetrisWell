@@ -175,15 +175,10 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
 
     @Override
     public void handle(KeyEvent event) {
-        int fallingX = getGridIndexX(falling.getTranslateX());
-        int fallingY = getGridIndexY(falling.getTranslateY());
-        int fallingZ = getGridIndexZ(falling.getTranslateZ());
-        
         int fallingMinX = getGridIndexX(falling.getBoundsInParent().getMinX());
         int fallingMaxX = getGridIndexX(falling.getBoundsInParent().getMaxX());
         int fallingMinY = getGridIndexY(falling.getBoundsInParent().getMinY());
         int fallingMaxY = getGridIndexY(falling.getBoundsInParent().getMaxY());
-        int fallingMinZ = getGridIndexZ(falling.getBoundsInParent().getMinZ());
         int fallingMaxZ = getGridIndexZ(falling.getBoundsInParent().getMaxZ());
         
         
@@ -238,7 +233,6 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         int futureMaxX = getGridIndexX(futureTetrimino.getBoundsInParent().getMaxX());
         int futureMinY = getGridIndexY(futureTetrimino.getBoundsInParent().getMinY());
         int futureMaxY = getGridIndexY(futureTetrimino.getBoundsInParent().getMaxY());
-        int futureMinZ = getGridIndexZ(futureTetrimino.getBoundsInParent().getMinZ());
         int futureMaxZ = getGridIndexZ(futureTetrimino.getBoundsInParent().getMaxZ()); 
         
     //PERFORM NO ROTATION IF IT CAUSES A TETRIMINO TO FALL BELOW THE BOTTOM OF THE WELL
