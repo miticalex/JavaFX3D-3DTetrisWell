@@ -33,6 +33,10 @@ public class Tetrimino extends Group {
         for (Transform transform : tetrimino.getTransforms()) {
             this.getTransforms().add(transform);
         }
+        
+        this.setTranslateX(tetrimino.getTranslateX());
+        this.setTranslateY(tetrimino.getTranslateY());
+        this.setTranslateZ(tetrimino.getTranslateZ());
     }
     
     protected final void addBox(int posX, int posY, int posZ){
