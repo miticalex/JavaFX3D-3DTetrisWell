@@ -280,6 +280,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             }
             
             if (floorFull) clearFloor(i);
+            //TODO: BUG FOUND - Clearing misfunctions when clearing multiple floors
         }
     }
     
