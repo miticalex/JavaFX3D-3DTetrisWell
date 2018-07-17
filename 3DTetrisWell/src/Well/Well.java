@@ -67,7 +67,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         depth = z>20 ? 20 : (z<6 ? 6 : z);;
         
         makeWellWalls();
-        fallenBlocks = new Box[width][height][depth];
+        fallenBlocks = new Box[depth][width][height];
     }
     
     @Override
@@ -213,7 +213,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             int boxZ = getGridIndexZ(boxCoordinatesInWell.getZ());
             
             if (boxX>=0 && boxX<width && boxY>=0 && boxY<height && boxZ>=0 && boxZ<depth &&
-                    (fallenBlocks[boxX][boxY][boxZ] != null)) 
+                    (fallenBlocks[boxZ][boxX][boxY] != null)) 
                 return true; // A COLLISION EXISTS IFF AT LEAST ONE BOX OVERLAPS ONE OF THE FALLEN BOXES
         }
         
@@ -236,12 +236,14 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
                 blockMaterial.setSpecularColor(Color.color(0.25, 0.25, 0.25));
                 blockMaterial.setBumpMap(new Image("resources/cubeBumpMap.png"));
                 
-                fallenBlocks[boxX][boxY][boxZ] = new Box(BOX_SIZE, BOX_SIZE, BOX_SIZE);
-                fallenBlocks[boxX][boxY][boxZ].setMaterial(blockMaterial);
+                fallenBlocks[boxZ][boxX][boxY] = new Box(BOX_SIZE, BOX_SIZE, BOX_SIZE);
+                fallenBlocks[boxZ][boxX][boxY].setMaterial(blockMaterial);
                 
-                this.addNodeToXYZ(fallenBlocks[boxX][boxY][boxZ], boxX, boxY, boxZ);
+                this.addNodeToXYZ(fallenBlocks[boxZ][boxX][boxY], boxX, boxY, boxZ);
             }
         }
+        
+        dropFloors();
 
         setWallProjection(fallingTetrimino, false);
         this.getChildren().remove(fallingTetrimino);
@@ -249,6 +251,60 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         fallingTetrimino = null;
         
         return true;
+    }
+    
+    private void dropFloors() {
+        for (int i=0; i<fallenBlocks.length; i++) {
+            boolean floorFull = true; // SET TO TRUE UNTIL PROVEN FALSE
+            
+            for (int j = 0; j < fallenBlocks[i].length; j++) {
+                for (int k = 0; k < fallenBlocks[i][j].length; k++) {
+                    if (fallenBlocks[i][j][k] == null){
+                        floorFull = false;
+                        break;
+                    }
+                }
+                
+                if (!floorFull) break;
+            }
+            
+            if (floorFull) clearFloor(i);
+        }
+    }
+    
+    private void clearFloor(int i){
+        for (int j = 0; j < fallenBlocks[i].length; j++) {
+            for (int k = 0; k < fallenBlocks[i][j].length; k++) {
+                this.getChildren().remove(fallenBlocks[i][j][k]);
+                fallenBlocks[i][j][k] = null;
+            }
+        }
+        
+        for (int j = i; j >0; j--) {
+            fallenBlocks[j] = fallenBlocks[j-1];
+            for (int k = 0; k < fallenBlocks[j].length; k++) {
+                for (int l = 0; l < fallenBlocks[j][k].length; l++) {
+                    if (fallenBlocks[j][k][l] == null){
+                        int x=1;
+                        continue;
+                    }
+                    
+                    TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(1), fallenBlocks[j][k][l]);
+                    translateTransition.setByZ(FIELD_SIZE);
+                    translateTransition.play();
+                    
+                    final int j1 = j, k1 = k, l1 = l;
+                    translateTransition.setOnFinished(e->{
+                        PhongMaterial blockMaterial = new PhongMaterial(fallenBlocksColor[(depth-1 - j1) % fallenBlocksColor.length]);
+                        blockMaterial.setSpecularColor(Color.color(0.25, 0.25, 0.25));
+                        blockMaterial.setBumpMap(new Image("resources/cubeBumpMap.png"));
+                
+                        fallenBlocks[j1][k1][l1].setMaterial(blockMaterial);
+                    });
+                }
+            }
+        }
+        fallenBlocks[0] = new Box[width][height];
     }
     
     public void setWallProjection(Tetrimino tetrimino, boolean set){
