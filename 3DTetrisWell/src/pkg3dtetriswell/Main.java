@@ -16,6 +16,8 @@ import javafx.scene.PerspectiveCamera;
 import javafx.scene.PointLight;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
+import javafx.scene.SubScene;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
@@ -60,13 +62,30 @@ public class Main extends Application implements Updateable{
         frontCamera.setFarClip(2500);       
         frontCamera.getTransforms().addAll(new Translate(0,0,-500));
         
-        gameScene = new Scene(root, WIDTH, HEIGHT, true, SceneAntialiasing.BALANCED);
-        gameScene.setCamera(frontCamera);
-        gameScene.setFill(Color.color(0.2, 0.1, 0));
+        SubScene gamePlay = new SubScene(root, HEIGHT, HEIGHT, true, SceneAntialiasing.BALANCED);
+        gamePlay.setCamera(frontCamera);
+        gamePlay.setFill(Color.color(0.2, 0.1, 0));
+        
+        Pane gamePlayPane = new Pane(gamePlay);
+        
+        gameScene = new Scene(gamePlayPane, WIDTH, HEIGHT);
+//        gameScene.setCamera(frontCamera);
+//        gameScene.setFill(Color.color(0.2, 0.1, 0));
+
+        Scale scale = new Scale();
+        gamePlay.getTransforms().add(scale);
         
         window.setTitle("3D Tetris Well");
         window.setScene(gameScene);
         window.show();
+        gameScene.widthProperty().addListener(e -> {
+            scale.setY(gameScene.getHeight()/HEIGHT);
+            scale.setX(gameScene.getWidth()/WIDTH);
+        });
+        gameScene.heightProperty().addListener(e -> {
+            scale.setY(gameScene.getHeight()/HEIGHT);
+            scale.setX(gameScene.getWidth()/WIDTH);
+        });
         
         new AnimationTimer(){
             @Override
