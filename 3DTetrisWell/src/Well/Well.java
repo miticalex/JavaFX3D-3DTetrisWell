@@ -44,6 +44,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         Color.color(0.2, 0.1, 0), Color.LIME, Color.RED, Color.PURPLE, Color.color(0.6, 0.4, 0), 
         Color.YELLOW, Color.VIOLET, Color.AQUA 
     };
+    public static final PhongMaterial[] fallenBlocksMaterials = new PhongMaterial[fallenBlocksColors.length];
     
     private final int width, height, depth;
     public int getWidth() { return width;}
@@ -64,22 +65,34 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     public Well(int x, int y, int z) {
         width = x>8 ? 8 : (x<3 ? 3 : x);
         height = y>8 ? 8 : (y<3 ? 3 : y);
-        depth = z>20 ? 20 : (z<6 ? 6 : z);;
+        depth = z>20 ? 20 : (z<6 ? 6 : z);
         
         makeWellWalls();
         fallenBlocks = new Box[depth][width][height];
+        instantiateFallenBlockMaterials();
+        setFallingTetrimino();
+    }
+    
+    private static void instantiateFallenBlockMaterials(){
+        for (int i = 0; i < fallenBlocksMaterials.length; i++) {
+            fallenBlocksMaterials[i] = new PhongMaterial(fallenBlocksColors[i]);
+            fallenBlocksMaterials[i].setSpecularColor(Color.color(0.25, 0.25, 0.25));
+            fallenBlocksMaterials[i].setBumpMap(new Image("resources/cubeBumpMap.png"));
+        }
+    }
+    
+    private void setFallingTetrimino(){
+        fallingTetrimino = tetriminoes[RANDOM.nextInt(tetriminoes.length)];
+        fallingTetrimino.getTransforms().add(new Rotate(180.0 * RANDOM.nextInt(2), Rotate.X_AXIS));
+        fallingTetrimino.getTransforms().add(new Rotate(90.0 * RANDOM.nextInt(4), Rotate.Z_AXIS));
+        this.addNodeToXYZ(fallingTetrimino, (width-1)/2, (height-1)/2, 0);
+        
+        setWallProjection(fallingTetrimino, true);
     }
     
     @Override
     public void update() {
-        if (fallingTetrimino == null){
-            fallingTetrimino = tetriminoes[RANDOM.nextInt(tetriminoes.length)];
-            fallingTetrimino.getTransforms().add(new Rotate(180.0 * RANDOM.nextInt(2), Rotate.X_AXIS));
-            fallingTetrimino.getTransforms().add(new Rotate(90.0 * RANDOM.nextInt(4), Rotate.Z_AXIS));
-            this.addNodeToXYZ(fallingTetrimino, (width-1)/2, (height-1)/2, 0);
-            
-            setWallProjection(fallingTetrimino, true);
-        }
+        
     }
     
     private void makeWellWalls() {
@@ -232,12 +245,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             int boxZ = getGridIndexZ(boxCoordinatesInWell.getZ());
             
             if (boxX>=0 && boxX<width && boxY>=0 && boxY<height && boxZ>=0 && boxZ<depth){
-                PhongMaterial blockMaterial = new PhongMaterial(fallenBlocksColors[(depth-1 - boxZ) % fallenBlocksColors.length]);
-                blockMaterial.setSpecularColor(Color.color(0.25, 0.25, 0.25));
-                blockMaterial.setBumpMap(new Image("resources/cubeBumpMap.png"));
-                
                 fallenBlocks[boxZ][boxX][boxY] = new Box(BOX_SIZE, BOX_SIZE, BOX_SIZE);
-                fallenBlocks[boxZ][boxX][boxY].setMaterial(blockMaterial);
+                fallenBlocks[boxZ][boxX][boxY].setMaterial(fallenBlocksMaterials[(depth-1 - boxZ) % fallenBlocksMaterials.length]);
                 
                 this.addNodeToXYZ(fallenBlocks[boxZ][boxX][boxY], boxX, boxY, boxZ);
             }
@@ -249,6 +258,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         this.getChildren().remove(fallingTetrimino);
         fallingTetrimino.getTransforms().setAll();
         fallingTetrimino = null;
+        
+        setFallingTetrimino();
         
         return true;
     }
@@ -295,11 +306,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
                     
                     final int j1 = j, k1 = k, l1 = l;
                     translateTransition.setOnFinished(e->{
-                        PhongMaterial blockMaterial = new PhongMaterial(fallenBlocksColors[(depth-1 - j1) % fallenBlocksColors.length]);
-                        blockMaterial.setSpecularColor(Color.color(0.25, 0.25, 0.25));
-                        blockMaterial.setBumpMap(new Image("resources/cubeBumpMap.png"));
-                
-                        fallenBlocks[j1][k1][l1].setMaterial(blockMaterial);
+                        fallenBlocks[j1][k1][l1].setMaterial(fallenBlocksMaterials[(depth-1 - j1) % fallenBlocksColors.length]);
                     });
                 }
             }
