@@ -59,10 +59,22 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     private Box[][] frontWall, rearWall;
     private Box[][] bottom;
     
+    private double framePeriod = 1./60.;
+    private double time;
+    private double timeUntilFallingTetriminoDrops;
+    
     private Tetrimino fallingTetrimino = null;
     private boolean fallingTetriminoRotates = false;
     
-    public Well(int x, int y, int z) {
+    private int level;
+    private int linesCleared = 0;
+    
+    public Well(int level, int x, int y, int z) {
+        time=0;
+        
+        this.level = level>10 ? 10 : (level<1 ? 1 : level);
+        timeUntilFallingTetriminoDrops = 10/level;
+        
         width = x>8 ? 8 : (x<3 ? 3 : x);
         height = y>8 ? 8 : (y<3 ? 3 : y);
         depth = z>20 ? 20 : (z<6 ? 6 : z);
@@ -92,7 +104,14 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     
     @Override
     public void update() {
+        time += framePeriod;
+        timeUntilFallingTetriminoDrops -= framePeriod;
         
+        if (timeUntilFallingTetriminoDrops <=0){
+            if (moveTetriminoByXYZ(fallingTetrimino, 0, 0, +1) == false)
+                integrateFallingTetrimino();
+            timeUntilFallingTetriminoDrops = 10/level;
+        }
     }
     
     private void makeWellWalls() {
@@ -260,6 +279,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         fallingTetrimino = null;
         
         setFallingTetrimino();
+        timeUntilFallingTetriminoDrops = 10/level;
         
         return true;
     }
@@ -284,6 +304,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     }
     
     private void clearFloor(int i){
+        if (++linesCleared % 10 == 0) timeUntilFallingTetriminoDrops = 10/++level;
+        
         for (int j = 0; j < fallenBlocks[i].length; j++) {
             for (int k = 0; k < fallenBlocks[i][j].length; k++) {
                 this.getChildren().remove(fallenBlocks[i][j][k]);
