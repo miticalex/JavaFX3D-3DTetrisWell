@@ -53,13 +53,13 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     PhongMaterial wallMaterial; // TRANSPARENT BLUE
     PhongMaterial shiningWallMaterial; // SAME COLOR - WITH RED SELF ILLUMINATION
     
-    private Box[][][] fallen;
+    private Box[][][] fallenBlocks;
     private Box[][] leftWall, rightWall;
     private Box[][] frontWall, rearWall;
     private Box[][] bottom;
     
-    private Tetrimino falling = null;
-    private boolean fallingRotates = false;
+    private Tetrimino fallingTetrimino = null;
+    private boolean fallingTetriminoRotates = false;
     
     public Well(int x, int y, int z) {
         width = x>8 ? 8 : (x<3 ? 3 : x);
@@ -67,18 +67,18 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         depth = z>20 ? 20 : (z<6 ? 6 : z);;
         
         makeWellWalls();
-        fallen = new Box[width][height][depth];
+        fallenBlocks = new Box[width][height][depth];
     }
     
     @Override
     public void update() {
-        if (falling == null){
-            falling = tetriminoes[RANDOM.nextInt(tetriminoes.length)];
-            falling.getTransforms().add(new Rotate(180.0 * RANDOM.nextInt(2), Rotate.X_AXIS));
-            falling.getTransforms().add(new Rotate(90.0 * RANDOM.nextInt(4), Rotate.Z_AXIS));
-            this.addNodeToXYZ(falling, (width-1)/2, (height-1)/2, 0);
+        if (fallingTetrimino == null){
+            fallingTetrimino = tetriminoes[RANDOM.nextInt(tetriminoes.length)];
+            fallingTetrimino.getTransforms().add(new Rotate(180.0 * RANDOM.nextInt(2), Rotate.X_AXIS));
+            fallingTetrimino.getTransforms().add(new Rotate(90.0 * RANDOM.nextInt(4), Rotate.Z_AXIS));
+            this.addNodeToXYZ(fallingTetrimino, (width-1)/2, (height-1)/2, 0);
             
-            setWallProjection(falling, true);
+            setWallProjection(fallingTetrimino, true);
         }
     }
     
@@ -192,7 +192,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         futureTetrimino.setTranslateY(tetrimino.getTranslateY() + y*FIELD_SIZE);
         futureTetrimino.setTranslateZ(tetrimino.getTranslateZ() + z*FIELD_SIZE);
         
-        if (collidesWithFallen(futureTetrimino)) return false;
+        if (collidesWithFallenBlocks(futureTetrimino)) return false;
         
         setWallProjection(tetrimino, false);
         tetrimino.setTranslateX(tetrimino.getTranslateX() + x*FIELD_SIZE);
@@ -203,7 +203,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         return true;
     }
     
-    public final boolean collidesWithFallen(Tetrimino tetrimino){
+    public final boolean collidesWithFallenBlocks(Tetrimino tetrimino){
         for (Node node : tetrimino.getChildren()) {
             Box box = (Box)node;
             Point3D boxCoordinatesInWell = tetrimino.localToParent(box.getTranslateX(), box.getTranslateY(), box.getTranslateZ());
@@ -213,19 +213,19 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             int boxZ = getGridIndexZ(boxCoordinatesInWell.getZ());
             
             if (boxX>=0 && boxX<width && boxY>=0 && boxY<height && boxZ>=0 && boxZ<depth &&
-                    (fallen[boxX][boxY][boxZ] != null)) 
+                    (fallenBlocks[boxX][boxY][boxZ] != null)) 
                 return true; // A COLLISION EXISTS IFF AT LEAST ONE BOX OVERLAPS ONE OF THE FALLEN BOXES
         }
         
         return false;
     }
     
-    public final boolean integrateFalling(){
-        if (falling==null) return false;
+    public final boolean integrateFallingTetrimino(){
+        if (fallingTetrimino==null) return false;
         
-        for (Node node : falling.getChildren()) {
+        for (Node node : fallingTetrimino.getChildren()) {
             Box box = (Box)node;
-            Point3D boxCoordinatesInWell = falling.localToParent(box.getTranslateX(), box.getTranslateY(), box.getTranslateZ());
+            Point3D boxCoordinatesInWell = fallingTetrimino.localToParent(box.getTranslateX(), box.getTranslateY(), box.getTranslateZ());
             
             int boxX = getGridIndexX(boxCoordinatesInWell.getX());
             int boxY = getGridIndexY(boxCoordinatesInWell.getY());
@@ -236,17 +236,17 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
                 blockMaterial.setSpecularColor(Color.color(0.25, 0.25, 0.25));
                 blockMaterial.setBumpMap(new Image("resources/cubeBumpMap.png"));
                 
-                fallen[boxX][boxY][boxZ] = new Box(BOX_SIZE, BOX_SIZE, BOX_SIZE);
-                fallen[boxX][boxY][boxZ].setMaterial(blockMaterial);
+                fallenBlocks[boxX][boxY][boxZ] = new Box(BOX_SIZE, BOX_SIZE, BOX_SIZE);
+                fallenBlocks[boxX][boxY][boxZ].setMaterial(blockMaterial);
                 
-                this.addNodeToXYZ(fallen[boxX][boxY][boxZ], boxX, boxY, boxZ);
+                this.addNodeToXYZ(fallenBlocks[boxX][boxY][boxZ], boxX, boxY, boxZ);
             }
         }
 
-        setWallProjection(falling, false);
-        this.getChildren().remove(falling);
-        falling.getTransforms().setAll();
-        falling = null;
+        setWallProjection(fallingTetrimino, false);
+        this.getChildren().remove(fallingTetrimino);
+        fallingTetrimino.getTransforms().setAll();
+        fallingTetrimino = null;
         
         return true;
     }
@@ -254,7 +254,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     public void setWallProjection(Tetrimino tetrimino, boolean set){
         for (Node node : tetrimino.getChildren()) {
             Box box = (Box)node;
-            Point3D boxCoordinatesInWell = falling.localToParent(box.getTranslateX(), box.getTranslateY(), box.getTranslateZ());
+            Point3D boxCoordinatesInWell = fallingTetrimino.localToParent(box.getTranslateX(), box.getTranslateY(), box.getTranslateZ());
             
             int boxX = getGridIndexX(boxCoordinatesInWell.getX());
             int boxY = getGridIndexY(boxCoordinatesInWell.getY());
@@ -272,58 +272,58 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     
     @Override
     public void handle(KeyEvent event) {
-        int fallingMinX = getGridIndexX(falling.getBoundsInParent().getMinX());
-        int fallingMaxX = getGridIndexX(falling.getBoundsInParent().getMaxX());
-        int fallingMinY = getGridIndexY(falling.getBoundsInParent().getMinY());
-        int fallingMaxY = getGridIndexY(falling.getBoundsInParent().getMaxY());
-        int fallingMaxZ = getGridIndexZ(falling.getBoundsInParent().getMaxZ());
+        int fallingMinX = getGridIndexX(fallingTetrimino.getBoundsInParent().getMinX());
+        int fallingMaxX = getGridIndexX(fallingTetrimino.getBoundsInParent().getMaxX());
+        int fallingMinY = getGridIndexY(fallingTetrimino.getBoundsInParent().getMinY());
+        int fallingMaxY = getGridIndexY(fallingTetrimino.getBoundsInParent().getMaxY());
+        int fallingMaxZ = getGridIndexZ(fallingTetrimino.getBoundsInParent().getMaxZ());
         
         
         switch (event.getCode()) {
             case LEFT:
                 if (fallingMinX > 0) {
-                        moveTetriminoByXYZ(falling, -1, 0, 0);
+                        moveTetriminoByXYZ(fallingTetrimino, -1, 0, 0);
                 }
                 break;
             case RIGHT:
                 if (fallingMaxX < width-1){
-                        moveTetriminoByXYZ(falling, +1, 0, 0);
+                        moveTetriminoByXYZ(fallingTetrimino, +1, 0, 0);
                 }
                 break;
             case UP:
                 if (fallingMinY > 0) {
-                        moveTetriminoByXYZ(falling, 0, -1, 0);
+                        moveTetriminoByXYZ(fallingTetrimino, 0, -1, 0);
                 }
                 break;
             case DOWN:
                 if (fallingMaxY < height-1) {
-                        moveTetriminoByXYZ(falling, 0, +1, 0);
+                        moveTetriminoByXYZ(fallingTetrimino, 0, +1, 0);
                 }
                 break;
             case CONTROL:
                 if (fallingMaxZ < depth){
-                    if (moveTetriminoByXYZ(falling, 0, 0, +1) == false)
-                        integrateFalling();
+                    if (moveTetriminoByXYZ(fallingTetrimino, 0, 0, +1) == false)
+                        integrateFallingTetrimino();
                 }
                 break;
             case SPACE:
-                while (moveTetriminoByXYZ(falling, 0, 0, +1));
-                integrateFalling();
+                while (moveTetriminoByXYZ(fallingTetrimino, 0, 0, +1));
+                integrateFallingTetrimino();
                 break;
                 
-            case U: rotateTetrimino(falling, Rotate.Z_AXIS, 90); break;
-            case J: rotateTetrimino(falling, Rotate.Z_AXIS, -90); break; 
-            case I: rotateTetrimino(falling, Rotate.Y_AXIS, 90); break;
-            case K: rotateTetrimino(falling, Rotate.Y_AXIS, -90); break;
-            case O: rotateTetrimino(falling, Rotate.X_AXIS, 90); break;
-            case L: rotateTetrimino(falling, Rotate.X_AXIS, -90); break;
+            case U: rotateTetrimino(fallingTetrimino, Rotate.Z_AXIS, 90); break;
+            case J: rotateTetrimino(fallingTetrimino, Rotate.Z_AXIS, -90); break; 
+            case I: rotateTetrimino(fallingTetrimino, Rotate.Y_AXIS, 90); break;
+            case K: rotateTetrimino(fallingTetrimino, Rotate.Y_AXIS, -90); break;
+            case O: rotateTetrimino(fallingTetrimino, Rotate.X_AXIS, 90); break;
+            case L: rotateTetrimino(fallingTetrimino, Rotate.X_AXIS, -90); break;
             default: break;
         }
     }
 
     private void rotateTetrimino(Tetrimino tetrimino, Point3D axis, double angle) {
         // PERFORM NO ROTATION IF ONE IS CURRENTLY BEING PERFORMED
-        if (fallingRotates) return;
+        if (fallingTetriminoRotates) return;
         
         Tetrimino futureTetrimino = new Tetrimino(tetrimino);
         futureTetrimino.getTransforms().add(0, new Rotate(angle, axis));
@@ -339,9 +339,9 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         if (futureMaxZ >= depth) return; 
         
         // PERFORM NO ROTATION IF IT CAUSES A COLLISION WITH ANY OF THE FALLEN BLOCKS
-        if (collidesWithFallen(futureTetrimino)) return;
+        if (collidesWithFallenBlocks(futureTetrimino)) return;
         
-        fallingRotates = true;
+        fallingTetriminoRotates = true;
         setWallProjection(tetrimino, false);
         
         Rotate rotate = new Rotate(0, axis);
@@ -363,7 +363,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         parallelTransition.setInterpolator(Interpolator.LINEAR);
         parallelTransition.play();
         parallelTransition.setOnFinished(e -> {
-            fallingRotates = false;
+            fallingTetriminoRotates = false;
             setWallProjection(tetrimino, true);
         });
     }
