@@ -40,7 +40,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         new ITetrimino(), new LTetrimino(), new OTetrimino(), new TTetrimino(), new ZTetrimino() //list of basic 2D tetriminoes
     };
     
-    public static final Color[] fallenBlocksColor = {
+    public static final Color[] fallenBlocksColors = {
         Color.color(0.2, 0.1, 0), Color.LIME, Color.RED, Color.PURPLE, Color.color(0.6, 0.4, 0), 
         Color.YELLOW, Color.VIOLET, Color.AQUA 
     };
@@ -232,7 +232,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             int boxZ = getGridIndexZ(boxCoordinatesInWell.getZ());
             
             if (boxX>=0 && boxX<width && boxY>=0 && boxY<height && boxZ>=0 && boxZ<depth){
-                PhongMaterial blockMaterial = new PhongMaterial(fallenBlocksColor[(depth-1 - boxZ) % fallenBlocksColor.length]);
+                PhongMaterial blockMaterial = new PhongMaterial(fallenBlocksColors[(depth-1 - boxZ) % fallenBlocksColors.length]);
                 blockMaterial.setSpecularColor(Color.color(0.25, 0.25, 0.25));
                 blockMaterial.setBumpMap(new Image("resources/cubeBumpMap.png"));
                 
@@ -295,7 +295,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
                     
                     final int j1 = j, k1 = k, l1 = l;
                     translateTransition.setOnFinished(e->{
-                        PhongMaterial blockMaterial = new PhongMaterial(fallenBlocksColor[(depth-1 - j1) % fallenBlocksColor.length]);
+                        PhongMaterial blockMaterial = new PhongMaterial(fallenBlocksColors[(depth-1 - j1) % fallenBlocksColors.length]);
                         blockMaterial.setSpecularColor(Color.color(0.25, 0.25, 0.25));
                         blockMaterial.setBumpMap(new Image("resources/cubeBumpMap.png"));
                 
