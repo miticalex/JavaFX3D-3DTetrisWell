@@ -74,6 +74,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     public void update() {
         if (falling == null){
             falling = tetriminoes[RANDOM.nextInt(tetriminoes.length)];
+            falling.getTransforms().add(new Rotate(180.0 * RANDOM.nextInt(2), Rotate.X_AXIS));
+            falling.getTransforms().add(new Rotate(90.0 * RANDOM.nextInt(4), Rotate.Z_AXIS));
             this.addNodeToXYZ(falling, (width-1)/2, (height-1)/2, 0);
             
             setWallProjection(falling, true);
