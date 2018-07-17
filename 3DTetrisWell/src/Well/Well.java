@@ -280,7 +280,6 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             }
             
             if (floorFull) clearFloor(i);
-            //TODO: BUG FOUND - Clearing misfunctions when clearing multiple floors
         }
     }
     
@@ -298,14 +297,18 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
                 for (int l = 0; l < fallenBlocks[j][k].length; l++) {
                     if (fallenBlocks[j][k][l] == null) continue;
                     
-                    TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(1), fallenBlocks[j][k][l]);
-                    translateTransition.setByZ(FIELD_SIZE);
-                    translateTransition.play();
+                    fallenBlocks[j][k][l].setTranslateZ(fallenBlocks[j][k][l].getTranslateZ() + FIELD_SIZE);
+                    fallenBlocks[j][k][l].setMaterial(fallenBlocksMaterials[(depth-1 - j) % fallenBlocksColors.length]);
                     
-                    final int j1 = j, k1 = k, l1 = l;
-                    translateTransition.setOnFinished(e->{
-                        fallenBlocks[j1][k1][l1].setMaterial(fallenBlocksMaterials[(depth-1 - j1) % fallenBlocksColors.length]);
-                    });
+                    //TODO: Try to implement translate transition
+//                    TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(1), fallenBlocks[j][k][l]);
+//                    translateTransition.setByZ(FIELD_SIZE);
+//                    translateTransition.play();
+//                    
+//                    final int j1 = j, k1 = k, l1 = l;
+//                    translateTransition.setOnFinished(e->{
+//                        fallenBlocks[j1][k1][l1].setMaterial(fallenBlocksMaterials[(depth-1 - j1) % fallenBlocksColors.length]);
+//                    });
                 }
             }
         }
