@@ -64,7 +64,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     public Well(int x, int y, int z) {
         width = x>8 ? 8 : (x<3 ? 3 : x);
         height = y>8 ? 8 : (y<3 ? 3 : y);
-        depth = z>40 ? 40 : (z<6 ? 6 : z);;
+        depth = z>20 ? 20 : (z<6 ? 6 : z);;
         
         makeWellWalls();
         fallen = new Box[width][height][depth];

@@ -55,10 +55,9 @@ public class Main extends Application implements Updateable{
         PointLight bottomLight = new PointLight(Color.DARKGREY);
         bottomLight.setTranslateZ(500);
         
-        
         root.getChildren().addAll(topLight, bottomLight);
         
-        frontCamera.setFarClip(20000);       
+        frontCamera.setFarClip(2500);       
         frontCamera.getTransforms().addAll(new Translate(0,0,-500));
         
         gameScene = new Scene(root, WIDTH, HEIGHT, true, SceneAntialiasing.BALANCED);
