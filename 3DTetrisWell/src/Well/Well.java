@@ -296,10 +296,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             fallenBlocks[j] = fallenBlocks[j-1];
             for (int k = 0; k < fallenBlocks[j].length; k++) {
                 for (int l = 0; l < fallenBlocks[j][k].length; l++) {
-                    if (fallenBlocks[j][k][l] == null){
-                        int x=1;
-                        continue;
-                    }
+                    if (fallenBlocks[j][k][l] == null) continue;
                     
                     TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(1), fallenBlocks[j][k][l]);
                     translateTransition.setByZ(FIELD_SIZE);
