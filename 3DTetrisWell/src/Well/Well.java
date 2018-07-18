@@ -20,6 +20,7 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.PointLight;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
@@ -66,19 +67,20 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     private Box[][] frontWall, rearWall;
     private Box[][] bottom;
     
-    private double framePeriod = 1./60.;
-    private double time;
+    private static final double framePeriod = 1./60.;
+    private double time=0;
     private double timeUntilFallingTetriminoDrops;
     
     private Tetrimino fallingTetrimino = null;
     private boolean fallingTetriminoRotates = false;
     
+    private boolean paused = false;
+    public boolean isPaused() { return paused; }
+    
     private int level;
     private int floorsCleared = 0;
     
     public Well(int level, int x, int y, int z) {
-        time=0;
-        
         this.level = level>10 ? 10 : (level<1 ? 1 : level);
         timeUntilFallingTetriminoDrops = 10/level;
         
@@ -125,6 +127,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     
     @Override
     public void update() {
+        if (paused) return;
+        
         time += framePeriod;
         timeUntilFallingTetriminoDrops -= framePeriod;
         
@@ -391,12 +395,16 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     
     @Override
     public void handle(KeyEvent event) {
+        if (event.getCode() == KeyCode.P)
+            paused = !paused;
+        
+        if (paused) return;
+        
         int fallingMinX = getGridIndexX(fallingTetrimino.getBoundsInParent().getMinX());
         int fallingMaxX = getGridIndexX(fallingTetrimino.getBoundsInParent().getMaxX());
         int fallingMinY = getGridIndexY(fallingTetrimino.getBoundsInParent().getMinY());
         int fallingMaxY = getGridIndexY(fallingTetrimino.getBoundsInParent().getMaxY());
         int fallingMaxZ = getGridIndexZ(fallingTetrimino.getBoundsInParent().getMaxZ());
-        
         
         switch (event.getCode()) {
             case LEFT: case A:
