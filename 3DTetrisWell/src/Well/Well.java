@@ -67,7 +67,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     private boolean fallingTetriminoRotates = false;
     
     private int level;
-    private int linesCleared = 0;
+    private int floorsCleared = 0;
     
     public Well(int level, int x, int y, int z) {
         time=0;
@@ -304,7 +304,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     }
     
     private void clearFloor(int i){
-        if (++linesCleared % 10 == 0) timeUntilFallingTetriminoDrops = 10/++level;
+        if (++floorsCleared % 10 == 0) timeUntilFallingTetriminoDrops = 10/++level;
         
         for (int j = 0; j < fallenBlocks[i].length; j++) {
             for (int k = 0; k < fallenBlocks[i][j].length; k++) {
