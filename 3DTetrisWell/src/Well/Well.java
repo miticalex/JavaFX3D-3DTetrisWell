@@ -82,7 +82,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     
     public Well(int level, int x, int y, int z) {
         this.level = level>10 ? 10 : (level<1 ? 1 : level);
-        timeUntilFallingTetriminoDrops = 10/level;
+        timeUntilFallingTetriminoDrops = 10.0/level;
         
         width = x>8 ? 8 : (x<3 ? 3 : x);
         height = y>8 ? 8 : (y<3 ? 3 : y);
@@ -135,7 +135,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         if (timeUntilFallingTetriminoDrops <=0){
             if (moveTetriminoOnGrid(fallingTetrimino, Z_AXIS, Direction.POSITIVE) == false)
                 integrateFallingTetrimino();
-            timeUntilFallingTetriminoDrops = 10/level;
+            timeUntilFallingTetriminoDrops = 10.0/level;
         }
     }
     
@@ -314,7 +314,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         fallingTetrimino = null;
         
         setFallingTetrimino();
-        timeUntilFallingTetriminoDrops = 10/level;
+        timeUntilFallingTetriminoDrops = 10.0/level;
         
         return true;
     }
@@ -339,7 +339,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     }
     
     private void clearFloor(int i){
-        if (++floorsCleared % 10 == 0) timeUntilFallingTetriminoDrops = 10/++level;
+        if (++floorsCleared % 10 == 0) timeUntilFallingTetriminoDrops = 10.0/++level;
         
         for (int j = 0; j < fallenBlocks[i].length; j++) {
             for (int k = 0; k < fallenBlocks[i][j].length; k++) {
