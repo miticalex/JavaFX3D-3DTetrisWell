@@ -15,8 +15,10 @@ import javafx.animation.Timeline;
 import javafx.animation.TranslateTransition;
 import javafx.event.EventHandler;
 import javafx.geometry.Point3D;
+import javafx.scene.AmbientLight;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.PointLight;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
@@ -88,6 +90,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         fallenBlocks = new Box[depth][width][height];
         instantiateFallenBlockMaterials();
         setFallingTetrimino();
+        setLights();
     }
     
     private static void instantiateFallenBlockMaterials(){
@@ -105,6 +108,19 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         this.addNodeToGridXYZ(fallingTetrimino, (width-1)/2, (height-1)/2, 0);
         
         setWallProjection(fallingTetrimino, true);
+    }
+    
+    private void setLights(){
+        AmbientLight ambientLight = new AmbientLight(Color.color(0, 0.1, 0.0));
+        
+        PointLight topLight= new PointLight(Color.WHITE);
+        topLight.setTranslateZ(- 1.5*FIELD_SIZE);
+        this.getChildren().addAll(ambientLight, topLight);
+        for (int i = 1; i < 2; i++) {
+            PointLight bottomLight = new PointLight(Color.DARKGRAY);
+            bottomLight.setTranslateZ(8*i*FIELD_SIZE);
+            this.getChildren().add(bottomLight);
+        }
     }
     
     @Override

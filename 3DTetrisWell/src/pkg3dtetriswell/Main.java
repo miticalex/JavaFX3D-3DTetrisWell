@@ -28,8 +28,8 @@ import javafx.stage.Stage;
  * @author AM
  */
 public class Main extends Application implements Updateable{
-    private static final double WIDTH = 1000;
-    private static final double HEIGHT = 600;
+    private static final double WIDTH = 1500;
+    private static final double HEIGHT = 900;
     private static final double MAX_WELL_SIZE = 260;
     
     private Scene gameScene;
@@ -50,14 +50,6 @@ public class Main extends Application implements Updateable{
         well.getTransforms().setAll(new Scale(scaleFactor, scaleFactor, 1.5*scaleFactor));
         
         root.getChildren().add(well);
-        
-        AmbientLight ambientLight = new AmbientLight(Color.color(0.1, 0.1, 0.1));
-        PointLight topLight = new PointLight(Color.WHITE);
-        topLight.setTranslateZ(-40);
-        PointLight bottomLight = new PointLight(Color.DARKGREY);
-        bottomLight.setTranslateZ(500);
-        
-        root.getChildren().addAll(topLight, bottomLight);
         
         frontCamera.setFarClip(2500);       
         frontCamera.getTransforms().addAll(new Translate(0,0,-500));
