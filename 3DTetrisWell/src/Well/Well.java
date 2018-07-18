@@ -353,6 +353,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     }
     
     public void setWallProjection(Tetrimino tetrimino, boolean set){
+        // TODO: BUG SPOTTED - TETRIMINO PROJECTION ON THE WALL DOESN'T ALWAYS DISAPPEAR
+        
         for (Node node : tetrimino.getChildren()) {
             Box box = (Box)node;
             Point3D boxCoordinatesInWell = fallingTetrimino.localToParent(box.getTranslateX(), box.getTranslateY(), box.getTranslateZ());
