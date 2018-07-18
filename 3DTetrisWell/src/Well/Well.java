@@ -46,6 +46,11 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     };
     public static final PhongMaterial[] fallenBlocksMaterials = new PhongMaterial[fallenBlocksColors.length];
     
+    private static enum Direction {POSITIVE, NEGATIVE};
+    private static final Point3D X_AXIS = Rotate.X_AXIS;
+    private static final Point3D Y_AXIS = Rotate.Y_AXIS;
+    private static final Point3D Z_AXIS = Rotate.Z_AXIS;
+    
     private final int width, height, depth;
     public int getWidth() { return width;}
     public int getHeight() { return height;}
@@ -108,7 +113,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         timeUntilFallingTetriminoDrops -= framePeriod;
         
         if (timeUntilFallingTetriminoDrops <=0){
-            if (moveTetriminoByXYZ(fallingTetrimino, 0, 0, +1) == false)
+            if (moveTetriminoOnGrid(fallingTetrimino, Z_AXIS, Direction.POSITIVE) == false)
                 integrateFallingTetrimino();
             timeUntilFallingTetriminoDrops = 10/level;
         }
@@ -213,23 +218,32 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         return (int) Math.floor(positionZ/FIELD_SIZE);
     }
     
-    public final boolean moveTetriminoByXYZ(Tetrimino tetrimino, int x, int y, int z){
+    public final boolean moveTetriminoOnGrid(Tetrimino tetrimino, Point3D axis, Direction direction){
         if (tetrimino == null) 
             return false;
-        if ((z==1) && (getGridIndexZ(tetrimino.getBoundsInParent().getMaxZ()) == depth-1))
+        if ((axis != X_AXIS) && (axis != Y_AXIS) && (axis != Z_AXIS))
+            return false;
+        if ((axis == Z_AXIS) && (direction == Direction.NEGATIVE))
             return false;
         
+        if ((axis == Z_AXIS) && (direction == Direction.POSITIVE) && 
+            (getGridIndexZ(tetrimino.getBoundsInParent().getMaxZ()) == depth-1))
+            return false;
+            
+        
+        int displacement = direction == direction.POSITIVE ? +1 : -1;
+        
         Tetrimino futureTetrimino = new Tetrimino(tetrimino);
-        futureTetrimino.setTranslateX(tetrimino.getTranslateX() + x*FIELD_SIZE);
-        futureTetrimino.setTranslateY(tetrimino.getTranslateY() + y*FIELD_SIZE);
-        futureTetrimino.setTranslateZ(tetrimino.getTranslateZ() + z*FIELD_SIZE);
+        if (axis == X_AXIS)         futureTetrimino.setTranslateX(tetrimino.getTranslateX() + displacement*FIELD_SIZE);
+        else if (axis == Y_AXIS)    futureTetrimino.setTranslateY(tetrimino.getTranslateY() + displacement*FIELD_SIZE);
+        else /* Z_AXIS */           futureTetrimino.setTranslateZ(tetrimino.getTranslateZ() + displacement*FIELD_SIZE);
         
         if (collidesWithFallenBlocks(futureTetrimino)) return false;
         
         setWallProjection(tetrimino, false);
-        tetrimino.setTranslateX(tetrimino.getTranslateX() + x*FIELD_SIZE);
-        tetrimino.setTranslateY(tetrimino.getTranslateY() + y*FIELD_SIZE);
-        tetrimino.setTranslateZ(tetrimino.getTranslateZ() + z*FIELD_SIZE);
+        if (axis == X_AXIS)         tetrimino.setTranslateX(tetrimino.getTranslateX() + displacement*FIELD_SIZE);
+        else if (axis == Y_AXIS)    tetrimino.setTranslateY(tetrimino.getTranslateY() + displacement*FIELD_SIZE);
+        else /* Z_AXIS */           tetrimino.setTranslateZ(tetrimino.getTranslateZ() + displacement*FIELD_SIZE);
         setWallProjection(tetrimino, true);
         
         return true;
@@ -368,32 +382,32 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         switch (event.getCode()) {
             case LEFT: case A:
                 if (fallingMinX > 0) {
-                        moveTetriminoByXYZ(fallingTetrimino, -1, 0, 0);
+                    moveTetriminoOnGrid(fallingTetrimino, X_AXIS, Direction.NEGATIVE);
                 }
                 break;
             case RIGHT: case D:
                 if (fallingMaxX < width-1){
-                        moveTetriminoByXYZ(fallingTetrimino, +1, 0, 0);
+                    moveTetriminoOnGrid(fallingTetrimino, X_AXIS, Direction.POSITIVE);
                 }
                 break;
             case UP: case W:
                 if (fallingMinY > 0) {
-                        moveTetriminoByXYZ(fallingTetrimino, 0, -1, 0);
+                    moveTetriminoOnGrid(fallingTetrimino, Y_AXIS, Direction.NEGATIVE);
                 }
                 break;
             case DOWN: case S:
                 if (fallingMaxY < height-1) {
-                        moveTetriminoByXYZ(fallingTetrimino, 0, +1, 0);
+                    moveTetriminoOnGrid(fallingTetrimino, Y_AXIS, Direction.POSITIVE);
                 }
                 break;
             case CONTROL:
                 if (fallingMaxZ < depth){
-                    if (moveTetriminoByXYZ(fallingTetrimino, 0, 0, +1) == false)
+                    if (moveTetriminoOnGrid(fallingTetrimino, Z_AXIS, Direction.POSITIVE) == false)
                         integrateFallingTetrimino();
                 }
                 break;
             case SPACE:
-                while (moveTetriminoByXYZ(fallingTetrimino, 0, 0, +1));
+                while (moveTetriminoOnGrid(fallingTetrimino, Z_AXIS, Direction.POSITIVE));
                 integrateFallingTetrimino();
                 break;
                 
