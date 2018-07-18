@@ -111,7 +111,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     }
     
     private void setLights(){
-        AmbientLight ambientLight = new AmbientLight(Color.color(0, 0.1, 0.0));
+        AmbientLight ambientLight = new AmbientLight(Color.color(0, 0.15, 0.0));
         
         PointLight topLight= new PointLight(Color.WHITE);
         topLight.setTranslateZ(- 1.5*FIELD_SIZE);
