@@ -75,13 +75,18 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     private boolean fallingTetriminoRotates = false;
     
     private boolean paused = false;
-    public boolean isPaused() { return paused; }
-    
     private boolean gameOver = false;
-    public boolean isGameOver() { return gameOver; }
-    
     private int level;
     private int floorsCleared = 0;
+    private int blocksCleared = 0;
+    private int points = 0;
+
+    public boolean isPaused() { return paused; }
+    public boolean isGameOver() { return gameOver; }
+    public int getLevel() { return level; }
+    public int getFloorsCleared() { return floorsCleared; }
+    public int getBlocksCleared() { return blocksCleared; }
+    public int getPoints() { return points; }
     
     public Well(int level, int x, int y, int z) {
         this.level = level>10 ? 10 : (level<1 ? 1 : level);
@@ -317,6 +322,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             }
         }
         
+        points+=10;
         dropFloors();
 
         this.getChildren().remove(fallingTetrimino);
@@ -330,6 +336,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     }
     
     private void dropFloors() {
+        int floorsClearedAtOnce = 0;
+        
         for (int i=0; i<fallenBlocks.length; i++) {
             boolean floorFull = true; // SET TO TRUE UNTIL PROVEN FALSE
             
@@ -344,12 +352,21 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
                 if (!floorFull) break;
             }
             
-            if (floorFull) clearFloor(i);
+            if (floorFull) {
+                clearFloor(i);
+                floorsClearedAtOnce++;
+            }
         }
+        
+        if (floorsClearedAtOnce>0)
+            points += 50 * (int)Math.pow(2, floorsClearedAtOnce);
     }
     
     private void clearFloor(int i){
-        if (++floorsCleared % 10 == 0) timeUntilFallingTetriminoDrops = 10.0/++level;
+        floorsCleared ++; 
+        blocksCleared += width*height;
+        
+        if (blocksCleared % 200 == 0) timeUntilFallingTetriminoDrops = 10.0/++level;
         
         for (int j = 0; j < fallenBlocks[i].length; j++) {
             for (int k = 0; k < fallenBlocks[i][j].length; k++) {
@@ -448,6 +465,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             case SPACE:
                 while (moveTetriminoOnGrid(fallingTetrimino, Z_AXIS, Direction.POSITIVE));
                 integrateFallingTetrimino();
+                points+=10;
                 break;
                 
             case U: case INSERT:    rotateTetrimino(fallingTetrimino, Rotate.Z_AXIS, 90); break;
