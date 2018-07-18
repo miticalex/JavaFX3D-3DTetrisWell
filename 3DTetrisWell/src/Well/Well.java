@@ -269,6 +269,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     public final boolean integrateFallingTetrimino(){
         if (fallingTetrimino==null) return false;
         
+        setWallProjection(fallingTetrimino, false);
+        
         for (Node node : fallingTetrimino.getChildren()) {
             Box box = (Box)node;
             Point3D boxCoordinatesInWell = fallingTetrimino.localToParent(box.getTranslateX(), box.getTranslateY(), box.getTranslateZ());
@@ -287,7 +289,6 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         
         dropFloors();
 
-        setWallProjection(fallingTetrimino, false);
         this.getChildren().remove(fallingTetrimino);
         fallingTetrimino.getTransforms().setAll();
         fallingTetrimino = null;
