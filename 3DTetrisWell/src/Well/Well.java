@@ -395,7 +395,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     
     @Override
     public void handle(KeyEvent event) {
-        if (event.getCode() == KeyCode.P)
+        if (event.getCode() == KeyCode.PAUSE)
             paused = !paused;
         
         if (paused) return;
