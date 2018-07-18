@@ -97,7 +97,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         fallingTetrimino = tetriminoes[RANDOM.nextInt(tetriminoes.length)];
         fallingTetrimino.getTransforms().add(new Rotate(180.0 * RANDOM.nextInt(2), Rotate.X_AXIS));
         fallingTetrimino.getTransforms().add(new Rotate(90.0 * RANDOM.nextInt(4), Rotate.Z_AXIS));
-        this.addNodeToXYZ(fallingTetrimino, (width-1)/2, (height-1)/2, 0);
+        this.addNodeToGridXYZ(fallingTetrimino, (width-1)/2, (height-1)/2, 0);
         
         setWallProjection(fallingTetrimino, true);
     }
@@ -126,8 +126,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
                 leftWall[i][j] = new Box(WALL_WIDTH, BOX_SIZE, BOX_SIZE);
                 rightWall[i][j] = new Box(WALL_WIDTH, BOX_SIZE, BOX_SIZE);
                 
-                this.addNodeToXYZ(leftWall[i][j], -0.5 -0.5*WALL_WIDTH/FIELD_SIZE, i, j);
-                this.addNodeToXYZ(rightWall[i][j], width -0.5 +0.5*WALL_WIDTH/FIELD_SIZE, i, j);
+                this.addNodeToGridXYZ(leftWall[i][j], -0.5 -0.5*WALL_WIDTH/FIELD_SIZE, i, j);
+                this.addNodeToGridXYZ(rightWall[i][j], width -0.5 +0.5*WALL_WIDTH/FIELD_SIZE, i, j);
             }
         }
         
@@ -138,8 +138,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
                 frontWall[i][j] = new Box(BOX_SIZE, WALL_WIDTH, BOX_SIZE);
                 rearWall[i][j] = new Box(BOX_SIZE, WALL_WIDTH, BOX_SIZE);
                 
-                this.addNodeToXYZ(frontWall[i][j], i, height -0.5 +0.5*WALL_WIDTH/FIELD_SIZE, j);
-                this.addNodeToXYZ(rearWall[i][j], i, -0.5 -0.5*WALL_WIDTH/FIELD_SIZE, j);
+                this.addNodeToGridXYZ(frontWall[i][j], i, height -0.5 +0.5*WALL_WIDTH/FIELD_SIZE, j);
+                this.addNodeToGridXYZ(rearWall[i][j], i, -0.5 -0.5*WALL_WIDTH/FIELD_SIZE, j);
             }   
         }
         
@@ -148,7 +148,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             for (int j = 0; j < height; j++) {
                 bottom[i][j] = new Box(BOX_SIZE, BOX_SIZE, WALL_WIDTH);
                 
-                this.addNodeToXYZ(bottom[i][j], i, j, depth - 0.5 + 0.5*WALL_WIDTH/FIELD_SIZE);
+                this.addNodeToGridXYZ(bottom[i][j], i, j, depth - 0.5 + 0.5*WALL_WIDTH/FIELD_SIZE);
             }   
         }
         
@@ -156,16 +156,16 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             Box rearEdge = new Box(BOX_SIZE, BOX_SIZE/2, WALL_WIDTH);
             Box frontEdge = new Box(BOX_SIZE, BOX_SIZE/2, WALL_WIDTH);
             
-            this.addNodeToXYZ(rearEdge, i, -0.75, -0.5);
-            this.addNodeToXYZ(frontEdge, i, height - 0.25, -0.5);
+            this.addNodeToGridXYZ(rearEdge, i, -0.75, -0.5);
+            this.addNodeToGridXYZ(frontEdge, i, height - 0.25, -0.5);
         }
         
         for (int i = 0; i < height; i++) {
             Box leftEdge = new Box(BOX_SIZE/2, BOX_SIZE, WALL_WIDTH);
             Box rightEdge = new Box(BOX_SIZE/2, BOX_SIZE, WALL_WIDTH);
             
-            this.addNodeToXYZ(leftEdge, -0.75, i, -0.5);
-            this.addNodeToXYZ(rightEdge, width - 0.25, i, -0.5);
+            this.addNodeToGridXYZ(leftEdge, -0.75, i, -0.5);
+            this.addNodeToGridXYZ(rightEdge, width - 0.25, i, -0.5);
         }
         
         this.getChildren().forEach(node -> ((Shape3D) node).setMaterial(wallMaterial));
@@ -180,13 +180,13 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         corner2.setMaterial(new PhongMaterial(Color.BLUE));
         corner3.setMaterial(new PhongMaterial(Color.BLUE));
         
-        this.addNodeToXYZ(corner0, -0.75,           -0.75,          -0.5);
-        this.addNodeToXYZ(corner1, width - 0.25,    -0.75,          -0.5);
-        this.addNodeToXYZ(corner2, -0.75,           height - 0.25,  -0.5);
-        this.addNodeToXYZ(corner3, width - 0.25,    height - 0.25,  -0.5);
+        this.addNodeToGridXYZ(corner0, -0.75,           -0.75,          -0.5);
+        this.addNodeToGridXYZ(corner1, width - 0.25,    -0.75,          -0.5);
+        this.addNodeToGridXYZ(corner2, -0.75,           height - 0.25,  -0.5);
+        this.addNodeToGridXYZ(corner3, width - 0.25,    height - 0.25,  -0.5);
     }
     
-    public final void moveNodeToXYZ(Node node, double x, double y, double z){
+    public final void moveNodeToGridXYZ(Node node, double x, double y, double z){
         if (node == null) return;
         
         node.setTranslateX(-FIELD_SIZE*width/2 + (x+0.5)*FIELD_SIZE);
@@ -194,10 +194,10 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         node.setTranslateZ(FIELD_SIZE/2 + z*FIELD_SIZE);
     }
     
-    public final void addNodeToXYZ(Node node, double x, double y, double z){
+    public final void addNodeToGridXYZ(Node node, double x, double y, double z){
         if (node == null) return;
         
-        moveNodeToXYZ(node, x, y, z);       
+        moveNodeToGridXYZ(node, x, y, z);       
         this.getChildren().add(node);
     }
     
@@ -267,7 +267,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
                 fallenBlocks[boxZ][boxX][boxY] = new Box(BOX_SIZE, BOX_SIZE, BOX_SIZE);
                 fallenBlocks[boxZ][boxX][boxY].setMaterial(fallenBlocksMaterials[(depth-1 - boxZ) % fallenBlocksMaterials.length]);
                 
-                this.addNodeToXYZ(fallenBlocks[boxZ][boxX][boxY], boxX, boxY, boxZ);
+                this.addNodeToGridXYZ(fallenBlocks[boxZ][boxX][boxY], boxX, boxY, boxZ);
             }
         }
         
