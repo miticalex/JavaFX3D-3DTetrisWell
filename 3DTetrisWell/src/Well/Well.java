@@ -81,6 +81,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     private int blocksCleared = 0;
     private int points = 0;
 
+    public double getTime() { return time; }
     public boolean isPaused() { return paused; }
     public boolean isGameOver() { return gameOver; }
     public int getLevel() { return level; }
