@@ -77,6 +77,9 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     private boolean paused = false;
     public boolean isPaused() { return paused; }
     
+    private boolean gameOver = false;
+    public boolean isGameOver() { return gameOver; }
+    
     private int level;
     private int floorsCleared = 0;
     
@@ -110,6 +113,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         this.addNodeToGridXYZ(fallingTetrimino, (width-1)/2, (height-1)/2, 0);
         
         setWallProjection(fallingTetrimino, true);
+        
+        if (collidesWithFallenBlocks(fallingTetrimino)) gameOver = true;
     }
     
     private void setLights(){
@@ -127,7 +132,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     
     @Override
     public void update() {
-        if (paused) return;
+        if (gameOver || paused) return;
         
         time += framePeriod;
         timeUntilFallingTetriminoDrops -= framePeriod;
@@ -299,6 +304,11 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             int boxY = getGridIndexY(boxCoordinatesInWell.getY());
             int boxZ = getGridIndexZ(boxCoordinatesInWell.getZ());
             
+            if (boxZ<0){
+                gameOver = true;
+                return false;
+            }
+            
             if (boxX>=0 && boxX<width && boxY>=0 && boxY<height && boxZ>=0 && boxZ<depth){
                 fallenBlocks[boxZ][boxX][boxY] = new Box(BOX_SIZE, BOX_SIZE, BOX_SIZE);
                 fallenBlocks[boxZ][boxX][boxY].setMaterial(fallenBlocksMaterials[(depth-1 - boxZ) % fallenBlocksMaterials.length]);
@@ -395,6 +405,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     
     @Override
     public void handle(KeyEvent event) {
+        if (gameOver) return;
+        
         if (event.getCode() == KeyCode.PAUSE)
             paused = !paused;
         
