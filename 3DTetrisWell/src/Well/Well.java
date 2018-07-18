@@ -366,22 +366,22 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         
         
         switch (event.getCode()) {
-            case LEFT:
+            case LEFT: case A:
                 if (fallingMinX > 0) {
                         moveTetriminoByXYZ(fallingTetrimino, -1, 0, 0);
                 }
                 break;
-            case RIGHT:
+            case RIGHT: case D:
                 if (fallingMaxX < width-1){
                         moveTetriminoByXYZ(fallingTetrimino, +1, 0, 0);
                 }
                 break;
-            case UP:
+            case UP: case W:
                 if (fallingMinY > 0) {
                         moveTetriminoByXYZ(fallingTetrimino, 0, -1, 0);
                 }
                 break;
-            case DOWN:
+            case DOWN: case S:
                 if (fallingMaxY < height-1) {
                         moveTetriminoByXYZ(fallingTetrimino, 0, +1, 0);
                 }
@@ -397,12 +397,12 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
                 integrateFallingTetrimino();
                 break;
                 
-            case U: rotateTetrimino(fallingTetrimino, Rotate.Z_AXIS, 90); break;
-            case J: rotateTetrimino(fallingTetrimino, Rotate.Z_AXIS, -90); break; 
-            case I: rotateTetrimino(fallingTetrimino, Rotate.Y_AXIS, 90); break;
-            case K: rotateTetrimino(fallingTetrimino, Rotate.Y_AXIS, -90); break;
-            case O: rotateTetrimino(fallingTetrimino, Rotate.X_AXIS, 90); break;
-            case L: rotateTetrimino(fallingTetrimino, Rotate.X_AXIS, -90); break;
+            case U: case INSERT:    rotateTetrimino(fallingTetrimino, Rotate.Z_AXIS, 90); break;
+            case J: case DELETE:    rotateTetrimino(fallingTetrimino, Rotate.Z_AXIS, -90); break; 
+            case I: case HOME:      rotateTetrimino(fallingTetrimino, Rotate.Y_AXIS, 90); break;
+            case K: case END:       rotateTetrimino(fallingTetrimino, Rotate.Y_AXIS, -90); break;
+            case O: case PAGE_UP:   rotateTetrimino(fallingTetrimino, Rotate.X_AXIS, 90); break;
+            case L: case PAGE_DOWN: rotateTetrimino(fallingTetrimino, Rotate.X_AXIS, -90); break;
             default: break;
         }
     }
