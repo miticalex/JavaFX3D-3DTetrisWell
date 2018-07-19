@@ -7,6 +7,7 @@ package pkg3dtetriswell;
 
 import Well.Updateable;
 import Well.Well;
+import gameStats.GameStats;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.AmbientLight;
@@ -19,6 +20,8 @@ import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
@@ -33,51 +36,48 @@ public class Main extends Application implements Updateable{
     private static final double MAX_WELL_SIZE = 260;
     
     private Scene gameScene;
+    private SubScene gamePlayScene;
     private Group root;
     private Well well;
+    private GameStats gameStats;
     
     private Camera frontCamera = new PerspectiveCamera(true);
     
+    private Scale windowScale = new Scale();
+    
     @Override
     public void start(Stage window) {
-        root = new Group();
-        
         well = new Well(1, 5,5,12);
         
-        double scaleFactor = MAX_WELL_SIZE/(well.FIELD_SIZE * 
+        double wellScaleFactor = MAX_WELL_SIZE/(well.FIELD_SIZE * 
                 ((well.getHeight()>well.getWidth()? well.getHeight() : well.getWidth())+1));
-
-        well.getTransforms().setAll(new Scale(scaleFactor, scaleFactor, 1.5*scaleFactor));
+        well.getTransforms().setAll(new Scale(wellScaleFactor, wellScaleFactor, 1.5*wellScaleFactor));
         
-        root.getChildren().add(well);
+        root = new Group(well);
         
         frontCamera.setFarClip(2500);       
         frontCamera.getTransforms().addAll(new Translate(0,0,-500));
         
-        SubScene gamePlay = new SubScene(root, HEIGHT, HEIGHT, true, SceneAntialiasing.BALANCED);
-        gamePlay.setCamera(frontCamera);
-        gamePlay.setFill(Color.color(0.2, 0.1, 0));
+        gamePlayScene = new SubScene(root, HEIGHT, HEIGHT, true, SceneAntialiasing.BALANCED);
+        gamePlayScene.setCamera(frontCamera);
+        gamePlayScene.setFill(Color.color(0.2, 0.1, 0));
         
-        Pane gamePlayPane = new Pane(gamePlay);
+        Pane gamePlayPane = new Pane(gamePlayScene);
+        
+        gameStats = new GameStats(WIDTH-HEIGHT, HEIGHT);
+        
+        gamePlayPane.getChildren().add(gameStats);
+        gameStats.setTranslateX(HEIGHT);
         
         gameScene = new Scene(gamePlayPane, WIDTH, HEIGHT);
-//        gameScene.setCamera(frontCamera);
-//        gameScene.setFill(Color.color(0.2, 0.1, 0));
-
-        Scale scale = new Scale();
-        gamePlay.getTransforms().add(scale);
+        
+        gamePlayScene.getTransforms().add(windowScale);
         
         window.setTitle("3D Tetris Well");
         window.setScene(gameScene);
         window.show();
-        gameScene.widthProperty().addListener(e -> {
-            scale.setY(gameScene.getHeight()/HEIGHT);
-            scale.setX(gameScene.getWidth()/WIDTH);
-        });
-        gameScene.heightProperty().addListener(e -> {
-            scale.setY(gameScene.getHeight()/HEIGHT);
-            scale.setX(gameScene.getWidth()/WIDTH);
-        });
+        gameScene.widthProperty().addListener(e -> adjustSize(window));
+        gameScene.heightProperty().addListener(e -> adjustSize(window));
         
         new AnimationTimer(){
             @Override
@@ -106,6 +106,14 @@ public class Main extends Application implements Updateable{
      */
     public static void main(String[] args) {
         launch(args);
+    }
+
+    private void adjustSize(Stage window) {
+        windowScale.setY(gameScene.getHeight()/HEIGHT);
+        windowScale.setX(gameScene.getWidth()/WIDTH);
+        gameStats.setTranslateX(gamePlayScene.getBoundsInParent().getWidth());
+        gameStats.getBackground().setWidth(window.getWidth() - gamePlayScene.getBoundsInParent().getWidth());
+        gameStats.getBackground().setHeight(window.getHeight());
     }
 
     
