@@ -31,8 +31,8 @@ import javafx.stage.Stage;
  * @author AM
  */
 public class Main extends Application implements Updateable{
-    private static final double WIDTH = 1500;
-    private static final double HEIGHT = 900;
+    private static final double WIDTH = 1250;
+    private static final double HEIGHT = 750;
     private static final double MAX_WELL_SIZE = 260;
     
     private Scene gameScene;
@@ -92,7 +92,9 @@ public class Main extends Application implements Updateable{
     @Override
     public void update() {
         root.getChildren().remove(well);
+        
         well.update();
+        
         
         root.getChildren().add(well);
     }
