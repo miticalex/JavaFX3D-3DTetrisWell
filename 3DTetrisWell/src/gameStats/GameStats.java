@@ -1,6 +1,6 @@
 package gameStats;
 
-import javafx.event.EventType;
+import Well.Well;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.layout.VBox;
@@ -16,6 +16,8 @@ import javafx.scene.text.Text;
 public class GameStats extends Group{
     public static Text gameName = new Text("BlockWell");
     
+    private Well well;
+    
     private double width;
     private double height;
     private Rectangle background;
@@ -26,24 +28,43 @@ public class GameStats extends Group{
     VBox labelsVBox, statsVBox;
     
     private Text dimensionsLabel = new Text("Dimensions: ");
-    private Text dimensions;
+    private Text dimensions = new Text("");
     private Text timeLabel = new Text("Time: ");
-    private Text time;
+    private Text time = new Text("");
     private Text levelLabel = new Text("Level: ");
-    private Text level;
+    private Text level = new Text("");
     private Text pointsLabel = new Text("Points: ");
-    private Text points;
+    private Text points = new Text("");
     private Text linesClearedLabel = new Text("Lines Cleared: ");
-    private Text linesCleared;
+    private Text linesCleared = new Text("");
     private Text blocksClearedLabel = new Text("Blocks Cleared: ");
-    private Text blocksCleared;
+    private Text blocksCleared = new Text("");
+
+    public void setDimensionsText(int x, int y, int z) { 
+        dimensions.setText(x + "x" + y + "x" + z); 
+    }
+    public void setTimeText(double time) { 
+        int seconds = ((int)time) % 60;
+        int minutes = ((int)time) / 60;
+        
+        if (minutes<60) this.time.setText(
+                (minutes<10 ? "0" : "") + minutes + ":" + 
+                (seconds<10 ? "0" : "") + seconds);
+        else this.time.setText(minutes/60 + ":" + minutes%60 + ":" + seconds);
+    }
+    public void setLevelText(int level) { this.level.setText("" + level); }
+    public void setPointsText(int points) { this.points.setText("" + points); }
+    public void setLinesClearedText(int linesCleared) { this.linesCleared.setText("" + linesCleared); }
+    public void setBlocksClearedText(int blocksCleared) { this.blocksCleared.setText("" + blocksCleared); }
     
-    public GameStats(double width, double height) { 
+    public GameStats(Well well, double width, double height) { 
         this.width = width;
         this.height = height;
         
         setBackGround();
         setLabels();
+        setInitialStats();
+        setRotationButtons();
     }
     
     private void setBackGround(){
@@ -69,5 +90,25 @@ public class GameStats extends Group{
         }
         
         this.getChildren().add(labelsVBox);
+    }
+    
+    private void setInitialStats() {
+        statsVBox = new VBox(dimensions, time, level, 
+                points, linesCleared, blocksCleared);
+        statsVBox.setTranslateY(200);
+        statsVBox.setTranslateX(width/2);
+        
+        for (Node node : statsVBox.getChildren()) {
+            Text label = (Text)node;
+            label.setFont(Font.font(20));
+            label.setFill(Color.YELLOW);
+        }
+        
+        this.getChildren().add(statsVBox);
+    }
+
+    private void setRotationButtons() {
+        Rectangle positiveZ = new Rectangle(width/4-20, 600, 40, 40);
+        positiveZ.setOnMouseClicked(value);
     }
 }
