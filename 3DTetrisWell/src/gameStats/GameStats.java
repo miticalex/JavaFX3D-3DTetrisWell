@@ -57,14 +57,14 @@ public class GameStats extends Group{
     public void setLinesClearedText(int linesCleared) { this.linesCleared.setText("" + linesCleared); }
     public void setBlocksClearedText(int blocksCleared) { this.blocksCleared.setText("" + blocksCleared); }
     
-    public GameStats(Well well, double width, double height) { 
+    public GameStats(double width, double height) { 
         this.width = width;
         this.height = height;
         
         setBackGround();
         setLabels();
         setInitialStats();
-        setRotationButtons();
+//        setRotationButtons();
     }
     
     private void setBackGround(){
@@ -107,8 +107,8 @@ public class GameStats extends Group{
         this.getChildren().add(statsVBox);
     }
 
-    private void setRotationButtons() {
-        Rectangle positiveZ = new Rectangle(width/4-20, 600, 40, 40);
-        positiveZ.setOnMouseClicked(value);
-    }
+//    private void setRotationButtons() {
+//        Rectangle positiveZ = new Rectangle(width/4-20, 600, 40, 40);
+//        positiveZ.setOnMouseClicked(value);
+//    }
 }
