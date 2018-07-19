@@ -52,7 +52,7 @@ public class GameStats extends Group{
         gameName.setFont(new Font(50));
         gameName.setTranslateX(width/2 - gameName.getBoundsInParent().getWidth()/2);
         gameName.setTranslateY(100);
-        gameName.setFill(Color.WHITESMOKE);
+        gameName.setFill(Color.TURQUOISE);
         this.getChildren().addAll(background, gameName);
     }
     

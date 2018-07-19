@@ -88,13 +88,20 @@ public class Main extends Application implements Updateable{
         
         eventHandling();
     }
+    
+    private void adjustSize(Stage window) {
+        windowScale.setY(gameScene.getHeight()/HEIGHT);
+        windowScale.setX(gameScene.getWidth()/WIDTH);
+        gameStats.setTranslateX(gamePlayScene.getBoundsInParent().getWidth());
+        gameStats.getBackground().setWidth(window.getWidth() - gamePlayScene.getBoundsInParent().getWidth());
+        gameStats.getBackground().setHeight(window.getHeight());
+    }
 
     @Override
     public void update() {
         root.getChildren().remove(well);
         
         well.update();
-        
         
         root.getChildren().add(well);
     }
@@ -109,14 +116,4 @@ public class Main extends Application implements Updateable{
     public static void main(String[] args) {
         launch(args);
     }
-
-    private void adjustSize(Stage window) {
-        windowScale.setY(gameScene.getHeight()/HEIGHT);
-        windowScale.setX(gameScene.getWidth()/WIDTH);
-        gameStats.setTranslateX(gamePlayScene.getBoundsInParent().getWidth());
-        gameStats.getBackground().setWidth(window.getWidth() - gamePlayScene.getBoundsInParent().getWidth());
-        gameStats.getBackground().setHeight(window.getHeight());
-    }
-
-    
 }
