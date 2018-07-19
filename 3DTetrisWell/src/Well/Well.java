@@ -34,6 +34,13 @@ import javafx.util.Duration;
  * @author AM
  */
 public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
+    public static enum State {PLAYING, PAUSED, GAMEOVER};
+
+    public State state;
+    public State getState() {
+        return state;
+    }
+    
     public static final double  FIELD_SIZE = 10.0;
     public static final double  BOX_SIZE = FIELD_SIZE-0.2;
     public static final double  WALL_WIDTH = 0.4;
@@ -74,22 +81,20 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     private Tetrimino fallingTetrimino = null;
     private boolean fallingTetriminoRotates = false;
     
-    private boolean paused = false;
-    private boolean gameOver = false;
     private int level;
     private int floorsCleared = 0;
     private int blocksCleared = 0;
     private int points = 0;
 
     public double getTime() { return time; }
-    public boolean isPaused() { return paused; }
-    public boolean isGameOver() { return gameOver; }
     public int getLevel() { return level; }
     public int getFloorsCleared() { return floorsCleared; }
     public int getBlocksCleared() { return blocksCleared; }
     public int getPoints() { return points; }
     
     public Well(int level, int x, int y, int z) {
+        state = State.PLAYING;
+        
         this.level = level>10 ? 10 : (level<1 ? 1 : level);
         timeUntilFallingTetriminoDrops = 10.0/level;
         
@@ -120,7 +125,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         
         setWallProjection(fallingTetrimino, true);
         
-        if (collidesWithFallenBlocks(fallingTetrimino)) gameOver = true;
+        if (collidesWithFallenBlocks(fallingTetrimino)) state = State.GAMEOVER;
     }
     
     private void setLights(){
@@ -138,7 +143,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     
     @Override
     public void update() {
-        if (gameOver || paused) return;
+        if (state != State.PLAYING) return;
         
         time += framePeriod;
         timeUntilFallingTetriminoDrops -= framePeriod;
@@ -311,7 +316,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             int boxZ = getGridIndexZ(boxCoordinatesInWell.getZ());
             
             if (boxZ<0){
-                gameOver = true;
+                state = State.GAMEOVER;
                 return false;
             }
             
@@ -423,12 +428,14 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     
     @Override
     public void handle(KeyEvent event) {
-        if (gameOver) return;
+        if (state == State.GAMEOVER) return;
         
-        if (event.getCode() == KeyCode.PAUSE)
-            paused = !paused;
+        if (event.getCode() == KeyCode.PAUSE){
+            if (state == State.PLAYING) state = State.PAUSED;
+            else if (state == State.PAUSED) state = State.PLAYING;
+        }
         
-        if (paused) return;
+        if (state == State.PAUSED) return;
         
         int fallingMinX = getGridIndexX(fallingTetrimino.getBoundsInParent().getMinX());
         int fallingMaxX = getGridIndexX(fallingTetrimino.getBoundsInParent().getMaxX());
