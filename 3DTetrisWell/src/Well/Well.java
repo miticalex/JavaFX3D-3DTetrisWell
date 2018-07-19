@@ -35,11 +35,15 @@ import javafx.util.Duration;
  */
 public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     public static enum State {PLAYING, PAUSED, GAMEOVER};
-
-    public State state;
+    private State state;
     public State getState() {
         return state;
     }
+    
+    private static enum Direction {POSITIVE, NEGATIVE};
+    private static final Point3D X_AXIS = Rotate.X_AXIS;
+    private static final Point3D Y_AXIS = Rotate.Y_AXIS;
+    private static final Point3D Z_AXIS = Rotate.Z_AXIS;
     
     public static final double  FIELD_SIZE = 10.0;
     public static final double  BOX_SIZE = FIELD_SIZE-0.2;
@@ -55,11 +59,6 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         Color.YELLOW, Color.VIOLET, Color.AQUA 
     };
     public static final PhongMaterial[] fallenBlocksMaterials = new PhongMaterial[fallenBlocksColors.length];
-    
-    private static enum Direction {POSITIVE, NEGATIVE};
-    private static final Point3D X_AXIS = Rotate.X_AXIS;
-    private static final Point3D Y_AXIS = Rotate.Y_AXIS;
-    private static final Point3D Z_AXIS = Rotate.Z_AXIS;
     
     private final int width, height, depth;
     public int getWidth() { return width;}
@@ -486,7 +485,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         }
     }
 
-    private void rotateFallingTetrimino(Point3D axis, double angle) {
+    public void rotateFallingTetrimino(Point3D axis, double angle) {
         // PERFORM NO ROTATION IF ONE IS CURRENTLY BEING PERFORMED
         if (fallingTetriminoRotates) return;
         

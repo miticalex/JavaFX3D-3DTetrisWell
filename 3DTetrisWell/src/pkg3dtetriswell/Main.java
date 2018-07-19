@@ -64,12 +64,12 @@ public class Main extends Application implements Updateable{
         
         Pane gamePlayPane = new Pane(gamePlayScene);
         
-        gameStats = new GameStats(WIDTH-HEIGHT, HEIGHT);
+        gameStats = new GameStats(well, WIDTH-HEIGHT, HEIGHT);
         
         gamePlayPane.getChildren().add(gameStats);
         gameStats.setTranslateX(HEIGHT);
         
-        gameScene = new Scene(gamePlayPane, WIDTH, HEIGHT);
+        gameScene = new Scene(gamePlayPane, WIDTH, HEIGHT, true, SceneAntialiasing.BALANCED);
         
         gamePlayScene.getTransforms().add(windowScale);
         
