@@ -308,7 +308,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     public final boolean integrateFallingTetrimino(){
         if (fallingTetrimino==null) return false;
         
-        setWallProjection(fallingTetrimino, false);
+        refreshWalls();//setWallProjection(fallingTetrimino, false);
         
         for (Node node : fallingTetrimino.getChildren()) {
             Box box = (Box)node;
@@ -412,8 +412,26 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         fallenBlocks[0] = new Box[width][height];
     }
     
+    private void refreshWalls() {
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < depth; j++) {
+                leftWall[i][j].setMaterial(wallMaterial);
+                rightWall[i][j].setMaterial(wallMaterial);
+            }
+        }
+        
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < depth; j++) {
+                frontWall[i][j].setMaterial(wallMaterial);
+                rearWall[i][j].setMaterial(wallMaterial);  
+            }
+        }
+            
+    }
+    
     public void setWallProjection(Tetrimino tetrimino, boolean set){
-        // TODO: BUG SPOTTED - TETRIMINO PROJECTION ON THE WALL DOESN'T ALWAYS DISAPPEAR
+        // TODO: TETRIMINO PROJECTION ON THE WALL DOESN'T ALWAYS DISAPPEAR - BUG SOLVED - TRY TO FIND A BETTER SOLUTION
+        if (set) refreshWalls();
         
         for (Node node : tetrimino.getChildren()) {
             Box box = (Box)node;
