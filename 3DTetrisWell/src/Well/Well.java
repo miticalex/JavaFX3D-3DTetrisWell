@@ -73,7 +73,10 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     private Box[][] frontWall, rearWall;
     private Box[][] bottom;
     
-    private static final double framePeriod = 1./60.;
+    private static final double INITIAL_FALLING_PERIOD = 5.0; //each x secs a tetrimino drops a level
+    private static final int    BLOCKS_TO_CLEAR_PER_LEVEL = 200;
+    
+    private static final double FRAME_PERIOD = 1./60.;
     private double time=0;
     private double timeUntilFallingTetriminoDrops;
     
@@ -83,6 +86,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     private int level;
     private int floorsCleared = 0;
     private int blocksCleared = 0;
+    private int blocksUntilNextLevel = BLOCKS_TO_CLEAR_PER_LEVEL;
     private int points = 0;
 
     public double getTime() { return time; }
@@ -95,7 +99,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         state = State.PLAYING;
         
         this.level = level>10 ? 10 : (level<1 ? 1 : level);
-        timeUntilFallingTetriminoDrops = 10.0/level;
+        timeUntilFallingTetriminoDrops = INITIAL_FALLING_PERIOD/level;
         
         width = x>8 ? 8 : (x<3 ? 3 : x);
         height = y>8 ? 8 : (y<3 ? 3 : y);
@@ -144,13 +148,13 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     public void update() {
         if (state != State.PLAYING) return;
         
-        time += framePeriod;
-        timeUntilFallingTetriminoDrops -= framePeriod;
+        time += FRAME_PERIOD;
+        timeUntilFallingTetriminoDrops -= FRAME_PERIOD;
         
         if (timeUntilFallingTetriminoDrops <=0){
             if (moveFallingTetriminoOnGrid(Z_AXIS, Direction.POSITIVE) == false)
                 integrateFallingTetrimino();
-            timeUntilFallingTetriminoDrops = 10.0/level;
+            timeUntilFallingTetriminoDrops = INITIAL_FALLING_PERIOD/level;
         }
     }
     
@@ -335,7 +339,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         fallingTetrimino = null;
         
         setFallingTetrimino();
-        timeUntilFallingTetriminoDrops = 10.0/level;
+        timeUntilFallingTetriminoDrops = INITIAL_FALLING_PERIOD/level;
         
         return true;
     }
@@ -370,8 +374,12 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     private void clearFloor(int i){
         floorsCleared ++; 
         blocksCleared += width*height;
+        blocksUntilNextLevel -= width*height;
         
-        if (blocksCleared % 200 == 0) timeUntilFallingTetriminoDrops = 10.0/++level;
+        if (blocksUntilNextLevel <= 0) {
+            timeUntilFallingTetriminoDrops = INITIAL_FALLING_PERIOD/++level;
+            blocksUntilNextLevel += BLOCKS_TO_CLEAR_PER_LEVEL;
+        }
         
         for (int j = 0; j < fallenBlocks[i].length; j++) {
             for (int k = 0; k < fallenBlocks[i][j].length; k++) {
