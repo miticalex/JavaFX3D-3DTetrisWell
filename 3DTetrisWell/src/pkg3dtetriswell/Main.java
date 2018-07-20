@@ -105,16 +105,7 @@ public class Main extends Application implements Updateable{
         
         root.getChildren().add(well);
         
-        updateStats();
-    }
-    
-    private void updateStats(){
-        gameStats.setBlocksClearedText(well.getBlocksCleared());
-        gameStats.setDimensionsText(well.getWidth(), well.getHeight(), well.getDepth());
-        gameStats.setLevelText(well.getLevel());
-        gameStats.setLinesClearedText(well.getFloorsCleared());
-        gameStats.setPointsText(well.getPoints());
-        gameStats.setTimeText(well.getTime());
+        gameStats.update();
     }
     
     private void eventHandling() {

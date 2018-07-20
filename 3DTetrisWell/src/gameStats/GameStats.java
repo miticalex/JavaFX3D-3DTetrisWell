@@ -1,5 +1,6 @@
 package gameStats;
 
+import Well.Updateable;
 import Well.Well;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -7,7 +8,6 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -17,7 +17,7 @@ import javafx.scene.transform.Rotate;
  *
  * @author AM
  */
-public class GameStats extends Group{
+public class GameStats extends Group implements Updateable {
     public static Text gameName = new Text("BlockWell");
     
     private Well well;
@@ -170,5 +170,15 @@ public class GameStats extends Group{
         
         this.getChildren().addAll(positiveZ, negativeZ, positiveY, negativeY, positiveX, negativeX, 
             positiveZLabel, negativeZLabel, positiveYLabel, negativeYLabel, positiveXLabel, negativeXLabel);
+    }
+
+    @Override
+    public void update() {
+        setBlocksClearedText(well.getBlocksCleared());
+        setDimensionsText(well.getWidth(), well.getHeight(), well.getDepth());
+        setLevelText(well.getLevel());
+        setLinesClearedText(well.getFloorsCleared());
+        setPointsText(well.getPoints());
+        setTimeText(well.getTime());
     }
 }
