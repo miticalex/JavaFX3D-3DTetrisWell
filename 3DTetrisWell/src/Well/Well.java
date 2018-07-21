@@ -45,6 +45,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     private static final Point3D X_AXIS = Rotate.X_AXIS;
     private static final Point3D Y_AXIS = Rotate.Y_AXIS;
     private static final Point3D Z_AXIS = Rotate.Z_AXIS;
+    private static final int    ROTATION_DURATION = 200;
     
     public static final double  FIELD_SIZE = 10.0;
     public static final double  BOX_SIZE = FIELD_SIZE-0.2;
@@ -569,10 +570,10 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
 
         KeyValue startAngle = new KeyValue(rotate.angleProperty(), 0);
         KeyValue endAngle = new KeyValue(rotate.angleProperty(), angle);
-        Timeline rotateTimeline = new Timeline(new KeyFrame(Duration.millis(200), startAngle, endAngle));
+        Timeline rotateTimeline = new Timeline(new KeyFrame(Duration.millis(ROTATION_DURATION), startAngle, endAngle));
 
         // PERFORM A TRANSLATION ALSO IF A ROTATION CAUSES COLLISIONS WITH WALLS
-        TranslateTransition translateTransition = new TranslateTransition(Duration.millis(200), fallingTetrimino);
+        TranslateTransition translateTransition = new TranslateTransition(Duration.millis(ROTATION_DURATION), fallingTetrimino);
         
         if (futureMinX < 0)
             translateTransition.setByX(-futureMinX*FIELD_SIZE);
