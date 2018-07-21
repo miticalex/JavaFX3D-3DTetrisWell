@@ -523,7 +523,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         int futureMaxX = getGridIndexX(futureTetrimino.getBoundsInParent().getMaxX() - 0.75*FIELD_SIZE);
         int futureMinY = getGridIndexY(futureTetrimino.getBoundsInParent().getMinY() + 0.75*FIELD_SIZE);
         int futureMaxY = getGridIndexY(futureTetrimino.getBoundsInParent().getMaxY() - 0.75*FIELD_SIZE);
-        int futureMaxZ = getGridIndexZ(futureTetrimino.getBoundsInParent().getMaxZ() + 0.75*FIELD_SIZE); 
+        int futureMaxZ = getGridIndexZ(futureTetrimino.getBoundsInParent().getMaxZ()); 
         
         // PERFORM NO ROTATION IF IT CAUSES A TETRIMINO TO FALL BELOW THE BOTTOM OF THE WELL
         if (futureMaxZ >= depth) return; 
