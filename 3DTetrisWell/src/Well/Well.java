@@ -6,6 +6,7 @@ import Well.Tetriminoes.OTetrimino;
 import Well.Tetriminoes.TTetrimino;
 import Well.Tetriminoes.Tetrimino;
 import Well.Tetriminoes.ZTetrimino;
+import java.util.LinkedList;
 import java.util.Random;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
@@ -34,7 +35,7 @@ import javafx.util.Duration;
  * @author AM
  */
 public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
-    public static enum State {PLAYING, PAUSED, GAMEOVER};
+    public static enum State {PLAYING, PAUSED, CLEARING, GAMEOVER};
     private State state;
     public State getState() {
         return state;
@@ -332,7 +333,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         }
         
         points+=10;
-        dropFloors();
+        dropFloorsCheck();
 
         this.getChildren().remove(fallingTetrimino);
         fallingTetrimino.getTransforms().setAll();
@@ -344,9 +345,9 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         return true;
     }
     
-    private void dropFloors() {
-        int floorsClearedAtOnce = 0;
+    private void dropFloorsCheck() {
         
+        LinkedList<Integer> floorsToClear = new LinkedList<>();
         for (int i=0; i<fallenBlocks.length; i++) {
             boolean floorFull = true; // SET TO TRUE UNTIL PROVEN FALSE
             
@@ -361,17 +362,26 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
                 if (!floorFull) break;
             }
             
-            if (floorFull) {
-                clearFloor(i);
-                floorsClearedAtOnce++;
-            }
+            if (floorFull)  
+                floorsToClear.add(i); 
         }
         
-        if (floorsClearedAtOnce>0)
-            points += 50 * (int)Math.pow(2, floorsClearedAtOnce);
+        points += 50 * (int)Math.pow(2, floorsToClear.size());
+        
+        if (floorsToClear.size() > 0){
+            state = State.CLEARING;
+            clearFloor(floorsToClear, 0);
+        }
     }
     
-    private void clearFloor(int i){
+    private void clearFloor(LinkedList<Integer> floorsToClear, int position){
+        if (position >= floorsToClear.size()){
+            state = State.PLAYING;
+            return;
+        }
+        
+        int i = floorsToClear.get(position);
+        
         floorsCleared ++; 
         blocksCleared += width*height;
         blocksUntilNextLevel -= width*height;
@@ -388,28 +398,32 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             }
         }
         
+//        state = State.PLAYING;
+        ParallelTransition dropping = new ParallelTransition();
         for (int j = i; j >0; j--) {
             fallenBlocks[j] = fallenBlocks[j-1];
             for (int k = 0; k < fallenBlocks[j].length; k++) {
                 for (int l = 0; l < fallenBlocks[j][k].length; l++) {
                     if (fallenBlocks[j][k][l] == null) continue;
                     
-                    fallenBlocks[j][k][l].setTranslateZ(fallenBlocks[j][k][l].getTranslateZ() + FIELD_SIZE);
-                    fallenBlocks[j][k][l].setMaterial(fallenBlocksMaterials[(depth-1 - j) % fallenBlocksColors.length]);
+                    TranslateTransition translateTransition = new TranslateTransition(Duration.millis(1000), fallenBlocks[j][k][l]);
+                    translateTransition.setByZ(FIELD_SIZE);
+                    translateTransition.play();
                     
-                    //TODO: Try to implement translate transition
-//                    TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(1), fallenBlocks[j][k][l]);
-//                    translateTransition.setByZ(FIELD_SIZE);
-//                    translateTransition.play();
-//                    
-//                    final int j1 = j, k1 = k, l1 = l;
-//                    translateTransition.setOnFinished(e->{
-//                        fallenBlocks[j1][k1][l1].setMaterial(fallenBlocksMaterials[(depth-1 - j1) % fallenBlocksColors.length]);
-//                    });
+                    final int j1 = j, k1 = k, l1 = l;
+                    translateTransition.setOnFinished(e->{
+                        fallenBlocks[j1][k1][l1].setMaterial(fallenBlocksMaterials[(depth-1 - j1) % fallenBlocksColors.length]);
+                    });
+                    
+                    dropping.getChildren().add(translateTransition);
                 }
             }
         }
-        fallenBlocks[0] = new Box[width][height];
+        dropping.play();
+        dropping.setOnFinished(e-> {
+            fallenBlocks[0] = new Box[width][height];
+            clearFloor(floorsToClear, position+1);
+        });
     }
     
     private void refreshWalls() {
@@ -460,7 +474,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             else if (state == State.PAUSED) state = State.PLAYING;
         }
         
-        if (state == State.PAUSED) return;
+        if (state != State.PLAYING) return;
         
         int fallingMinX = getGridIndexX(fallingTetrimino.getBoundsInParent().getMinX());
         int fallingMaxX = getGridIndexX(fallingTetrimino.getBoundsInParent().getMaxX());
