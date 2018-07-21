@@ -81,7 +81,6 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     private double timeUntilFallingTetriminoDrops;
     
     private Tetrimino fallingTetrimino = null;
-    private boolean fallingTetriminoRotates = false;
     
     private int level;
     private int floorsCleared = 0;
@@ -512,9 +511,9 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     }
 
     public void rotateFallingTetrimino(Point3D axis, double angle) {
-        // PERFORM NO ROTATION IF ONE IS CURRENTLY BEING PERFORMED
-        if (fallingTetriminoRotates) return;
-        
+        if ((axis!=X_AXIS && axis!=Y_AXIS && axis!=Z_AXIS) || (Math.abs(angle) !=90.0)) 
+            return;
+
         Tetrimino futureTetrimino = new Tetrimino(fallingTetrimino);
         futureTetrimino.getTransforms().add(0, new Rotate(angle, axis));
         
@@ -531,7 +530,6 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         // PERFORM NO ROTATION IF IT CAUSES A COLLISION WITH ANY OF THE FALLEN BLOCKS
         if (collidesWithFallenBlocks(futureTetrimino)) return;
         
-        fallingTetriminoRotates = true;
         setWallProjection(fallingTetrimino, false);
         
         Rotate rotate = new Rotate(0, axis);
@@ -539,10 +537,10 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
 
         KeyValue startAngle = new KeyValue(rotate.angleProperty(), 0);
         KeyValue endAngle = new KeyValue(rotate.angleProperty(), angle);
-        Timeline rotateTimeline = new Timeline(new KeyFrame(Duration.millis(100), startAngle, endAngle));
+        Timeline rotateTimeline = new Timeline(new KeyFrame(Duration.millis(200), startAngle, endAngle));
 
         // PERFORM A TRANSLATION ALSO IF A ROTATION CAUSES COLLISIONS WITH WALLS
-        TranslateTransition translateTransition = new TranslateTransition(Duration.millis(100), fallingTetrimino);
+        TranslateTransition translateTransition = new TranslateTransition(Duration.millis(200), fallingTetrimino);
         
         if (futureMinX < 0)         translateTransition.setByX(-futureMinX*FIELD_SIZE);
         if (futureMaxX >= width)    translateTransition.setByX((width-1 - futureMaxX)*FIELD_SIZE);
@@ -552,9 +550,6 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         ParallelTransition parallelTransition = new ParallelTransition(rotateTimeline, translateTransition);
         parallelTransition.setInterpolator(Interpolator.LINEAR);
         parallelTransition.play();
-        parallelTransition.setOnFinished(e -> {
-            fallingTetriminoRotates = false;
-            setWallProjection(fallingTetrimino, true);
-        });
+        parallelTransition.setOnFinished(e -> { setWallProjection(fallingTetrimino, true); });
     }
 }
