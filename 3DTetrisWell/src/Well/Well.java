@@ -61,6 +61,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     };
     public static final PhongMaterial[] fallenBlocksMaterials = new PhongMaterial[fallenBlocksColors.length];
     
+    
+    private final int startingLevel;
     private final int width, height, depth;
     public int getWidth() { return width;}
     public int getHeight() { return height;}
@@ -78,17 +80,17 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     private static final int    BLOCKS_TO_CLEAR_PER_LEVEL = 200;
     
     private static final double FRAME_PERIOD = 1./60.;
-    private double time=0;
+    private double time;
     private double timeUntilFallingTetriminoDrops;
     
-    private Tetrimino fallingTetrimino = null;
+    private Tetrimino fallingTetrimino;
     private boolean criticalRotationLasts = false;
     
     private int level;
-    private int floorsCleared = 0;
-    private int blocksCleared = 0;
-    private int blocksUntilNextLevel = BLOCKS_TO_CLEAR_PER_LEVEL;
-    private int points = 0;
+    private int floorsCleared;
+    private int blocksCleared;
+    private int blocksUntilNextLevel;
+    private int points;
 
     public double getTime() { return time; }
     public int getLevel() { return level; }
@@ -97,21 +99,34 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     public int getPoints() { return points; }
     
     public Well(int level, int x, int y, int z) {
-        state = State.PLAYING;
-        
-        this.level = level>10 ? 10 : (level<1 ? 1 : level);
-        timeUntilFallingTetriminoDrops = INITIAL_FALLING_PERIOD/level;
-        
+        this.startingLevel = level; 
         width = x>8 ? 8 : (x<3 ? 3 : x);
         height = y>8 ? 8 : (y<3 ? 3 : y);
         depth = z>20 ? 20 : (z<6 ? 6 : z);
+        
+        initialise(startingLevel, x, y, z);
+    }
+    
+    private void initialise(int level, int x, int y, int z){
+        this.getChildren().clear();
+        
+        this.level = level>10 ? 10 : (level<1 ? 1 : level);
+        time=0;
+        timeUntilFallingTetriminoDrops = INITIAL_FALLING_PERIOD/level;
+        floorsCleared = 0;
+        blocksCleared = 0;
+        blocksUntilNextLevel = BLOCKS_TO_CLEAR_PER_LEVEL;
+        points = 0;
         
         makeWellWalls();
         fallenBlocks = new Box[depth][width][height];
         instantiateFallenBlockMaterials();
         setFallingTetrimino();
         setLights();
+        
+        state = State.PLAYING;
     }
+    
     
     private static void instantiateFallenBlockMaterials(){
         for (int i = 0; i < fallenBlocksMaterials.length; i++) {
@@ -521,6 +536,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             case K: case END:       rotateFallingTetrimino(Rotate.Y_AXIS, -90); break;
             case O: case PAGE_UP:   rotateFallingTetrimino(Rotate.X_AXIS, 90); break;
             case L: case PAGE_DOWN: rotateFallingTetrimino(Rotate.X_AXIS, -90); break;
+            
+            case ESCAPE: initialise(startingLevel, width, height, depth);
             default: break;
         }
     }
