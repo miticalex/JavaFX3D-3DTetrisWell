@@ -43,7 +43,6 @@ public class GameStats extends Group implements Updateable {
     private Text linesCleared = new Text("");
     private Text blocksClearedLabel = new Text("Blocks Cleared: ");
     private Text blocksCleared = new Text("");
-    private Text rotationButtonsLabel = new Text("Rotation Buttons:");
 
     public void setDimensionsText(int x, int y, int z) { 
         dimensions.setText(x + "x" + y + "x" + z); 
@@ -72,6 +71,19 @@ public class GameStats extends Group implements Updateable {
         setLabels();
         setInitialStats();
         setRotationButtons();
+        
+        Text pauseLabel = new Text("Pause Button:      PAUSE/BREAK");
+        Text newGameLabel = new Text("Start New Game: ESCAPE");
+        pauseLabel.setTranslateX(width/6);
+        pauseLabel.setTranslateY(680);
+        pauseLabel.setFont(Font.font(20));
+        pauseLabel.setFill(Color.YELLOW);
+        newGameLabel.setTranslateX(width/6);
+        newGameLabel.setTranslateY(720);
+        newGameLabel.setFont(Font.font(20));
+        newGameLabel.setFill(Color.YELLOW);
+        
+        this.getChildren().addAll(pauseLabel, newGameLabel);
     }
     
     private void setBackGround(){
@@ -87,7 +99,7 @@ public class GameStats extends Group implements Updateable {
     private void setLabels() {
         labelsVBox = new VBox(dimensionsLabel, timeLabel, levelLabel, 
                 pointsLabel, linesClearedLabel, blocksClearedLabel);
-        labelsVBox.setTranslateY(200);
+        labelsVBox.setTranslateY(150);
         labelsVBox.setTranslateX(width/6);
         
         for (Node node : labelsVBox.getChildren()) {
@@ -96,18 +108,13 @@ public class GameStats extends Group implements Updateable {
             label.setFill(Color.YELLOW);
         }
         
-        rotationButtonsLabel.setTranslateX(width/6);
-        rotationButtonsLabel.setTranslateY(500);
-        rotationButtonsLabel.setFont(Font.font(20));
-        rotationButtonsLabel.setFill(Color.YELLOW);
-        
-        this.getChildren().addAll(labelsVBox, rotationButtonsLabel);
+        this.getChildren().addAll(labelsVBox);
     }
     
     private void setInitialStats() {
         statsVBox = new VBox(dimensions, time, level, 
                 points, linesCleared, blocksCleared);
-        statsVBox.setTranslateY(200);
+        statsVBox.setTranslateY(150);
         statsVBox.setTranslateX(width/2);
         
         for (Node node : statsVBox.getChildren()) {
@@ -120,55 +127,76 @@ public class GameStats extends Group implements Updateable {
     }
 
     private void setRotationButtons() {
-        Rectangle positiveZ = new Rectangle(width/6, 520, width/8, width/8);
+        Text rotationButtonsLabel = new Text("Rotation Buttons:");
+        rotationButtonsLabel.setTranslateX(width/6);
+        rotationButtonsLabel.setTranslateY(450);
+        rotationButtonsLabel.setFont(Font.font(20));
+        rotationButtonsLabel.setFill(Color.YELLOW);
+        
+        Rectangle positiveZ = new Rectangle(width/12, 470, width/8, width/8);
         positiveZ.setFill(new ImagePattern(new Image("resources/positiveZ.png")));
         positiveZ.setOnMouseClicked(e-> {well.rotateFallingTetrimino(Rotate.Z_AXIS, +90);});
-        Text positiveZLabel = new Text("or \nINS\nU");
-        positiveZLabel.setTranslateX(width/12);positiveZLabel.setTranslateY(535);
+        
+        Rectangle negativeZ = new Rectangle(width/12, 570, width/8, width/8);
+        negativeZ.setFill(new ImagePattern(new Image("resources/negativeZ.png")));
+        negativeZ.setOnMouseClicked(e-> {well.rotateFallingTetrimino(Rotate.Z_AXIS, -90);});
+        
+        Rectangle positiveY = new Rectangle(3*width/12, 470, width/8, width/8);
+        positiveY.setFill(new ImagePattern(new Image("resources/positiveY.png")));
+        positiveY.setOnMouseClicked(e-> {well.rotateFallingTetrimino(Rotate.Y_AXIS, +90);});
+        
+        Rectangle negativeY = new Rectangle(3*width/12, 570, width/8, width/8);
+        negativeY.setFill(new ImagePattern(new Image("resources/negativeY.png")));
+        negativeY.setOnMouseClicked(e-> {well.rotateFallingTetrimino(Rotate.Y_AXIS, -90);});
+        
+        Rectangle positiveX = new Rectangle(5*width/12, 470, width/8, width/8);
+        positiveX.setFill(new ImagePattern(new Image("resources/positiveX.png")));
+        positiveX.setOnMouseClicked(e-> {well.rotateFallingTetrimino(Rotate.X_AXIS, +90);});
+        
+        Rectangle negativeX = new Rectangle(5*width/12, 570, width/8, width/8);
+        negativeX.setFill(new ImagePattern(new Image("resources/negativeX.png")));
+        negativeX.setOnMouseClicked(e-> {well.rotateFallingTetrimino(Rotate.X_AXIS, -90);});
+        
+        
+        Text alternativeRotationButtonsLabel = new Text("Alternative buttons:");
+        alternativeRotationButtonsLabel.setTranslateX(0.62*width);
+        alternativeRotationButtonsLabel.setTranslateY(450);
+        alternativeRotationButtonsLabel.setFont(Font.font(20));
+        alternativeRotationButtonsLabel.setFill(Color.YELLOW);
+        
+        Text positiveZLabel = new Text("INS \\\n U");
+        positiveZLabel.setTranslateX(7*width/12);positiveZLabel.setTranslateY(485);
         positiveZLabel.setFont(Font.font(15));
         positiveZLabel.setFill(Color.YELLOW);
         
-        Rectangle negativeZ = new Rectangle(width/6, 620, width/8, width/8);
-        negativeZ.setFill(new ImagePattern(new Image("resources/negativeZ.png")));
-        negativeZ.setOnMouseClicked(e-> {well.rotateFallingTetrimino(Rotate.Z_AXIS, -90);});
-        Text negativeZLabel = new Text("or \nDEL\nJ");
-        negativeZLabel.setTranslateX(width/12);negativeZLabel.setTranslateY(635);
+        Text negativeZLabel = new Text("DEL \\\n J");
+        negativeZLabel.setTranslateX(7*width/12);negativeZLabel.setTranslateY(585);
         negativeZLabel.setFont(Font.font(15));
         negativeZLabel.setFill(Color.YELLOW);
         
-        Rectangle positiveY = new Rectangle(3*width/6, 520, width/8, width/8);
-        positiveY.setFill(new ImagePattern(new Image("resources/positiveY.png")));
-        positiveY.setOnMouseClicked(e-> {well.rotateFallingTetrimino(Rotate.Y_AXIS, +90);});
-        Text positiveYLabel = new Text("or \nHOME\nI");
-        positiveYLabel.setTranslateX(5*width/12-15);positiveYLabel.setTranslateY(535);
+        Text positiveYLabel = new Text("HOME \\\n I");
+        positiveYLabel.setTranslateX(9*width/12-15);positiveYLabel.setTranslateY(485);
         positiveYLabel.setFont(Font.font(15));
         positiveYLabel.setFill(Color.YELLOW);
         
-        Rectangle negativeY = new Rectangle(3*width/6, 620, width/8, width/8);
-        negativeY.setFill(new ImagePattern(new Image("resources/negativeY.png")));
-        negativeY.setOnMouseClicked(e-> {well.rotateFallingTetrimino(Rotate.Y_AXIS, -90);});
-        Text negativeYLabel = new Text("or \nEND\nK");
-        negativeYLabel.setTranslateX(5*width/12-15);negativeYLabel.setTranslateY(635);
+        Text negativeYLabel = new Text("END \\\n K");
+        negativeYLabel.setTranslateX(9*width/12-15);negativeYLabel.setTranslateY(585);
         negativeYLabel.setFont(Font.font(15));
         negativeYLabel.setFill(Color.YELLOW);
         
-        Rectangle positiveX = new Rectangle(5*width/6, 520, width/8, width/8);
-        positiveX.setFill(new ImagePattern(new Image("resources/positiveX.png")));
-        positiveX.setOnMouseClicked(e-> {well.rotateFallingTetrimino(Rotate.X_AXIS, +90);});
-        Text positiveXLabel = new Text("or \nPGUP\nO");
-        positiveXLabel.setTranslateX(9*width/12-15);positiveXLabel.setTranslateY(535);
+        Text positiveXLabel = new Text("PGUP \\\n O");
+        positiveXLabel.setTranslateX(11*width/12-15);positiveXLabel.setTranslateY(485);
         positiveXLabel.setFont(Font.font(15));
         positiveXLabel.setFill(Color.YELLOW);
         
-        Rectangle negativeX = new Rectangle(5*width/6, 620, width/8, width/8);
-        negativeX.setFill(new ImagePattern(new Image("resources/negativeX.png")));
-        negativeX.setOnMouseClicked(e-> {well.rotateFallingTetrimino(Rotate.X_AXIS, -90);});
-        Text negativeXLabel = new Text("or \nPGDN\nL");
-        negativeXLabel.setTranslateX(9*width/12-15);negativeXLabel.setTranslateY(635);
+        Text negativeXLabel = new Text("PGDN \\\n L");
+        negativeXLabel.setTranslateX(11*width/12-15);negativeXLabel.setTranslateY(585);
         negativeXLabel.setFont(Font.font(15));
         negativeXLabel.setFill(Color.YELLOW);
         
-        this.getChildren().addAll(positiveZ, negativeZ, positiveY, negativeY, positiveX, negativeX, 
+        
+        this.getChildren().addAll(rotationButtonsLabel, alternativeRotationButtonsLabel, 
+            positiveZ, negativeZ, positiveY, negativeY, positiveX, negativeX, 
             positiveZLabel, negativeZLabel, positiveYLabel, negativeYLabel, positiveXLabel, negativeXLabel);
     }
 
