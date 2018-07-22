@@ -124,7 +124,6 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         setFallingTetrimino();
         setLights();
         
-        fallingTetriminoRotates = false;
         state = State.PLAYING;
     }
     
@@ -577,7 +576,6 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
 //            return;
             
         setWallProjection(fallingTetrimino, false);
-        fallingTetriminoRotates = true;
         
         Rotate rotate = new Rotate(0, axis);
         fallingTetrimino.getTransforms().add(0, rotate);
@@ -607,7 +605,6 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         parallelTransition.setOnFinished(e -> { 
             setWallProjection(fallingTetrimino, true); 
             state = state.PLAYING;
-            fallingTetriminoRotates = false;
         });
     }
 }
