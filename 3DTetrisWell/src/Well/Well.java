@@ -568,6 +568,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         
         // PROHIBIT COMPOSIT ROTATION ON THE EDGES OF THE FIELD, BECAUSE IT MAY CAUSE A TETRIMINO TO GO OUT OF BOUNDS
         // TODO: TRY TO FIND A BETTER SOLUTION - THIS ONE SLOWS DOWN THE ROTATION
+        // MUST SOLVE THIS!!!
 //        int fallingMinX = getGridIndexX(fallingTetrimino.getBoundsInParent().getMinX() + 0.5*FIELD_SIZE);
 //        int fallingMaxX = getGridIndexX(fallingTetrimino.getBoundsInParent().getMaxX() - 0.5*FIELD_SIZE);
 //        int fallingMinY = getGridIndexY(fallingTetrimino.getBoundsInParent().getMinY() + 0.5*FIELD_SIZE);
