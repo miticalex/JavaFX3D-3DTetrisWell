@@ -86,6 +86,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     
     private Tetrimino fallingTetrimino;
     private boolean criticalRotationLasts;
+    private boolean fallingTetriminoRotates;
     
     private int level;
     private int floorsCleared;
@@ -126,6 +127,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         setLights();
         
         criticalRotationLasts = false;
+        fallingTetriminoRotates = false;
         state = State.PLAYING;
     }
     
@@ -565,7 +567,21 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         // PERFORM NO ROTATION IF IT CAUSES A COLLISION WITH ANY OF THE FALLEN BLOCKS
         if (collidesWithFallenBlocks(futureTetrimino)) return;
         
+        // PROHIBIT COMPOSIT ROTATION ON THE EDGES OF THE FIELD, BECAUSE IT MAY CAUSE A TETRIMINO TO GO OUT OF BOUNDS
+        // TODO: TRY TO FIND A BETTER SOLUTION - THIS ONE SLOWS DOWN THE ROTATION
+//        int fallingMinX = getGridIndexX(fallingTetrimino.getBoundsInParent().getMinX() + 0.5*FIELD_SIZE);
+//        int fallingMaxX = getGridIndexX(fallingTetrimino.getBoundsInParent().getMaxX() - 0.5*FIELD_SIZE);
+//        int fallingMinY = getGridIndexY(fallingTetrimino.getBoundsInParent().getMinY() + 0.5*FIELD_SIZE);
+//        int fallingMaxY = getGridIndexY(fallingTetrimino.getBoundsInParent().getMaxY() - 0.5*FIELD_SIZE);
+//        int fallingMaxZ = getGridIndexZ(fallingTetrimino.getBoundsInParent().getMaxZ() - 0.5*FIELD_SIZE);
+//        
+//        if (((fallingMinX == 0) || (fallingMaxX == width-1) || 
+//            (fallingMinY == 0) || (fallingMaxY == height-1) || (fallingMaxZ == depth-1))
+//                && fallingTetriminoRotates)
+//            return;
+            
         setWallProjection(fallingTetrimino, false);
+        fallingTetriminoRotates = true;
         
         Rotate rotate = new Rotate(0, axis);
         fallingTetrimino.getTransforms().add(0, rotate);
@@ -595,6 +611,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         parallelTransition.setOnFinished(e -> { 
             setWallProjection(fallingTetrimino, true); 
             criticalRotationLasts = false;
+            fallingTetriminoRotates = false;
         });
     }
 }
