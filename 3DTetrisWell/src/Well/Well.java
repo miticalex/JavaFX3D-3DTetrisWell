@@ -35,7 +35,7 @@ import javafx.util.Duration;
  * @author AM
  */
 public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
-    public static enum State {PLAYING, PAUSED, CLEARING, GAMEOVER};
+    public static enum State {PLAYING, PAUSED, CLEARING, CRITICAL_ROTATION, GAMEOVER};
     private State state;
     public State getState() {
         return state;
@@ -85,8 +85,6 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     private double timeUntilFallingTetriminoDrops;
     
     private Tetrimino fallingTetrimino;
-    private boolean criticalRotationLasts;
-    private boolean fallingTetriminoRotates;
     
     private int level;
     private int floorsCleared;
@@ -126,7 +124,6 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         setFallingTetrimino();
         setLights();
         
-        criticalRotationLasts = false;
         fallingTetriminoRotates = false;
         state = State.PLAYING;
     }
@@ -547,7 +544,6 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     }
 
     public void rotateFallingTetrimino(Point3D axis, double angle) {
-        if (criticalRotationLasts) return;
         if ((axis!=X_AXIS && axis!=Y_AXIS && axis!=Z_AXIS) || (Math.abs(angle) !=90.0)) return;
 
         Tetrimino futureTetrimino = new Tetrimino(fallingTetrimino);
@@ -603,14 +599,14 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             translateTransition.setByY((height-1 - futureMaxY)*FIELD_SIZE);
         
         if ((translateTransition.getByX() != 0) || (translateTransition.getByY() != 0))
-            criticalRotationLasts = true;
+            state = state.CRITICAL_ROTATION;
         
         ParallelTransition parallelTransition = new ParallelTransition(rotateTimeline, translateTransition);
         parallelTransition.setInterpolator(Interpolator.LINEAR);
         parallelTransition.play();
         parallelTransition.setOnFinished(e -> { 
             setWallProjection(fallingTetrimino, true); 
-            criticalRotationLasts = false;
+            state = state.PLAYING;
             fallingTetriminoRotates = false;
         });
     }
