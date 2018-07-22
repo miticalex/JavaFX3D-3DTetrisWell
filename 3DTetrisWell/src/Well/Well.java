@@ -386,9 +386,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
                 floorsToClear.add(i); 
         }
         
-        points += 50 * (int)Math.pow(2, floorsToClear.size());
-        
         if (floorsToClear.size() > 0){
+            points += 50 * (int)Math.pow(2, floorsToClear.size());
             state = State.CLEARING;
             clearFloor(floorsToClear, 0);
         }
