@@ -283,7 +283,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             return false;
         
         if ((axis == Z_AXIS) && (direction == Direction.POSITIVE) && 
-            (getGridIndexZ(fallingTetrimino.getBoundsInParent().getMaxZ()) == depth-1))
+            (getGridIndexZ(fallingTetrimino.getBoundsInParent().getMaxZ() - 0.5*FIELD_SIZE) == depth-1))
             return false;
             
         
