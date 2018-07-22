@@ -85,7 +85,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     private double timeUntilFallingTetriminoDrops;
     
     private Tetrimino fallingTetrimino;
-    private boolean criticalRotationLasts = false;
+    private boolean criticalRotationLasts;
     
     private int level;
     private int floorsCleared;
@@ -125,6 +125,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         setFallingTetrimino();
         setLights();
         
+        criticalRotationLasts = false;
         state = State.PLAYING;
     }
     
@@ -294,7 +295,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         else if (axis == Y_AXIS)    futureTetrimino.setTranslateY(fallingTetrimino.getTranslateY() + displacement*FIELD_SIZE);
         else /* Z_AXIS */           futureTetrimino.setTranslateZ(fallingTetrimino.getTranslateZ() + displacement*FIELD_SIZE);
         
-        if (collidesWithFallenBlocks(futureTetrimino)) return false;
+        if (collidesWithFallenBlocks(futureTetrimino)) 
+            return false;
         
         setWallProjection(fallingTetrimino, false);
         if (axis == X_AXIS)         fallingTetrimino.setTranslateX(fallingTetrimino.getTranslateX() + displacement*FIELD_SIZE);
