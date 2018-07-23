@@ -71,6 +71,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     
     PhongMaterial wallMaterial; // TRANSPARENT BLUE
     PhongMaterial shiningWallMaterial; // SAME COLOR - WITH RED SELF ILLUMINATION
+    PhongMaterial stonesMaterial;
     
     private Box[][][] fallenBlocks;
     private Box[][] leftWall, rightWall;
@@ -182,16 +183,27 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     }
     
     private void makeWellWalls() {
-        wallMaterial = new PhongMaterial(Color.color(0, 0.1, 1, 0.5)); // TRANSPARENT BLUE
-        shiningWallMaterial = new PhongMaterial(Color.color(0, 0.1, 1, 0.5));
+        wallMaterial = new PhongMaterial();//Color.color(0, 0.1, 1, 0.5)); // TRANSPARENT BLUE
+        wallMaterial.setDiffuseMap(new Image("resources/WellBricksDiffuse.jpg"));
+        wallMaterial.setBumpMap(new Image("resources/WellBricksBump.jpg"));
+        wallMaterial.setSpecularMap(new Image("resources/WellBricksSpecular.jpg"));
+        
+        stonesMaterial = new PhongMaterial();
+        stonesMaterial.setDiffuseMap(new Image("resources/StonesDiffuse.jpg"));
+        stonesMaterial.setBumpMap(new Image("resources/StonesBump.jpg"));
+        stonesMaterial.setSpecularMap(new Image("resources/StonesSpecular.jpg"));
+        
+        shiningWallMaterial = new PhongMaterial();//Color.color(0, 0.1, 1, 0.5));
+        shiningWallMaterial.setDiffuseMap(new Image("resources/WellBricksDiffuse.jpg"));
+        shiningWallMaterial.setBumpMap(new Image("resources/WellBricksBump.jpg"));
         shiningWallMaterial.setSelfIlluminationMap(new Image("resources/red.png"));
         
         leftWall = new Box[height][depth];
         rightWall = new Box[height][depth];
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < depth; j++) {
-                leftWall[i][j] = new Box(WALL_WIDTH, BOX_SIZE, BOX_SIZE);
-                rightWall[i][j] = new Box(WALL_WIDTH, BOX_SIZE, BOX_SIZE);
+                leftWall[i][j] = new Box(WALL_WIDTH, FIELD_SIZE, FIELD_SIZE);
+                rightWall[i][j] = new Box(WALL_WIDTH, FIELD_SIZE, FIELD_SIZE);
                 
                 this.addNodeToGridXYZ(leftWall[i][j], -0.5 -0.5*WALL_WIDTH/FIELD_SIZE, i, j);
                 this.addNodeToGridXYZ(rightWall[i][j], width -0.5 +0.5*WALL_WIDTH/FIELD_SIZE, i, j);
@@ -202,50 +214,55 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         rearWall = new Box[width][depth];
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < depth; j++) {
-                frontWall[i][j] = new Box(BOX_SIZE, WALL_WIDTH, BOX_SIZE);
-                rearWall[i][j] = new Box(BOX_SIZE, WALL_WIDTH, BOX_SIZE);
+                frontWall[i][j] = new Box(FIELD_SIZE, WALL_WIDTH, FIELD_SIZE);
+                rearWall[i][j] = new Box(FIELD_SIZE, WALL_WIDTH, FIELD_SIZE);
                 
                 this.addNodeToGridXYZ(frontWall[i][j], i, height -0.5 +0.5*WALL_WIDTH/FIELD_SIZE, j);
                 this.addNodeToGridXYZ(rearWall[i][j], i, -0.5 -0.5*WALL_WIDTH/FIELD_SIZE, j);
             }   
         }
         
-        bottom = new Box[width][height];
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                bottom[i][j] = new Box(BOX_SIZE, BOX_SIZE, WALL_WIDTH);
-                
-                this.addNodeToGridXYZ(bottom[i][j], i, j, depth - 0.5 + 0.5*WALL_WIDTH/FIELD_SIZE);
-            }   
-        }
+        this.getChildren().forEach(node -> ((Shape3D) node).setMaterial(wallMaterial));
         
         for (int i = 0; i < width; i++) {
-            Box rearEdge = new Box(BOX_SIZE, BOX_SIZE/2, WALL_WIDTH);
-            Box frontEdge = new Box(BOX_SIZE, BOX_SIZE/2, WALL_WIDTH);
-            
+            Box rearEdge = new Box(FIELD_SIZE, FIELD_SIZE/2, WALL_WIDTH);
+            Box frontEdge = new Box(FIELD_SIZE, FIELD_SIZE/2, WALL_WIDTH);
+            rearEdge.setMaterial(stonesMaterial);
+            frontEdge.setMaterial(stonesMaterial);
+
             this.addNodeToGridXYZ(rearEdge, i, -0.75, -0.5);
             this.addNodeToGridXYZ(frontEdge, i, height - 0.25, -0.5);
         }
         
         for (int i = 0; i < height; i++) {
-            Box leftEdge = new Box(BOX_SIZE/2, BOX_SIZE, WALL_WIDTH);
-            Box rightEdge = new Box(BOX_SIZE/2, BOX_SIZE, WALL_WIDTH);
-            
+            Box leftEdge = new Box(FIELD_SIZE/2, FIELD_SIZE, WALL_WIDTH);
+            Box rightEdge = new Box(FIELD_SIZE/2, FIELD_SIZE, WALL_WIDTH);
+            leftEdge.setMaterial(stonesMaterial);
+            rightEdge.setMaterial(stonesMaterial);
+
             this.addNodeToGridXYZ(leftEdge, -0.75, i, -0.5);
             this.addNodeToGridXYZ(rightEdge, width - 0.25, i, -0.5);
         }
         
-        this.getChildren().forEach(node -> ((Shape3D) node).setMaterial(wallMaterial));
+        bottom = new Box[width][height];
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                bottom[i][j] = new Box(FIELD_SIZE, FIELD_SIZE, WALL_WIDTH);
+                bottom[i][j].setMaterial(stonesMaterial);
+                
+                this.addNodeToGridXYZ(bottom[i][j], i, j, depth - 0.5 + 0.5*WALL_WIDTH/FIELD_SIZE);
+            }   
+        }
         
         Box corner0 = new Box(BOX_SIZE/2, BOX_SIZE/2, WALL_WIDTH);
         Box corner1 = new Box(BOX_SIZE/2, BOX_SIZE/2, WALL_WIDTH);
         Box corner2 = new Box(BOX_SIZE/2, BOX_SIZE/2, WALL_WIDTH);
         Box corner3 = new Box(BOX_SIZE/2, BOX_SIZE/2, WALL_WIDTH);
         
-        corner0.setMaterial(new PhongMaterial(Color.BLUE));
-        corner1.setMaterial(new PhongMaterial(Color.BLUE));
-        corner2.setMaterial(new PhongMaterial(Color.BLUE));
-        corner3.setMaterial(new PhongMaterial(Color.BLUE));
+        corner0.setMaterial(stonesMaterial);
+        corner1.setMaterial(stonesMaterial);
+        corner2.setMaterial(stonesMaterial);
+        corner3.setMaterial(stonesMaterial);
         
         this.addNodeToGridXYZ(corner0, -0.75,           -0.75,          -0.5);
         this.addNodeToGridXYZ(corner1, width - 0.25,    -0.75,          -0.5);

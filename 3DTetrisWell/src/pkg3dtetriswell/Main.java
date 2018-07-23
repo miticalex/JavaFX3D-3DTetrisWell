@@ -10,18 +10,14 @@ import Well.Well;
 import gameStats.GameStats;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.scene.AmbientLight;
 import javafx.scene.Camera;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
-import javafx.scene.PointLight;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
@@ -60,7 +56,7 @@ public class Main extends Application implements Updateable{
         
         gamePlayScene = new SubScene(root, HEIGHT, HEIGHT, true, SceneAntialiasing.BALANCED);
         gamePlayScene.setCamera(frontCamera);
-        gamePlayScene.setFill(Color.color(0.2, 0.1, 0));
+        gamePlayScene.setFill(Color.BLACK);//Color.color(0.2, 0.1, 0));
         
         Pane gamePlayPane = new Pane(gamePlayScene);
         
