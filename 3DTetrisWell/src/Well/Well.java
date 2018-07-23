@@ -254,10 +254,10 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             }   
         }
         
-        Box corner0 = new Box(BOX_SIZE/2, BOX_SIZE/2, WALL_WIDTH);
-        Box corner1 = new Box(BOX_SIZE/2, BOX_SIZE/2, WALL_WIDTH);
-        Box corner2 = new Box(BOX_SIZE/2, BOX_SIZE/2, WALL_WIDTH);
-        Box corner3 = new Box(BOX_SIZE/2, BOX_SIZE/2, WALL_WIDTH);
+        Box corner0 = new Box(FIELD_SIZE/2, FIELD_SIZE/2, WALL_WIDTH);
+        Box corner1 = new Box(FIELD_SIZE/2, FIELD_SIZE/2, WALL_WIDTH);
+        Box corner2 = new Box(FIELD_SIZE/2, FIELD_SIZE/2, WALL_WIDTH);
+        Box corner3 = new Box(FIELD_SIZE/2, FIELD_SIZE/2, WALL_WIDTH);
         
         corner0.setMaterial(stonesMaterial);
         corner1.setMaterial(stonesMaterial);
