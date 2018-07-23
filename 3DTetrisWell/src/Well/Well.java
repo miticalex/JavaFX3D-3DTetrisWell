@@ -511,7 +511,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     public void handle(KeyEvent event) {
         if (state == State.GAMEOVER) return;
         
-        if (event.getCode() == KeyCode.PAUSE){
+        if (event.getCode() == KeyCode.PAUSE || event.getCode() == KeyCode.P || event.getCode() == KeyCode.F3){
             if (state == State.PLAYING) state = State.PAUSED;
             else if (state == State.PAUSED) state = State.PLAYING;
         }
@@ -564,7 +564,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             case O: case PAGE_UP:   rotateFallingTetrimino(Rotate.X_AXIS, 90); break;
             case L: case PAGE_DOWN: rotateFallingTetrimino(Rotate.X_AXIS, -90); break;
             
-            case ESCAPE: initialise(startingLevel, width, height, depth);
+            case F2: initialise(startingLevel, width, height, depth);
             default: break;
         }
     }

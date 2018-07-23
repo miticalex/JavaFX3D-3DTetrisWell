@@ -2,9 +2,15 @@ package gameStats;
 
 import Well.Updateable;
 import Well.Well;
+import Well.Well.State;
+import javafx.event.EventType;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
@@ -43,6 +49,8 @@ public class GameStats extends Group implements Updateable {
     private Text linesCleared = new Text("");
     private Text blocksClearedLabel = new Text("Blocks Cleared: ");
     private Text blocksCleared = new Text("");
+    
+    private Text gameStateLabel = new Text("Pera");
 
     public void setDimensionsText(int x, int y, int z) { 
         dimensions.setText(x + "x" + y + "x" + z); 
@@ -55,6 +63,17 @@ public class GameStats extends Group implements Updateable {
                 (minutes<10 ? "0" : "") + minutes + ":" + 
                 (seconds<10 ? "0" : "") + seconds);
         else this.time.setText(minutes/60 + ":" + minutes%60 + ":" + seconds);
+    }
+    private void setStateText(Well.State state) {
+        gameStateLabel.setText(state.toString());
+        gameStateLabel.setTranslateX(width/2 - gameStateLabel.getBoundsInParent().getWidth()/2);
+        
+        if (state == State.CLEARING || state == State.PAUSED || 
+                state == State.GAMEOVER){
+            gameStateLabel.setVisible(true);
+        }
+        else 
+            gameStateLabel.setVisible(false);
     }
     public void setLevelText(int level) { this.level.setText("" + level); }
     public void setPointsText(int points) { this.points.setText("" + points); }
@@ -70,7 +89,7 @@ public class GameStats extends Group implements Updateable {
         setBackGround();
         setLabels();
         setInitialStats();
-        setRotationButtons();
+        setButtons();
     }
     
     private void setBackGround(){
@@ -97,17 +116,24 @@ public class GameStats extends Group implements Updateable {
         
         this.getChildren().addAll(labelsVBox);
         
-        Text pauseLabel = new Text("Pause Button:      PAUSE/BREAK");
-        Text newGameLabel = new Text("Start New Game: ESCAPE");
-        pauseLabel.setTranslateX(width/6);
-        pauseLabel.setTranslateY(630);
-        pauseLabel.setFont(Font.font(20));
-        pauseLabel.setFill(Color.YELLOW);
-        newGameLabel.setTranslateX(width/6);
-        newGameLabel.setTranslateY(670);
-        newGameLabel.setFont(Font.font(20));
+        Text pauseLabel = new Text("PAUSE/P/F3");
+        Text newGameLabel = new Text("F2");
+        newGameLabel.setTranslateX(7*width/12);
+        newGameLabel.setTranslateY(620);
+        newGameLabel.setFont(Font.font(15));
         newGameLabel.setFill(Color.YELLOW);
+        pauseLabel.setTranslateX(7*width/12);
+        pauseLabel.setTranslateY(670);
+        pauseLabel.setFont(Font.font(15));
+        pauseLabel.setFill(Color.YELLOW);
         this.getChildren().addAll(pauseLabel, newGameLabel);
+        
+        gameStateLabel.setTranslateY(height/2);
+        gameStateLabel.setFont(Font.font(80));
+        gameStateLabel.setFill(Color.RED);
+        gameStateLabel.setStroke(Color.YELLOW);
+        gameStateLabel.setVisible(false);
+        this.getChildren().add(gameStateLabel);
     }
     
     private void setInitialStats() {
@@ -125,7 +151,7 @@ public class GameStats extends Group implements Updateable {
         this.getChildren().add(statsVBox);
     }
 
-    private void setRotationButtons() {
+    private void setButtons() {
         Text rotationButtonsLabel = new Text("Rotation Buttons:");
         rotationButtonsLabel.setTranslateX(width/6);
         rotationButtonsLabel.setTranslateY(400);
@@ -134,28 +160,45 @@ public class GameStats extends Group implements Updateable {
         
         Rectangle positiveZ = new Rectangle(width/12, 420, width/8, width/8);
         positiveZ.setFill(new ImagePattern(new Image("resources/positiveZ.png")));
-        positiveZ.setOnMouseClicked(e-> {well.rotateFallingTetrimino(Rotate.Z_AXIS, +90);});
+        positiveZ.setStroke(Color.color(0.6,0.6,0.6));
+        positiveZ.setOnMouseClicked(e-> well.rotateFallingTetrimino(Rotate.Z_AXIS, +90));
+        positiveZ.setOnMousePressed(e-> positiveZ.setStroke(Color.color(0.2,0.2,0.2)));
+        positiveZ.setOnMouseReleased(e-> positiveZ.setStroke(Color.color(0.6,0.6,0.6)));
         
         Rectangle negativeZ = new Rectangle(width/12, 520, width/8, width/8);
         negativeZ.setFill(new ImagePattern(new Image("resources/negativeZ.png")));
-        negativeZ.setOnMouseClicked(e-> {well.rotateFallingTetrimino(Rotate.Z_AXIS, -90);});
+        negativeZ.setStroke(Color.color(0.6,0.6,0.6));
+        negativeZ.setOnMouseClicked(e-> well.rotateFallingTetrimino(Rotate.Z_AXIS, -90));
+        negativeZ.setOnMousePressed(e-> negativeZ.setStroke(Color.color(0.2,0.2,0.2)));
+        negativeZ.setOnMouseReleased(e-> negativeZ.setStroke(Color.color(0.6,0.6,0.6)));
         
         Rectangle positiveY = new Rectangle(3*width/12, 420, width/8, width/8);
         positiveY.setFill(new ImagePattern(new Image("resources/positiveY.png")));
-        positiveY.setOnMouseClicked(e-> {well.rotateFallingTetrimino(Rotate.Y_AXIS, +90);});
+        positiveY.setStroke(Color.color(0.6,0.6,0.6));
+        positiveY.setOnMouseClicked(e-> well.rotateFallingTetrimino(Rotate.Y_AXIS, +90));
+        positiveY.setOnMousePressed(e-> positiveY.setStroke(Color.color(0.2,0.2,0.2)));
+        positiveY.setOnMouseReleased(e-> positiveY.setStroke(Color.color(0.6,0.6,0.6)));
         
         Rectangle negativeY = new Rectangle(3*width/12, 520, width/8, width/8);
         negativeY.setFill(new ImagePattern(new Image("resources/negativeY.png")));
-        negativeY.setOnMouseClicked(e-> {well.rotateFallingTetrimino(Rotate.Y_AXIS, -90);});
+        negativeY.setStroke(Color.color(0.6,0.6,0.6));
+        negativeY.setOnMouseClicked(e-> well.rotateFallingTetrimino(Rotate.Y_AXIS, -90));
+        negativeY.setOnMousePressed(e-> negativeY.setStroke(Color.color(0.2,0.2,0.2)));
+        negativeY.setOnMouseReleased(e-> negativeY.setStroke(Color.color(0.6,0.6,0.6)));
         
         Rectangle positiveX = new Rectangle(5*width/12, 420, width/8, width/8);
         positiveX.setFill(new ImagePattern(new Image("resources/positiveX.png")));
-        positiveX.setOnMouseClicked(e-> {well.rotateFallingTetrimino(Rotate.X_AXIS, +90);});
+        positiveX.setStroke(Color.color(0.6,0.6,0.6));
+        positiveX.setOnMouseClicked(e-> well.rotateFallingTetrimino(Rotate.X_AXIS, +90));
+        positiveX.setOnMousePressed(e-> positiveX.setStroke(Color.color(0.2,0.2,0.2)));
+        positiveX.setOnMouseReleased(e-> positiveX.setStroke(Color.color(0.6,0.6,0.6)));
         
         Rectangle negativeX = new Rectangle(5*width/12, 520, width/8, width/8);
         negativeX.setFill(new ImagePattern(new Image("resources/negativeX.png")));
-        negativeX.setOnMouseClicked(e-> {well.rotateFallingTetrimino(Rotate.X_AXIS, -90);});
-        
+        negativeX.setStroke(Color.color(0.6,0.6,0.6));
+        negativeX.setOnMouseClicked(e-> well.rotateFallingTetrimino(Rotate.X_AXIS, -90));
+        negativeX.setOnMousePressed(e-> negativeX.setStroke(Color.color(0.2,0.2,0.2)));
+        negativeX.setOnMouseReleased(e-> negativeX.setStroke(Color.color(0.6,0.6,0.6)));
         
         Text alternativeRotationButtonsLabel = new Text("Alternative controls:");
         alternativeRotationButtonsLabel.setTranslateX(0.62*width);
@@ -197,6 +240,24 @@ public class GameStats extends Group implements Updateable {
         this.getChildren().addAll(rotationButtonsLabel, alternativeRotationButtonsLabel, 
             positiveZ, negativeZ, positiveY, negativeY, positiveX, negativeX, 
             positiveZLabel, negativeZLabel, positiveYLabel, negativeYLabel, positiveXLabel, negativeXLabel);
+        
+        VBox menuButtons = new VBox(20);
+        menuButtons.setTranslateX(width/12);menuButtons.setTranslateY(600);
+        
+        Button newGameButton = new Button("NewGame");
+        newGameButton.setOnMouseClicked(e-> well.handle(
+                new KeyEvent(new EventType<KeyEvent>(), "F2", "F2", KeyCode.F2, false, false, false, false)));
+        newGameButton.setFont(Font.font(15));
+        menuButtons.getChildren().add(newGameButton);
+        
+        Button pauseButton = new Button("Pause");
+        pauseButton.setOnMouseClicked(e-> well.handle(
+                new KeyEvent(new EventType<KeyEvent>(), "P", "P", KeyCode.PAUSE, false, false, false, false)));
+        pauseButton.setFont(Font.font(15));
+        menuButtons.getChildren().add(pauseButton);
+        
+        this.getChildren().add(menuButtons);
+        
     }
 
     @Override
@@ -206,6 +267,7 @@ public class GameStats extends Group implements Updateable {
         setLevelText(well.getLevel());
         setLinesClearedText(well.getFloorsCleared());
         setPointsText(well.getPoints());
-        setTimeText(well.getTime());
+        setTimeText(well.getTime());    
+        setStateText(well.getState());
     }
 }
