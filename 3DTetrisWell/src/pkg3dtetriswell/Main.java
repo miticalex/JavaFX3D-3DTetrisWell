@@ -47,7 +47,7 @@ public class Main extends Application implements Updateable{
     
     @Override
     public void start(Stage window) {
-        well = new Well(1, 5,5,12);
+        well = new Well(0, 5,5,12);
         
         double wellScaleFactor = MAX_WELL_SIZE/(well.FIELD_SIZE * 
                 ((well.getHeight()>well.getWidth()? well.getHeight() : well.getWidth())+1));
