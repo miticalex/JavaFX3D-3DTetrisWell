@@ -116,17 +116,17 @@ public class GameStats extends Group implements Updateable {
         
         this.getChildren().addAll(labelsVBox);
         
-        Text pauseLabel = new Text("PAUSE/P/F3");
-        Text newGameLabel = new Text("F2");
-        newGameLabel.setTranslateX(7*width/12);
-        newGameLabel.setTranslateY(620);
+        Text pauseLabel = new Text("Pause Button:          PAUSE/P/F3");
+        Text newGameLabel = new Text("New Game Button:  F2");
+        
         newGameLabel.setFont(Font.font(15));
         newGameLabel.setFill(Color.YELLOW);
-        pauseLabel.setTranslateX(7*width/12);
-        pauseLabel.setTranslateY(670);
         pauseLabel.setFont(Font.font(15));
         pauseLabel.setFill(Color.YELLOW);
-        this.getChildren().addAll(pauseLabel, newGameLabel);
+        
+        VBox otherControls = new VBox(10, newGameLabel, pauseLabel);
+        otherControls.setTranslateX(width/12);otherControls.setTranslateY(610);
+        this.getChildren().addAll(otherControls);
         
         gameStateLabel.setTranslateY(height/2);
         gameStateLabel.setFont(Font.font(80));
@@ -240,24 +240,6 @@ public class GameStats extends Group implements Updateable {
         this.getChildren().addAll(rotationButtonsLabel, alternativeRotationButtonsLabel, 
             positiveZ, negativeZ, positiveY, negativeY, positiveX, negativeX, 
             positiveZLabel, negativeZLabel, positiveYLabel, negativeYLabel, positiveXLabel, negativeXLabel);
-        
-        VBox menuButtons = new VBox(20);
-        menuButtons.setTranslateX(width/12);menuButtons.setTranslateY(600);
-        
-        Button newGameButton = new Button("NewGame");
-        newGameButton.setOnMouseClicked(e-> well.handle(
-                new KeyEvent(new EventType<KeyEvent>(), "F2", "F2", KeyCode.F2, false, false, false, false)));
-        newGameButton.setFont(Font.font(15));
-        menuButtons.getChildren().add(newGameButton);
-        
-        Button pauseButton = new Button("Pause");
-        pauseButton.setOnMouseClicked(e-> well.handle(
-                new KeyEvent(new EventType<KeyEvent>(), "P", "P", KeyCode.PAUSE, false, false, false, false)));
-        pauseButton.setFont(Font.font(15));
-        menuButtons.getChildren().add(pauseButton);
-        
-        this.getChildren().add(menuButtons);
-        
     }
 
     @Override
