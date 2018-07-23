@@ -346,7 +346,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     }
     
     public final boolean integrateFallingTetrimino(){
-        if (futureTetrimino==null) return false;
+        if (futureTetrimino==null || fallingTetrimino==null) return false;
         
         refreshWalls();//setWallProjection(fallingTetrimino, false);
         
@@ -515,35 +515,35 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         
         if (state != State.PLAYING) return;
         
-        int fallingMinX = getGridIndexX(fallingTetrimino.getBoundsInParent().getMinX());
-        int fallingMaxX = getGridIndexX(fallingTetrimino.getBoundsInParent().getMaxX());
-        int fallingMinY = getGridIndexY(fallingTetrimino.getBoundsInParent().getMinY());
-        int fallingMaxY = getGridIndexY(fallingTetrimino.getBoundsInParent().getMaxY());
-        int fallingMaxZ = getGridIndexZ(fallingTetrimino.getBoundsInParent().getMaxZ());
+        int futureMinX = getGridIndexX(futureTetrimino.getBoundsInParent().getMinX() + 0.5*FIELD_SIZE);
+        int futureMaxX = getGridIndexX(futureTetrimino.getBoundsInParent().getMaxX() - 0.5*FIELD_SIZE);
+        int futureMinY = getGridIndexY(futureTetrimino.getBoundsInParent().getMinY() + 0.5*FIELD_SIZE);
+        int futureMaxY = getGridIndexY(futureTetrimino.getBoundsInParent().getMaxY() - 0.5*FIELD_SIZE);
+        int futureMaxZ = getGridIndexZ(futureTetrimino.getBoundsInParent().getMaxZ() - 0.5*FIELD_SIZE);
         
         switch (event.getCode()) {
             case LEFT: case A:
-                if (fallingMinX > 0) {
+                if (futureMinX > 0) {
                     moveFallingTetriminoOnGrid(X_AXIS, Direction.NEGATIVE);
                 }
                 break;
             case RIGHT: case D:
-                if (fallingMaxX < width-1){
+                if (futureMaxX < width-1){
                     moveFallingTetriminoOnGrid(X_AXIS, Direction.POSITIVE);
                 }
                 break;
             case UP: case W:
-                if (fallingMinY > 0) {
+                if (futureMinY > 0) {
                     moveFallingTetriminoOnGrid(Y_AXIS, Direction.NEGATIVE);
                 }
                 break;
             case DOWN: case S:
-                if (fallingMaxY < height-1) {
+                if (futureMaxY < height-1) {
                     moveFallingTetriminoOnGrid(Y_AXIS, Direction.POSITIVE);
                 }
                 break;
             case CONTROL:
-                if (fallingMaxZ < depth){
+                if (futureMaxZ < depth){
                     if (moveFallingTetriminoOnGrid(Z_AXIS, Direction.POSITIVE) == false)
                         integrateFallingTetrimino();
                 }
