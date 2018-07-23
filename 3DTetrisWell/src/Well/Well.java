@@ -305,21 +305,17 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         if ((axis == Z_AXIS) && (direction == Direction.NEGATIVE))
             return false;
         
-        if ((axis == Z_AXIS) && (direction == Direction.POSITIVE) && 
-            (getGridIndexZ(fallingTetrimino.getBoundsInParent().getMaxZ() - 0.5*FIELD_SIZE) == depth-1))
-            return false;
-            
-        
         int displacement = direction == direction.POSITIVE ? +1 : -1;
         
-        if (axis == X_AXIS)         futureTetrimino.setTranslateX(fallingTetrimino.getTranslateX() + displacement*FIELD_SIZE);
-        else if (axis == Y_AXIS)    futureTetrimino.setTranslateY(fallingTetrimino.getTranslateY() + displacement*FIELD_SIZE);
-        else /* Z_AXIS */           futureTetrimino.setTranslateZ(fallingTetrimino.getTranslateZ() + displacement*FIELD_SIZE);
+        if (axis == X_AXIS)         futureTetrimino.setTranslateX(futureTetrimino.getTranslateX() + displacement*FIELD_SIZE);
+        else if (axis == Y_AXIS)    futureTetrimino.setTranslateY(futureTetrimino.getTranslateY() + displacement*FIELD_SIZE);
+        else /* Z_AXIS */           futureTetrimino.setTranslateZ(futureTetrimino.getTranslateZ() + displacement*FIELD_SIZE);
         
-        if (collidesWithFallenBlocks(futureTetrimino)) {
-            if (axis == X_AXIS)         futureTetrimino.setTranslateX(fallingTetrimino.getTranslateX() - displacement*FIELD_SIZE);
-            else if (axis == Y_AXIS)    futureTetrimino.setTranslateY(fallingTetrimino.getTranslateY() - displacement*FIELD_SIZE);
-            else /* Z_AXIS */           futureTetrimino.setTranslateZ(fallingTetrimino.getTranslateZ() - displacement*FIELD_SIZE);
+        if ((getGridIndexZ(futureTetrimino.getBoundsInParent().getMaxZ() - 0.5*FIELD_SIZE) == depth) || 
+                collidesWithFallenBlocks(futureTetrimino)) {
+            if (axis == X_AXIS)         futureTetrimino.setTranslateX(futureTetrimino.getTranslateX() - displacement*FIELD_SIZE);
+            else if (axis == Y_AXIS)    futureTetrimino.setTranslateY(futureTetrimino.getTranslateY() - displacement*FIELD_SIZE);
+            else /* Z_AXIS */           futureTetrimino.setTranslateZ(futureTetrimino.getTranslateZ() - displacement*FIELD_SIZE);
             
             return false;
         }
@@ -350,13 +346,13 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     }
     
     public final boolean integrateFallingTetrimino(){
-        if (fallingTetrimino==null) return false;
+        if (futureTetrimino==null) return false;
         
         refreshWalls();//setWallProjection(fallingTetrimino, false);
         
-        for (Node node : fallingTetrimino.getChildren()) {
+        for (Node node : futureTetrimino.getChildren()) {
             Box box = (Box)node;
-            Point3D boxCoordinatesInWell = fallingTetrimino.localToParent(box.getTranslateX(), box.getTranslateY(), box.getTranslateZ());
+            Point3D boxCoordinatesInWell = futureTetrimino.localToParent(box.getTranslateX(), box.getTranslateY(), box.getTranslateZ());
             
             int boxX = getGridIndexX(boxCoordinatesInWell.getX());
             int boxY = getGridIndexY(boxCoordinatesInWell.getY());
