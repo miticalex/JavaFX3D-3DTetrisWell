@@ -592,17 +592,6 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             return;   
         }
         
-        setWallProjection(fallingTetrimino, false);
-        
-        Rotate rotate = new Rotate(0, axis);
-        fallingTetrimino.getTransforms().add(0, rotate);
-
-        KeyValue startAngle = new KeyValue(rotate.angleProperty(), 0);
-        KeyValue endAngle = new KeyValue(rotate.angleProperty(), angle);
-        
-        ParallelTransition tetriminoTransition = new ParallelTransition(
-                new Timeline(new KeyFrame(Duration.millis(ROTATION_DURATION), startAngle, endAngle))); //ROTATION
-
         // PERFORM A TRANSLATION ALSO IF A ROTATION CAUSES COLLISIONS WITH WALLS
         double displacementX=0, displacementY=0;
         if (futureMinX < 0)
@@ -614,19 +603,38 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         else if (futureMaxY >= height)
             displacementY = (height-1 - futureMaxY)*FIELD_SIZE;
         
+        
+        ParallelTransition tetriminoTransition = new ParallelTransition();
         if ((displacementX != 0) || (displacementY != 0)){
             futureTetrimino.setTranslateX(futureTetrimino.getTranslateX() + displacementX);
             futureTetrimino.setTranslateY(futureTetrimino.getTranslateY() + displacementY);
+            
+            // PERFORM NO ROTATION IF IT CAUSES A COLLISION WITH ANY OF THE FALLEN BLOCKS
+            if (collidesWithFallenBlocks(futureTetrimino)){
+                futureTetrimino.setTranslateX(futureTetrimino.getTranslateX() - displacementX);
+                futureTetrimino.setTranslateY(futureTetrimino.getTranslateY() - displacementY);
+                futureTetrimino.getTransforms().remove(0);
+                return;   
+            }
             
             TranslateTransition translateTransition = new TranslateTransition(Duration.millis(ROTATION_DURATION), fallingTetrimino);
             translateTransition.setByX(displacementX);
             translateTransition.setByY(displacementY);
             
             state = state.CRITICAL_ROTATION;
-            
             tetriminoTransition.getChildren().add(translateTransition);
         }
         
+        setWallProjection(fallingTetrimino, false);
+        
+        Rotate rotate = new Rotate(0, axis);
+        fallingTetrimino.getTransforms().add(0, rotate);
+
+        KeyValue startAngle = new KeyValue(rotate.angleProperty(), 0);
+        KeyValue endAngle = new KeyValue(rotate.angleProperty(), angle);
+        
+        tetriminoTransition.getChildren().add(0, new ParallelTransition(
+                new Timeline(new KeyFrame(Duration.millis(ROTATION_DURATION), startAngle, endAngle)))); //ROTATION
         tetriminoTransition.setInterpolator(Interpolator.LINEAR);
         tetriminoTransition.play();
         tetriminoTransition.setOnFinished(e -> { 
