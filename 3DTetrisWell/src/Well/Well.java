@@ -508,10 +508,12 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     
     @Override
     public void handle(KeyEvent event) {
-        if (event.getCode() == KeyCode.F2) initialise(startingLevel, width, height, depth);
+        KeyCode keyCode = event.getCode();
+        
+        if (keyCode == KeyCode.F2) initialise(startingLevel, width, height, depth);
         if (state == State.GAMEOVER) return;
         
-        if (event.getCode() == KeyCode.PAUSE || event.getCode() == KeyCode.P || event.getCode() == KeyCode.F3){
+        if (keyCode == KeyCode.PAUSE || keyCode == KeyCode.P || keyCode == KeyCode.F3){
             if (state == State.PLAYING) state = State.PAUSED;
             else if (state == State.PAUSED) state = State.PLAYING;
         }
@@ -524,7 +526,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         int futureMaxY = getGridIndexY(futureTetrimino.getBoundsInParent().getMaxY() - 0.5*FIELD_SIZE);
         int futureMaxZ = getGridIndexZ(futureTetrimino.getBoundsInParent().getMaxZ() - 0.5*FIELD_SIZE);
         
-        switch (event.getCode()) {
+        switch (keyCode) {
             case LEFT: case A:
                 if (futureMinX > 0) {
                     moveFallingTetriminoOnGrid(X_AXIS, Direction.NEGATIVE);
