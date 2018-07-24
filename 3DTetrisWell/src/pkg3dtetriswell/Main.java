@@ -57,7 +57,7 @@ public class Main extends Application implements Updateable{
     private Group frontCameraHolder;
     private Camera frontCamera = new PerspectiveCamera(true);
     private double frontCameraLightIntensity = INITIAL_CAMERA_LIGHT_INTENSITY;
-    private Color frontCameraLightColor = Color.YELLOW;
+    private Color frontCameraLightColor = Color.BLUE;
     private PointLight frontCameraLight = new PointLight();
     private Rotate frontCameraHolderRotateX;
     private Rotate frontCameraHolderRotateZ;
@@ -160,18 +160,18 @@ public class Main extends Application implements Updateable{
         KeyCode keyCode = keyEvent.getCode();
         
         switch (keyCode) {
-            case DIGIT0:
+            case DIGIT0: case NUMPAD0:
                 frontCameraHolder.setTranslateZ(INITIAL_CAMERA_POSITION);
                 frontCameraHolderRotateX.setAngle(0);
                 frontCameraHolderRotateZ.setAngle(0);
                 break;
-            case DIGIT1:
+            case DIGIT1: case NUMPAD1:
                 if (frontCameraLightIntensity>0){
                     frontCameraLightIntensity-=0.1;
                     setLightIntensity(frontCameraLight, frontCameraLightColor, frontCameraLightIntensity);
                 }
                 break;
-            case DIGIT2:
+            case DIGIT2: case NUMPAD2:
                 if (frontCameraLightIntensity<1){
                     frontCameraLightIntensity+=0.1;
                     setLightIntensity(frontCameraLight, frontCameraLightColor, frontCameraLightIntensity);

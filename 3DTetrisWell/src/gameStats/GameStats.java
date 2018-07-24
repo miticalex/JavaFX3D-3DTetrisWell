@@ -116,16 +116,25 @@ public class GameStats extends Group implements Updateable {
         
         this.getChildren().addAll(labelsVBox);
         
-        Text pauseLabel = new Text("Pause Button:          PAUSE/P/F3");
-        Text newGameLabel = new Text("New Game Button:  F2");
+        Text pauseLabel = new Text("Pause Button:                        Pause/P/F3");
+        Text newGameLabel = new Text("New Game Button:                F2");
+        Text cameraManeuvring = new Text("Camera Maneuvring:             Mouse Drag&Scroll");
+        Text cameraReset = new Text("Camera Reset:                       0");
+        Text adjustCameraLight = new Text("Camera Light Adjustment:    1 & 2");
         
         newGameLabel.setFont(Font.font(15));
         newGameLabel.setFill(Color.YELLOW);
         pauseLabel.setFont(Font.font(15));
         pauseLabel.setFill(Color.YELLOW);
+        cameraManeuvring.setFont(Font.font(15));
+        cameraManeuvring.setFill(Color.YELLOW);
+        cameraReset.setFont(Font.font(15));
+        cameraReset.setFill(Color.YELLOW);
+        adjustCameraLight.setFont(Font.font(15));
+        adjustCameraLight.setFill(Color.YELLOW);
         
-        VBox otherControls = new VBox(10, newGameLabel, pauseLabel);
-        otherControls.setTranslateX(width/12);otherControls.setTranslateY(610);
+        VBox otherControls = new VBox(5, newGameLabel, pauseLabel, cameraManeuvring, cameraReset, adjustCameraLight);
+        otherControls.setTranslateX(width/12);otherControls.setTranslateY(600);
         this.getChildren().addAll(otherControls);
         
         gameStateLabel.setTranslateY(height/2);
