@@ -202,7 +202,11 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < depth; j++) {
                 leftWall[i][j] = new Box(WALL_WIDTH, FIELD_SIZE, FIELD_SIZE);
+                leftWall[i][j].setRotationAxis(X_AXIS);
+                leftWall[i][j].setRotate(90.);
                 rightWall[i][j] = new Box(WALL_WIDTH, FIELD_SIZE, FIELD_SIZE);
+                rightWall[i][j].setRotationAxis(X_AXIS);
+                rightWall[i][j].setRotate(90.);
                 
                 this.addNodeToGridXYZ(leftWall[i][j], -0.5 -0.5*WALL_WIDTH/FIELD_SIZE, i, j);
                 this.addNodeToGridXYZ(rightWall[i][j], width -0.5 +0.5*WALL_WIDTH/FIELD_SIZE, i, j);
@@ -223,24 +227,24 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         
         this.getChildren().forEach(node -> ((Shape3D) node).setMaterial(wallMaterial));
         
-        for (int i = 0; i < width; i++) {
-            Box rearEdge = new Box(FIELD_SIZE, FIELD_SIZE/2, WALL_WIDTH);
-            Box frontEdge = new Box(FIELD_SIZE, FIELD_SIZE/2, WALL_WIDTH);
+        for (int i = 0; i < 2*width; i++) {
+            Box rearEdge = new Box(FIELD_SIZE/2, FIELD_SIZE/2, WALL_WIDTH);
+            Box frontEdge = new Box(FIELD_SIZE/2, FIELD_SIZE/2, WALL_WIDTH);
             rearEdge.setMaterial(stonesMaterial);
             frontEdge.setMaterial(stonesMaterial);
 
-            this.addNodeToGridXYZ(rearEdge, i, -0.75, -0.5);
-            this.addNodeToGridXYZ(frontEdge, i, height - 0.25, -0.5);
+            this.addNodeToGridXYZ(rearEdge, i/2d - 0.25, -0.75, -0.5);
+            this.addNodeToGridXYZ(frontEdge, i/2d - 0.25, height - 0.25, -0.5);
         }
         
-        for (int i = 0; i < height; i++) {
-            Box leftEdge = new Box(FIELD_SIZE/2, FIELD_SIZE, WALL_WIDTH);
-            Box rightEdge = new Box(FIELD_SIZE/2, FIELD_SIZE, WALL_WIDTH);
+        for (int i = 0; i < 2*height; i++) {
+            Box leftEdge = new Box(FIELD_SIZE/2, FIELD_SIZE/2, WALL_WIDTH);
+            Box rightEdge = new Box(FIELD_SIZE/2, FIELD_SIZE/2, WALL_WIDTH);
             leftEdge.setMaterial(stonesMaterial);
             rightEdge.setMaterial(stonesMaterial);
 
-            this.addNodeToGridXYZ(leftEdge, -0.75, i, -0.5);
-            this.addNodeToGridXYZ(rightEdge, width - 0.25, i, -0.5);
+            this.addNodeToGridXYZ(leftEdge, -0.75, i/2d - 0.25, -0.5);
+            this.addNodeToGridXYZ(rightEdge, width - 0.25, i/2d - 0.25, -0.5);
         }
         
         bottom = new Box[width][height];
