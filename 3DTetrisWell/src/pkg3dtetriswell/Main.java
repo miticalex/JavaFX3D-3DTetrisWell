@@ -37,9 +37,9 @@ public class Main extends Application implements Updateable{
     private static final double HEIGHT = 750;
     private static final double MAX_WELL_SIZE = 260;
     
-    private static final double ROTATION_SPEED = 1.0;
-    private static final double TRANSLATION_SPEED = 1.0;
-    private static final double ALT_FACTOR = 0.1;
+    private static final double ROTATION_SPEED = 0.2;
+    private static final double TRANSLATION_SPEED = 0.2;
+    private static final double ALT_FACTOR = 5.0;
     
     private static final double INITIAL_CAMERA_POSITION = -500.0;
     private static final double INITIAL_CAMERA_LIGHT_INTENSITY = 0;
