@@ -219,6 +219,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             for (int j = 0; j < depth; j++) {
                 frontWall[i][j] = new Box(FIELD_SIZE, WALL_WIDTH, FIELD_SIZE);
                 rearWall[i][j] = new Box(FIELD_SIZE, WALL_WIDTH, FIELD_SIZE);
+                frontWall[i][j].setRotationAxis(Y_AXIS);
+                frontWall[i][j].setRotate(180.);
                 
                 this.addNodeToGridXYZ(frontWall[i][j], i, height -0.5 +0.5*WALL_WIDTH/FIELD_SIZE, j);
                 this.addNodeToGridXYZ(rearWall[i][j], i, -0.5 -0.5*WALL_WIDTH/FIELD_SIZE, j);
