@@ -116,11 +116,12 @@ public class GameStats extends Group implements Updateable {
         
         this.getChildren().addAll(labelsVBox);
         
-        Text pauseLabel = new Text("Pause Button:                        Pause/P/F3");
-        Text newGameLabel = new Text("New Game Button:                F2");
-        Text cameraManeuvring = new Text("Camera Maneuvring:             Mouse Drag&Scroll");
-        Text cameraReset = new Text("Camera Reset:                       0");
-        Text adjustCameraLight = new Text("Camera Light Adjustment:    1 & 2");
+        Text pauseLabel = new Text("Pause Button: \t\t\t\tPause/P/F3");
+        Text newGameLabel = new Text("New Game Button: \t\t\tF2");
+        Text cameraManeuvring = new Text("Camera Maneuvring: \t\tMouse Drag&Scroll");
+        Text cameraReset = new Text("Camera Reset: \t\t\t\t0");
+        Text adjustCameraLight = new Text("Camera Light Adjustment: \t1 & 2");
+        Text fastDrop = new Text("Fast Drop: \t\t\t\tSPACE/CTRL");
         
         newGameLabel.setFont(Font.font(15));
         newGameLabel.setFill(Color.YELLOW);
@@ -132,9 +133,11 @@ public class GameStats extends Group implements Updateable {
         cameraReset.setFill(Color.YELLOW);
         adjustCameraLight.setFont(Font.font(15));
         adjustCameraLight.setFill(Color.YELLOW);
+        fastDrop.setFont(Font.font(15));
+        fastDrop.setFill(Color.YELLOW);
         
-        VBox otherControls = new VBox(5, newGameLabel, pauseLabel, cameraManeuvring, cameraReset, adjustCameraLight);
-        otherControls.setTranslateX(width/12);otherControls.setTranslateY(600);
+        VBox otherControls = new VBox(5, newGameLabel, pauseLabel, cameraManeuvring, cameraReset, adjustCameraLight, fastDrop);
+        otherControls.setTranslateX(width/6);otherControls.setTranslateY(600);
         this.getChildren().addAll(otherControls);
         
         gameStateLabel.setTranslateY(height/2);
