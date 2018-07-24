@@ -186,6 +186,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         wallMaterial = new PhongMaterial();//Color.color(0, 0.1, 1, 0.5)); // TRANSPARENT BLUE
         wallMaterial.setDiffuseMap(new Image("resources/WellBricksDiffuse.jpg"));
         wallMaterial.setBumpMap(new Image("resources/WellBricksBump.jpg"));
+        wallMaterial.setSpecularMap(new Image("resources/WellBricksSpecular.jpg"));
         
         stonesMaterial = new PhongMaterial();
         stonesMaterial.setDiffuseMap(new Image("resources/StonesDiffuse.jpg"));
