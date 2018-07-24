@@ -41,6 +41,9 @@ public class Main extends Application implements Updateable{
     private static final double TRANSLATION_SPEED = 1.0;
     private static final double ALT_FACTOR = 0.1;
     
+    private static final double INITIAL_CAMERA_POSITION = -500.0;
+    private static final double INITIAL_CAMERA_LIGHT_INTENSITY = 0;
+    
     private double mousePositionX, mousePositionY;
     private double oldMousePositionX, oldMousePositionY;
     private double mouseMovedX, mouseMovedY, stepZ;
@@ -53,6 +56,9 @@ public class Main extends Application implements Updateable{
     
     private Group frontCameraHolder;
     private Camera frontCamera = new PerspectiveCamera(true);
+    private double frontCameraLightIntensity = INITIAL_CAMERA_LIGHT_INTENSITY;
+    private Color frontCameraLightColor = Color.YELLOW;
+    private PointLight frontCameraLight = new PointLight();
     private Rotate frontCameraHolderRotateX;
     private Rotate frontCameraHolderRotateZ;
     private Translate frontHolderTranslate;
@@ -70,10 +76,14 @@ public class Main extends Application implements Updateable{
         root = new Group(well);
         
         frontCamera.setFarClip(2500);       
-        //frontCamera.getTransforms().addAll(new Translate(0,0,-500));
         
-        frontCameraHolder = new Group(frontCamera);
-        frontCameraHolder.setTranslateZ(-500);
+        frontCameraHolder = new Group(frontCamera, frontCameraLight);
+        
+        frontCameraLight.setTranslateZ(0.4 * 
+                Math.min(well.getBoundsInParent().getWidth(), well.getBoundsInParent().getHeight()));
+        setLightIntensity(frontCameraLight, frontCameraLightColor, frontCameraLightIntensity);
+        
+        frontCameraHolder.setTranslateZ(INITIAL_CAMERA_POSITION);
         frontCameraHolderRotateX = new Rotate(0, Rotate.X_AXIS);
         frontCameraHolderRotateZ = new Rotate(0, Rotate.Z_AXIS);
         frontCameraHolderRotateZ.setPivotZ(frontCameraHolder.getTranslateZ());
@@ -135,9 +145,40 @@ public class Main extends Application implements Updateable{
     
     private void eventHandling() {
         gameScene.setOnKeyPressed(well);
+        gameScene.addEventHandler(KeyEvent.KEY_PRESSED, e-> onKeyPressed(e));
+        
         gamePlayScene.setOnMousePressed(e -> onMousePressed(e));
         gamePlayScene.setOnMouseDragged(e -> onMouseDragged(e));
         gamePlayScene.setOnScroll(e -> onScroll(e));
+    }
+    
+    private void setLightIntensity(PointLight light, Color color, double intensity){
+        light.setColor(Color.color(intensity * color.getRed(), intensity * color.getGreen(), intensity * color.getBlue()));
+    }
+    
+    private void onKeyPressed(KeyEvent keyEvent) {
+        KeyCode keyCode = keyEvent.getCode();
+        
+        switch (keyCode) {
+            case DIGIT0:
+                frontCameraHolder.setTranslateZ(INITIAL_CAMERA_POSITION);
+                frontCameraHolderRotateX.setAngle(0);
+                frontCameraHolderRotateZ.setAngle(0);
+                break;
+            case DIGIT1:
+                if (frontCameraLightIntensity>0){
+                    frontCameraLightIntensity-=0.1;
+                    setLightIntensity(frontCameraLight, frontCameraLightColor, frontCameraLightIntensity);
+                }
+                break;
+            case DIGIT2:
+                if (frontCameraLightIntensity<1){
+                    frontCameraLightIntensity+=0.1;
+                    setLightIntensity(frontCameraLight, frontCameraLightColor, frontCameraLightIntensity);
+                }
+                break;
+            default: break;
+        }
     }
     
     private void onMousePressed(MouseEvent mouseEvent) {
