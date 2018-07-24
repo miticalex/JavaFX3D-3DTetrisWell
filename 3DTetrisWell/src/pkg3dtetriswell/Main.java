@@ -13,11 +13,17 @@ import javafx.application.Application;
 import javafx.scene.Camera;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
+import javafx.scene.PointLight;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
@@ -31,13 +37,25 @@ public class Main extends Application implements Updateable{
     private static final double HEIGHT = 750;
     private static final double MAX_WELL_SIZE = 260;
     
+    private static final double ROTATION_SPEED = 1.0;
+    private static final double TRANSLATION_SPEED = 1.0;
+    private static final double ALT_FACTOR = 0.1;
+    
+    private double mousePositionX, mousePositionY;
+    private double oldMousePositionX, oldMousePositionY;
+    private double mouseMovedX, mouseMovedY, stepZ;
+    
     private Scene gameScene;
     private SubScene gamePlayScene;
     private Group root;
     private Well well;
     private GameStats gameStats;
     
+    private Group frontCameraHolder;
     private Camera frontCamera = new PerspectiveCamera(true);
+    private Rotate frontCameraHolderRotateX;
+    private Rotate frontCameraHolderRotateZ;
+    private Translate frontHolderTranslate;
     
     private Scale windowScale = new Scale();
     
@@ -52,7 +70,18 @@ public class Main extends Application implements Updateable{
         root = new Group(well);
         
         frontCamera.setFarClip(2500);       
-        frontCamera.getTransforms().addAll(new Translate(0,0,-500));
+        //frontCamera.getTransforms().addAll(new Translate(0,0,-500));
+        
+        frontCameraHolder = new Group(frontCamera);
+        frontCameraHolder.setTranslateZ(-500);
+        frontCameraHolderRotateX = new Rotate(0, Rotate.X_AXIS);
+        frontCameraHolderRotateZ = new Rotate(0, Rotate.Z_AXIS);
+        frontCameraHolderRotateZ.setPivotZ(frontCameraHolder.getTranslateZ());
+        
+        frontCameraHolder.getTransforms().addAll(frontCameraHolderRotateZ, frontCameraHolderRotateX);
+        
+        
+        root.getChildren().add(frontCameraHolder);
         
         gamePlayScene = new SubScene(root, HEIGHT, HEIGHT, true, SceneAntialiasing.BALANCED);
         gamePlayScene.setCamera(frontCamera);
@@ -106,6 +135,42 @@ public class Main extends Application implements Updateable{
     
     private void eventHandling() {
         gameScene.setOnKeyPressed(well);
+        gamePlayScene.setOnMousePressed(e -> onMousePressed(e));
+        gamePlayScene.setOnMouseDragged(e -> onMouseDragged(e));
+        gamePlayScene.setOnScroll(e -> onScroll(e));
+    }
+    
+    private void onMousePressed(MouseEvent mouseEvent) {
+        oldMousePositionX = mousePositionX = mouseEvent.getSceneX();
+        oldMousePositionY = mousePositionY = mouseEvent.getSceneY();
+    }
+    
+    private void onMouseDragged(MouseEvent mouseEvent) {
+        oldMousePositionX = mousePositionX;
+        oldMousePositionY = mousePositionY;
+        mousePositionX = mouseEvent.getSceneX();
+        mousePositionY = mouseEvent.getSceneY();
+        
+        mouseMovedX = (mousePositionX - oldMousePositionX);
+        mouseMovedY = (mousePositionY - oldMousePositionY);
+        
+        double speedModificator = 1.0;
+        if (mouseEvent.isAltDown())
+            speedModificator *= ALT_FACTOR;
+        
+        if (mouseEvent.isPrimaryButtonDown()) {
+            frontCameraHolderRotateZ.setAngle(frontCameraHolderRotateZ.getAngle() - mouseMovedX*ROTATION_SPEED*speedModificator);
+            frontCameraHolderRotateX.setAngle(frontCameraHolderRotateX.getAngle() + mouseMovedY*ROTATION_SPEED*speedModificator);
+        }
+    }
+    
+    private void onScroll(ScrollEvent scrollEvent) {
+        double speedModificator = 1.0;
+        if (scrollEvent.isAltDown())
+            speedModificator *= ALT_FACTOR;
+        
+        frontCameraHolder.setTranslateZ(frontCameraHolder.getTranslateZ() + scrollEvent.getDeltaY()*TRANSLATION_SPEED*speedModificator);
+        frontCameraHolderRotateZ.setPivotZ(frontCameraHolder.getTranslateZ());
     }
     
     /**
