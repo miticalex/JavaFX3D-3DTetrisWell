@@ -74,10 +74,16 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     PhongMaterial edgeMaterial;
     PhongMaterial bottomMaterial;
     
-    private Box[][][] fallenBlocks;
+    Group walls;
     private Box[][] leftWall, rightWall;
     private Box[][] frontWall, rearWall;
-    private Box[][] bottom;
+    
+    Group bottom;
+    private Box[][] tiles;
+    
+    Group edges;
+    
+    private Box[][][] fallenBlocks;
     
     private static final double INITIAL_FALLING_PERIOD = 10.0; // each x secs a tetrimino drops a level
     private static final double SPEEDING_UP_FACTOR = 1.30; // each level speeds up dropping speed by this factor
@@ -204,6 +210,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         shiningWallMaterial.setBumpMap(new Image("resources/WellBricksBump.jpg"));
         shiningWallMaterial.setSelfIlluminationMap(new Image("resources/red.png"));
         
+        walls = new Group();
         leftWall = new Box[height][depth];
         rightWall = new Box[height][depth];
         for (int i = 0; i < height; i++) {
@@ -215,8 +222,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
                 rightWall[i][j].setRotationAxis(X_AXIS);
                 rightWall[i][j].setRotate(90.);
                 
-                this.addNodeToGridXYZ(leftWall[i][j], -0.5 -0.5*WALL_WIDTH/FIELD_SIZE, i, j);
-                this.addNodeToGridXYZ(rightWall[i][j], width -0.5 +0.5*WALL_WIDTH/FIELD_SIZE, i, j);
+                addNodeToGroupGridXYZ(walls, leftWall[i][j], -0.5 -0.5*WALL_WIDTH/FIELD_SIZE, i, j);
+                addNodeToGroupGridXYZ(walls, rightWall[i][j], width -0.5 +0.5*WALL_WIDTH/FIELD_SIZE, i, j);
             }
         }
         
@@ -229,57 +236,46 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
                 frontWall[i][j].setRotationAxis(Y_AXIS);
                 frontWall[i][j].setRotate(180.);
                 
-                this.addNodeToGridXYZ(frontWall[i][j], i, height -0.5 +0.5*WALL_WIDTH/FIELD_SIZE, j);
-                this.addNodeToGridXYZ(rearWall[i][j], i, -0.5 -0.5*WALL_WIDTH/FIELD_SIZE, j);
+                addNodeToGroupGridXYZ(walls, frontWall[i][j], i, height -0.5 +0.5*WALL_WIDTH/FIELD_SIZE, j);
+                addNodeToGroupGridXYZ(walls, rearWall[i][j], i, -0.5 -0.5*WALL_WIDTH/FIELD_SIZE, j);
             }   
         }
         
-        this.getChildren().forEach(node -> ((Shape3D) node).setMaterial(wallMaterial));
+        walls.getChildren().forEach(node -> ((Shape3D) node).setMaterial(wallMaterial));
         
-        for (int i = 0; i < 2*width; i++) {
+        
+        edges = new Group();
+        for (int i = -1; i < 2*width+1; i++) {
             Box rearEdge = new Box(FIELD_SIZE/2, FIELD_SIZE/2, WALL_WIDTH);
             Box frontEdge = new Box(FIELD_SIZE/2, FIELD_SIZE/2, WALL_WIDTH);
-            rearEdge.setMaterial(edgeMaterial);
-            frontEdge.setMaterial(edgeMaterial);
-
-            this.addNodeToGridXYZ(rearEdge, i/2d - 0.25, -0.75, -0.5);
-            this.addNodeToGridXYZ(frontEdge, i/2d - 0.25, height - 0.25, -0.5);
+            
+            addNodeToGroupGridXYZ(edges, rearEdge, i/2d - 0.25, -0.75, -0.5);
+            addNodeToGroupGridXYZ(edges, frontEdge, i/2d - 0.25, height - 0.25, -0.5);
         }
         
         for (int i = 0; i < 2*height; i++) {
             Box leftEdge = new Box(FIELD_SIZE/2, FIELD_SIZE/2, WALL_WIDTH);
             Box rightEdge = new Box(FIELD_SIZE/2, FIELD_SIZE/2, WALL_WIDTH);
-            leftEdge.setMaterial(edgeMaterial);
-            rightEdge.setMaterial(edgeMaterial);
-
-            this.addNodeToGridXYZ(leftEdge, -0.75, i/2d - 0.25, -0.5);
-            this.addNodeToGridXYZ(rightEdge, width - 0.25, i/2d - 0.25, -0.5);
+            
+            addNodeToGroupGridXYZ(edges, leftEdge, -0.75, i/2d - 0.25, -0.5);
+            addNodeToGroupGridXYZ(edges, rightEdge, width - 0.25, i/2d - 0.25, -0.5);
         }
         
-        bottom = new Box[width][height];
+        edges.getChildren().forEach(node -> ((Shape3D)node).setMaterial(edgeMaterial));
+        
+        
+        bottom = new Group();
+        tiles = new Box[width][height];
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                bottom[i][j] = new Box(FIELD_SIZE, FIELD_SIZE, WALL_WIDTH);
-                bottom[i][j].setMaterial(bottomMaterial);
+                tiles[i][j] = new Box(FIELD_SIZE, FIELD_SIZE, WALL_WIDTH);
+                tiles[i][j].setMaterial(bottomMaterial);
                 
-                this.addNodeToGridXYZ(bottom[i][j], i, j, depth - 0.5 + 0.5*WALL_WIDTH/FIELD_SIZE);
+                addNodeToGroupGridXYZ(bottom, tiles[i][j], i, j, depth - 0.5 + 0.5*WALL_WIDTH/FIELD_SIZE);
             }   
         }
         
-        Box corner0 = new Box(FIELD_SIZE/2, FIELD_SIZE/2, WALL_WIDTH);
-        Box corner1 = new Box(FIELD_SIZE/2, FIELD_SIZE/2, WALL_WIDTH);
-        Box corner2 = new Box(FIELD_SIZE/2, FIELD_SIZE/2, WALL_WIDTH);
-        Box corner3 = new Box(FIELD_SIZE/2, FIELD_SIZE/2, WALL_WIDTH);
-        
-        corner0.setMaterial(edgeMaterial);
-        corner1.setMaterial(edgeMaterial);
-        corner2.setMaterial(edgeMaterial);
-        corner3.setMaterial(edgeMaterial);
-        
-        this.addNodeToGridXYZ(corner0, -0.75,           -0.75,          -0.5);
-        this.addNodeToGridXYZ(corner1, width - 0.25,    -0.75,          -0.5);
-        this.addNodeToGridXYZ(corner2, -0.75,           height - 0.25,  -0.5);
-        this.addNodeToGridXYZ(corner3, width - 0.25,    height - 0.25,  -0.5);
+        this.getChildren().addAll(walls, edges, bottom);
     }
     
     public final void moveNodeToGridXYZ(Node node, double x, double y, double z){
@@ -290,11 +286,15 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         node.setTranslateZ(FIELD_SIZE/2 + z*FIELD_SIZE);
     }
     
-    public final void addNodeToGridXYZ(Node node, double x, double y, double z){
-        if (node == null) return;
+    public final void addNodeToGroupGridXYZ(Group group, Node node, double x, double y, double z){
+        if (group==null || node==null) return;
         
         moveNodeToGridXYZ(node, x, y, z);       
-        this.getChildren().add(node);
+        group.getChildren().add(node);
+    }
+    
+    public final void addNodeToGridXYZ(Node node, double x, double y, double z){
+        addNodeToGroupGridXYZ(this, node, x, y, z);
     }
     
     public final int getGridIndexX(double positionX){
