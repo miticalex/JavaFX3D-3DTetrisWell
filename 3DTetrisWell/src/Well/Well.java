@@ -41,18 +41,18 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     private State state;
     public State getState() { return state; }
     
-    public static enum View {REALISTIC, MESHVIEW}
-    private View view;
-    public View getView() { return view; }
-    public void setView(View view) { 
-        this.view = view; 
+    public static enum WellView {REALISTIC, MESHVIEW}
+    private WellView wellView;
+    public WellView getView() { return wellView; }
+    public void setView(WellView view) { 
+        this.wellView = view; 
         
-        walls.setVisible((view == View.REALISTIC) ? true : false);
-        edges.setVisible((view == View.REALISTIC) ? true : false);
-        bottom.setVisible((view == View.REALISTIC) ? true : false);
-        meshView.setVisible((view == View.REALISTIC) ? false : true);
+        walls.setVisible((view == WellView.REALISTIC) ? true : false);
+        edges.setVisible((view == WellView.REALISTIC) ? true : false);
+        bottom.setVisible((view == WellView.REALISTIC) ? true : false);
+        meshView.setVisible((view == WellView.REALISTIC) ? false : true);
     }
-    public void changeView(){ setView((view == View.REALISTIC) ? View.MESHVIEW : View.REALISTIC); }
+    public void changeView(){ setView((wellView == WellView.REALISTIC) ? WellView.MESHVIEW : WellView.REALISTIC); }
     
     
     private static enum Direction {POSITIVE, NEGATIVE};
@@ -150,7 +150,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         makeEdges();
         makeBottom();
         makeMeshView();
-        setView(View.REALISTIC);
+        setView(WellView.REALISTIC);
         
         fallenBlocks = new Box[depth][width][height];
         instantiateFallenBlockMaterials();
@@ -728,7 +728,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         KeyValue endAngle = new KeyValue(rotate.angleProperty(), angle);
         
         tetriminoTransition.getChildren().add(0, new ParallelTransition(
-                new Timeline(new KeyFrame(Duration.millis(ROTATION_DURATION), startAngle, endAngle)))); //ROTATION
+                new Timeline(new KeyFrame(Duration.millis(ROTATION_DURATION), endAngle)))); //ROTATION
         tetriminoTransition.setInterpolator(Interpolator.LINEAR);
         tetriminoTransition.play();
         tetriminoTransition.setOnFinished(e -> { 

@@ -7,9 +7,13 @@ package pkg3dtetriswell;
 
 import Well.Updateable;
 import Well.Well;
-import Well.Well.View;
+import Well.Well.WellView;
 import gameStats.GameStats;
 import javafx.animation.AnimationTimer;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.ParallelTransition;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.scene.Camera;
 import javafx.scene.Group;
@@ -28,6 +32,7 @@ import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 /**
  *
@@ -38,21 +43,27 @@ public class Main extends Application implements Updateable{
     private static final double HEIGHT = 800;
     private static final double MAX_WELL_SIZE = 260;
     
+    private static final double WELL_SCALE_FACTOR_Z = 1.5;
+    
     private static final double ROTATION_SPEED = 0.2;
     private static final double TRANSLATION_SPEED = 0.2;
     private static final double ALT_FACTOR = 5.0;
     
     private static final double INITIAL_CAMERA_LIGHT_INTENSITY = 0;
     
-    private static final double INITIAL_CAMERA_POSITION_Y = 0;
-    private static final double INITIAL_CAMERA_POSITION_Z = -500.0;
+    private static final double BIRDSEYE_CAMERA_POSITION_X = 0;
+    private static final double BIRDSEYE_CAMERA_POSITION_Y = 0;
+    private static final double BIRDSEYE_CAMERA_POSITION_Z = -500.0;
+    private static final double BIRDSEYE_CAMERA_ROTATE = 0;
     
+    private static final double SIDE_CAMERA_POSITION_X = 0;
     private static final double SIDE_CAMERA_POSITION_Y = 1000;
     private static final double SIDE_CAMERA_POSITION_Z = 0;
+    private static final double SIDE_CAMERA_ROTATE = 90;
     
     private double mousePositionX, mousePositionY;
     private double oldMousePositionX, oldMousePositionY;
-    private double mouseMovedX, mouseMovedY, stepZ;
+    private double mouseMovedX, mouseMovedY;
     
     private Scene gameScene;
     private SubScene gamePlayScene;
@@ -94,7 +105,8 @@ public class Main extends Application implements Updateable{
         root.getChildren().add(cameraHolder);
         
         camera.setFarClip(2500);       
-        setBirdsEyeCamera();
+        setCamera(BIRDSEYE_CAMERA_POSITION_X, BIRDSEYE_CAMERA_POSITION_Y, BIRDSEYE_CAMERA_POSITION_Z, 
+                BIRDSEYE_CAMERA_ROTATE, CameraView.BIRDSEYE_VIEW, WellView.REALISTIC);
         
         cameraLight.setTranslateZ(0.4 * 
                 Math.min(well.getBoundsInParent().getWidth(), well.getBoundsInParent().getHeight()));
@@ -140,30 +152,26 @@ public class Main extends Application implements Updateable{
         gameStats.getBackground().setHeight(window.getHeight());
     }
     
-    private void setBirdsEyeCamera(){
-        cameraView = CameraView.BIRDSEYE_VIEW;
-        well.setView(View.REALISTIC);
+    private void setCamera(double endCameraTramslateX, double endCameraTramslateY, double endCameraTramslateZ, 
+            double endCameraRotate, CameraView endCameraView, WellView endWellView){
+        cameraView = endCameraView;
         
-        cameraHolder.setTranslateY(INITIAL_CAMERA_POSITION_Y);
-        cameraHolder.setTranslateZ(INITIAL_CAMERA_POSITION_Z);
-        cameraHolder.setRotate(0);
-        cameraHolderRotateX.setAngle(0);
-        cameraHolderRotateY.setAngle(0);
-        cameraHolderRotateZ.setAngle(0);
+        KeyValue endCameraHolderRotateX = new KeyValue(cameraHolderRotateX.angleProperty(), 0);
+        KeyValue endCameraHolderRotateY = new KeyValue(cameraHolderRotateY.angleProperty(), 0);
+        KeyValue endCameraHolderRotateZ = new KeyValue(cameraHolderRotateZ.angleProperty(), 0);
+        KeyValue endCameraHolderRotate = new KeyValue(cameraHolder.rotateProperty(), endCameraRotate);
+        KeyValue endCammeraHolderTranslateX = new KeyValue(cameraHolder.translateXProperty(), endCameraTramslateX);
+        KeyValue endCammeraHolderTranslateY = new KeyValue(cameraHolder.translateYProperty(), endCameraTramslateY);
+        KeyValue endCammeraHolderTranslateZ = new KeyValue(cameraHolder.translateZProperty(), endCameraTramslateZ);
+        
+        ParallelTransition parallelTransition = new ParallelTransition(
+            new Timeline(//new KeyFrame(Duration.millis(1000), endCameraHolderRotate),
+                    new KeyFrame(Duration.millis(2000), endCammeraHolderTranslateX, endCammeraHolderTranslateY, endCammeraHolderTranslateZ, 
+                            endCameraHolderRotateX, endCameraHolderRotateY, endCameraHolderRotateZ, endCameraHolderRotate)));
+        parallelTransition.play();
+        parallelTransition.setOnFinished(e-> well.setView(endWellView));
     }
     
-    private void setSideCamera(){
-        well.setView(View.MESHVIEW);
-        cameraView = CameraView.SIDE_VIEW;
-        
-        cameraHolder.setTranslateY(SIDE_CAMERA_POSITION_Y);
-        cameraHolder.setTranslateZ(SIDE_CAMERA_POSITION_Z);
-        cameraHolder.setRotate(90.0);
-        cameraHolderRotateX.setAngle(0);
-        cameraHolderRotateY.setAngle(0);
-        cameraHolderRotateZ.setAngle(0);
-    }
-
     @Override
     public void update() {
         root.getChildren().remove(well);
@@ -193,7 +201,8 @@ public class Main extends Application implements Updateable{
         
         switch (keyCode) {
             case DIGIT0: case NUMPAD0:
-                setBirdsEyeCamera();
+                setCamera(BIRDSEYE_CAMERA_POSITION_X, BIRDSEYE_CAMERA_POSITION_Y, BIRDSEYE_CAMERA_POSITION_Z, 
+                        BIRDSEYE_CAMERA_ROTATE, CameraView.BIRDSEYE_VIEW, WellView.REALISTIC);
                 break;
             case DIGIT1: case NUMPAD1:
                 cameraLightIntensity -= 0.1;
@@ -210,9 +219,11 @@ public class Main extends Application implements Updateable{
                 break;
             case TAB:
                 if (cameraView == CameraView.BIRDSEYE_VIEW) 
-                    setSideCamera();
+                    setCamera(SIDE_CAMERA_POSITION_X, SIDE_CAMERA_POSITION_Y, SIDE_CAMERA_POSITION_Z, 
+                            SIDE_CAMERA_ROTATE, CameraView.SIDE_VIEW, WellView.MESHVIEW);
                 else 
-                    setBirdsEyeCamera();
+                    setCamera(BIRDSEYE_CAMERA_POSITION_X, BIRDSEYE_CAMERA_POSITION_Y, BIRDSEYE_CAMERA_POSITION_Z, 
+                            BIRDSEYE_CAMERA_ROTATE, CameraView.BIRDSEYE_VIEW, WellView.REALISTIC);
                 break; 
             default: break;
         }
@@ -243,7 +254,7 @@ public class Main extends Application implements Updateable{
             }
             else { // SIDE_VIEW
                 cameraHolderRotateY.setAngle(cameraHolderRotateY.getAngle() - mouseMovedX*ROTATION_SPEED*speedModificator);
-                cameraHolderRotateZ.setAngle(cameraHolderRotateZ.getAngle() - mouseMovedY*ROTATION_SPEED*speedModificator);
+                cameraHolderRotateX.setAngle(cameraHolderRotateX.getAngle() - mouseMovedY*ROTATION_SPEED*speedModificator);
             }
         }
     }
