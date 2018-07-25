@@ -122,6 +122,7 @@ public class GameStats extends Group implements Updateable {
         Text cameraReset = new Text("Camera Reset: \t\t\t\t0");
         Text adjustCameraLight = new Text("Camera Light Adjustment: \t1 & 2");
         Text fastDrop = new Text("Fast Drop: \t\t\t\tSPACE/CTRL");
+        Text wellView = new Text("Realistic/Mesh View: \t\t3");
         
         newGameLabel.setFont(Font.font(15));
         newGameLabel.setFill(Color.YELLOW);
@@ -135,8 +136,11 @@ public class GameStats extends Group implements Updateable {
         adjustCameraLight.setFill(Color.YELLOW);
         fastDrop.setFont(Font.font(15));
         fastDrop.setFill(Color.YELLOW);
+        wellView.setFont(Font.font(15));
+        wellView.setFill(Color.YELLOW);
         
-        VBox otherControls = new VBox(5, newGameLabel, pauseLabel, cameraManeuvring, cameraReset, adjustCameraLight, fastDrop);
+        VBox otherControls = new VBox(5, newGameLabel, pauseLabel, cameraManeuvring, 
+                cameraReset, adjustCameraLight, fastDrop, wellView);
         otherControls.setTranslateX(width/6);otherControls.setTranslateY(600);
         this.getChildren().addAll(otherControls);
         

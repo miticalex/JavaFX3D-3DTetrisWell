@@ -8,6 +8,7 @@ import Well.Tetriminoes.Tetrimino;
 import Well.Tetriminoes.ZTetrimino;
 import java.util.LinkedList;
 import java.util.Random;
+import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -38,9 +39,21 @@ import javafx.util.Duration;
 public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     public static enum State {PLAYING, PAUSED, CLEARING, CRITICAL_ROTATION, GAMEOVER};
     private State state;
-    public State getState() {
-        return state;
+    public State getState() { return state; }
+    
+    public static enum View {REALISTIC, MESHVIEW}
+    private View view;
+    public View getView() { return view; }
+    public void setView(View view) { 
+        this.view = view; 
+        
+        walls.setVisible((view == View.REALISTIC) ? true : false);
+        edges.setVisible((view == View.REALISTIC) ? true : false);
+        bottom.setVisible((view == View.REALISTIC) ? true : false);
+        meshView.setVisible((view == View.REALISTIC) ? false : true);
     }
+    public void changeView(){ setView((view == View.REALISTIC) ? View.MESHVIEW : View.REALISTIC); }
+    
     
     private static enum Direction {POSITIVE, NEGATIVE};
     private static final Point3D X_AXIS = Rotate.X_AXIS;
@@ -137,6 +150,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         makeEdges();
         makeBottom();
         makeMeshView();
+        setView(View.REALISTIC);
+        
         fallenBlocks = new Box[depth][width][height];
         instantiateFallenBlockMaterials();
         setFallingTetrimino();

@@ -34,7 +34,7 @@ import javafx.stage.Stage;
  */
 public class Main extends Application implements Updateable{
     private static final double WIDTH = 1250;
-    private static final double HEIGHT = 750;
+    private static final double HEIGHT = 800;
     private static final double MAX_WELL_SIZE = 260;
     
     private static final double ROTATION_SPEED = 0.2;
@@ -174,6 +174,9 @@ public class Main extends Application implements Updateable{
                 frontCameraLightIntensity += 0.1;
                 if (frontCameraLightIntensity > 1 ) frontCameraLightIntensity = 1;
                 setLightIntensity(frontCameraLight, frontCameraLightColor, frontCameraLightIntensity);
+                break;
+            case DIGIT3: case NUMPAD3:
+                well.changeView();
                 break;
             default: break;
         }
