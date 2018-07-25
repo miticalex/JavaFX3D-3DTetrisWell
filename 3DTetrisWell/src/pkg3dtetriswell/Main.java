@@ -41,13 +41,8 @@ public class Main extends Application implements Updateable{
     private static final double TRANSLATION_SPEED = 0.2;
     private static final double ALT_FACTOR = 5.0;
     
+    private static final double INITIAL_CAMERA_POSITION = -500.0;
     private static final double INITIAL_CAMERA_LIGHT_INTENSITY = 0;
-    
-    private static final double INITIAL_CAMERA_POSITION_Y = 0;
-    private static final double INITIAL_CAMERA_POSITION_Z = -500.0;
-    
-    private static final double SIDE_CAMERA_POSITION_Y = 1000;
-    private static final double SIDE_CAMERA_POSITION_Z = 0;
     
     private double mousePositionX, mousePositionY;
     private double oldMousePositionX, oldMousePositionY;
@@ -59,16 +54,12 @@ public class Main extends Application implements Updateable{
     private Well well;
     private GameStats gameStats;
     
-    private static enum CameraView {FRONT_VIEW, SIDE_VIEW};
-    private CameraView cameraView;
-    
     private Group frontCameraHolder;
     private Camera frontCamera = new PerspectiveCamera(true);
     private double frontCameraLightIntensity = INITIAL_CAMERA_LIGHT_INTENSITY;
     private Color frontCameraLightColor = Color.BLUE;
     private PointLight frontCameraLight = new PointLight();
     private Rotate frontCameraHolderRotateX;
-    private Rotate frontCameraHolderRotateY;
     private Rotate frontCameraHolderRotateZ;
     private Translate frontHolderTranslate;
     
@@ -92,17 +83,12 @@ public class Main extends Application implements Updateable{
                 Math.min(well.getBoundsInParent().getWidth(), well.getBoundsInParent().getHeight()));
         setLightIntensity(frontCameraLight, frontCameraLightColor, frontCameraLightIntensity);
         
-        
-        cameraView = CameraView.FRONT_VIEW;
-        frontCameraHolder.setTranslateY(INITIAL_CAMERA_POSITION_Y);
-        frontCameraHolder.setTranslateZ(INITIAL_CAMERA_POSITION_Z);
-        frontCameraHolder.setRotationAxis(Rotate.X_AXIS);
+        frontCameraHolder.setTranslateZ(INITIAL_CAMERA_POSITION);
         frontCameraHolderRotateX = new Rotate(0, Rotate.X_AXIS);
-        frontCameraHolderRotateY = new Rotate(0, Rotate.Y_AXIS);
-        frontCameraHolderRotateY.setPivotZ(SIDE_CAMERA_POSITION_Y);
         frontCameraHolderRotateZ = new Rotate(0, Rotate.Z_AXIS);
+        frontCameraHolderRotateZ.setPivotZ(frontCameraHolder.getTranslateZ());
         
-        frontCameraHolder.getTransforms().addAll(frontCameraHolderRotateZ, frontCameraHolderRotateY, frontCameraHolderRotateX);
+        frontCameraHolder.getTransforms().addAll(frontCameraHolderRotateZ, frontCameraHolderRotateX);
         
         
         root.getChildren().add(frontCameraHolder);
@@ -175,13 +161,8 @@ public class Main extends Application implements Updateable{
         
         switch (keyCode) {
             case DIGIT0: case NUMPAD0:
-                cameraView = CameraView.FRONT_VIEW;
-                
-                frontCameraHolder.setTranslateY(INITIAL_CAMERA_POSITION_Y);
-                frontCameraHolder.setTranslateZ(INITIAL_CAMERA_POSITION_Z);
-                frontCameraHolder.setRotate(0);
+                frontCameraHolder.setTranslateZ(INITIAL_CAMERA_POSITION);
                 frontCameraHolderRotateX.setAngle(0);
-                frontCameraHolderRotateY.setAngle(0);
                 frontCameraHolderRotateZ.setAngle(0);
                 break;
             case DIGIT1: case NUMPAD1:
@@ -197,18 +178,6 @@ public class Main extends Application implements Updateable{
             case DIGIT3: case NUMPAD3:
                 well.changeView();
                 break;
-            case TAB:
-                well.changeView();
-                cameraView = CameraView.SIDE_VIEW;
-                
-                frontCameraHolder.setTranslateY(SIDE_CAMERA_POSITION_Y);
-                frontCameraHolder.setTranslateZ(SIDE_CAMERA_POSITION_Z);
-                frontCameraHolder.setRotate(90.0);
-                
-                frontCameraHolderRotateZ.setAngle(0);
-                frontCameraHolderRotateY.setAngle(0);
-                frontCameraHolderRotateX.setAngle(0);
-                break; 
             default: break;
         }
     }
@@ -232,14 +201,8 @@ public class Main extends Application implements Updateable{
             speedModificator *= ALT_FACTOR;
         
         if (mouseEvent.isPrimaryButtonDown()) {
-            if (cameraView == CameraView.FRONT_VIEW){
-                frontCameraHolderRotateZ.setAngle(frontCameraHolderRotateZ.getAngle() - mouseMovedX*ROTATION_SPEED*speedModificator);
-                frontCameraHolderRotateX.setAngle(frontCameraHolderRotateX.getAngle() + mouseMovedY*ROTATION_SPEED*speedModificator);
-            }
-            else { // SIDE_VIEW
-                frontCameraHolderRotateY.setAngle(frontCameraHolderRotateY.getAngle() - mouseMovedX*ROTATION_SPEED*speedModificator);
-                frontCameraHolderRotateZ.setAngle(frontCameraHolderRotateZ.getAngle() - mouseMovedY*ROTATION_SPEED*speedModificator);
-            }
+            frontCameraHolderRotateZ.setAngle(frontCameraHolderRotateZ.getAngle() - mouseMovedX*ROTATION_SPEED*speedModificator);
+            frontCameraHolderRotateX.setAngle(frontCameraHolderRotateX.getAngle() + mouseMovedY*ROTATION_SPEED*speedModificator);
         }
     }
     
@@ -249,6 +212,7 @@ public class Main extends Application implements Updateable{
             speedModificator *= ALT_FACTOR;
         
         frontCameraHolder.setTranslateZ(frontCameraHolder.getTranslateZ() + scrollEvent.getDeltaY()*TRANSLATION_SPEED*speedModificator);
+        frontCameraHolderRotateZ.setPivotZ(frontCameraHolder.getTranslateZ());
     }
     
     /**
