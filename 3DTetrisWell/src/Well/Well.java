@@ -128,7 +128,9 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         blocksUntilNextLevel = BLOCKS_TO_CLEAR_PER_LEVEL;
         points = 0;
         
-        makeWellWalls();
+        makeWalls();
+        makeEdges();
+        makeBottom();
         fallenBlocks = new Box[depth][width][height];
         instantiateFallenBlockMaterials();
         setFallingTetrimino();
@@ -189,21 +191,11 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         }
     }
     
-    private void makeWellWalls() {
+    private final void makeWalls() {
         wallMaterial = new PhongMaterial();//Color.color(0, 0.1, 1, 0.5)); // TRANSPARENT BLUE
         wallMaterial.setDiffuseMap(new Image("resources/WellBricksDiffuse.jpg"));
         wallMaterial.setBumpMap(new Image("resources/WellBricksBump.jpg"));
         wallMaterial.setSpecularMap(new Image("resources/WellBricksSpecular.jpg"));
-        
-        edgeMaterial = new PhongMaterial();
-        edgeMaterial.setDiffuseMap(new Image("resources/StonesDiffuse.jpg"));
-        edgeMaterial.setBumpMap(new Image("resources/StonesBump.jpg"));
-        edgeMaterial.setSpecularMap(new Image("resources/StonesSpecular.jpg"));
-        
-        bottomMaterial = new PhongMaterial();
-        bottomMaterial.setDiffuseMap(new Image("resources/BottomDiffuse.jpg"));
-        bottomMaterial.setBumpMap(new Image("resources/BottomBump.jpg"));
-        bottomMaterial.setSpecularMap(new Image("resources/BottomSpecular.jpg"));
         
         shiningWallMaterial = new PhongMaterial();//Color.color(0, 0.1, 1, 0.5));
         shiningWallMaterial.setDiffuseMap(new Image("resources/WellBricksDiffuse.jpg"));
@@ -242,7 +234,14 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         }
         
         walls.getChildren().forEach(node -> ((Shape3D) node).setMaterial(wallMaterial));
-        
+        this.getChildren().addAll(walls);
+    }
+    
+    private final void makeEdges(){
+        edgeMaterial = new PhongMaterial();
+        edgeMaterial.setDiffuseMap(new Image("resources/StonesDiffuse.jpg"));
+        edgeMaterial.setBumpMap(new Image("resources/StonesBump.jpg"));
+        edgeMaterial.setSpecularMap(new Image("resources/StonesSpecular.jpg"));
         
         edges = new Group();
         for (int i = -1; i < 2*width+1; i++) {
@@ -262,7 +261,14 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         }
         
         edges.getChildren().forEach(node -> ((Shape3D)node).setMaterial(edgeMaterial));
-        
+        this.getChildren().add(edges);
+    }
+    
+    private final void makeBottom(){
+        bottomMaterial = new PhongMaterial();
+        bottomMaterial.setDiffuseMap(new Image("resources/BottomDiffuse.jpg"));
+        bottomMaterial.setBumpMap(new Image("resources/BottomBump.jpg"));
+        bottomMaterial.setSpecularMap(new Image("resources/BottomSpecular.jpg"));
         
         bottom = new Group();
         tiles = new Box[width][height];
@@ -275,7 +281,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             }   
         }
         
-        this.getChildren().addAll(walls, edges, bottom);
+        this.getChildren().add(bottom);
     }
     
     public final void moveNodeToGridXYZ(Node node, double x, double y, double z){
