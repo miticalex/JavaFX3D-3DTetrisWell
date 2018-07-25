@@ -61,6 +61,8 @@ public class Main extends Application implements Updateable{
     private static final double SIDE_CAMERA_POSITION_Z = 0;
     private static final double SIDE_CAMERA_ROTATE = 90;
     
+    private static final int CAMERA_ANIMATION_DURATION = 3000;
+    
     private double mousePositionX, mousePositionY;
     private double oldMousePositionX, oldMousePositionY;
     private double mouseMovedX, mouseMovedY;
@@ -153,7 +155,9 @@ public class Main extends Application implements Updateable{
     }
     
     private void setCamera(double endCameraTramslateX, double endCameraTramslateY, double endCameraTramslateZ, 
-            double endCameraRotate, CameraView endCameraView, WellView endWellView){
+                            double endCameraRotate, CameraView endCameraView, WellView endWellView)
+    {
+        well.setPaused(true);
         cameraView = endCameraView;
         
         KeyValue endCameraHolderRotateX = new KeyValue(cameraHolderRotateX.angleProperty(), 0);
@@ -165,11 +169,14 @@ public class Main extends Application implements Updateable{
         KeyValue endCammeraHolderTranslateZ = new KeyValue(cameraHolder.translateZProperty(), endCameraTramslateZ);
         
         ParallelTransition parallelTransition = new ParallelTransition(
-            new Timeline(//new KeyFrame(Duration.millis(1000), endCameraHolderRotate),
-                    new KeyFrame(Duration.millis(2000), endCammeraHolderTranslateX, endCammeraHolderTranslateY, endCammeraHolderTranslateZ, 
-                            endCameraHolderRotateX, endCameraHolderRotateY, endCameraHolderRotateZ, endCameraHolderRotate)));
+            new Timeline(new KeyFrame(Duration.millis(CAMERA_ANIMATION_DURATION), 
+                    endCammeraHolderTranslateX, endCammeraHolderTranslateY, endCammeraHolderTranslateZ, 
+                    endCameraHolderRotateX, endCameraHolderRotateY, endCameraHolderRotateZ, endCameraHolderRotate)));
         parallelTransition.play();
-        parallelTransition.setOnFinished(e-> well.setView(endWellView));
+        parallelTransition.setOnFinished(e-> {
+            well.setView(endWellView);
+            well.setPaused(false);
+        });
     }
     
     @Override

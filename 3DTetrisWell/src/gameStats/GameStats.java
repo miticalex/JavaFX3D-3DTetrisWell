@@ -66,12 +66,13 @@ public class GameStats extends Group implements Updateable {
     }
     private void setStateText(Well.State state) {
         gameStateLabel.setText(state.toString());
+        if ((state != state.GAMEOVER) && (well.isPaused()))
+            gameStateLabel.setText("PAUSED");
+        
         gameStateLabel.setTranslateX(width/2 - gameStateLabel.getBoundsInParent().getWidth()/2);
         
-        if (state == State.CLEARING || state == State.PAUSED || 
-                state == State.GAMEOVER){
+        if (state == State.CLEARING || state == State.GAMEOVER || well.isPaused())
             gameStateLabel.setVisible(true);
-        }
         else 
             gameStateLabel.setVisible(false);
     }
@@ -87,9 +88,9 @@ public class GameStats extends Group implements Updateable {
         this.height = height;
         
         setBackGround();
-        setLabels();
         setInitialStats();
         setButtons();
+        setLabels();
     }
     
     private void setBackGround(){

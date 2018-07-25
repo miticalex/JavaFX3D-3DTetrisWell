@@ -37,9 +37,13 @@ import javafx.util.Duration;
  * @author AM
  */
 public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
-    public static enum State {PLAYING, PAUSED, CLEARING, CRITICAL_ROTATION, GAMEOVER};
+    public static enum State {PLAYING, CLEARING, CRITICAL_ROTATION, GAMEOVER};
     private State state;
     public State getState() { return state; }
+    
+    private boolean paused;
+    public boolean isPaused() { return paused; }
+    public void setPaused(boolean paused) { this.paused = paused; }
     
     public static enum WellView {REALISTIC, MESHVIEW}
     private WellView wellView;
@@ -200,7 +204,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     
     @Override
     public void update() {
-        if (state != State.PLAYING) return;
+        if ((state != State.PLAYING) || this.paused) return;
         
         time += FRAME_PERIOD;
         timeUntilFallingTetriminoDrops -= FRAME_PERIOD;
@@ -610,10 +614,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         if (keyCode == KeyCode.F2) initialise(startingLevel, width, height, depth);
         if (state == State.GAMEOVER) return;
         
-        if (keyCode == KeyCode.PAUSE || keyCode == KeyCode.P || keyCode == KeyCode.F3){
-            if (state == State.PLAYING) state = State.PAUSED;
-            else if (state == State.PAUSED) state = State.PLAYING;
-        }
+        if (keyCode == KeyCode.PAUSE || keyCode == KeyCode.P || keyCode == KeyCode.F3)
+            paused = !paused;
         
         if (state != State.PLAYING) return;
         
@@ -724,7 +726,6 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         Rotate rotate = new Rotate(0, axis);
         fallingTetrimino.getTransforms().add(0, rotate);
 
-        KeyValue startAngle = new KeyValue(rotate.angleProperty(), 0);
         KeyValue endAngle = new KeyValue(rotate.angleProperty(), angle);
         
         tetriminoTransition.getChildren().add(0, new ParallelTransition(
