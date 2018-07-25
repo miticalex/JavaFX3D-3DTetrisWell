@@ -26,6 +26,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
+import javafx.scene.shape.Cylinder;
 import javafx.scene.shape.Shape3D;
 import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
@@ -50,6 +51,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     public static final double  FIELD_SIZE = 10.0;
     public static final double  BOX_SIZE = FIELD_SIZE-0.2;
     public static final double  WALL_WIDTH = 0.4;
+    public static final double  BEAM_WIDTH = 0.2;
+    
     public static final Random  RANDOM = new Random();
     
     public static final Tetrimino[] tetriminoes = {
@@ -82,6 +85,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     private Box[][] tiles;
     
     Group edges;
+    
+    Group meshView;
     
     private Box[][][] fallenBlocks;
     
@@ -131,6 +136,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         makeWalls();
         makeEdges();
         makeBottom();
+        makeMeshView();
         fallenBlocks = new Box[depth][width][height];
         instantiateFallenBlockMaterials();
         setFallingTetrimino();
@@ -248,16 +254,16 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             Box rearEdge = new Box(FIELD_SIZE/2, FIELD_SIZE/2, WALL_WIDTH);
             Box frontEdge = new Box(FIELD_SIZE/2, FIELD_SIZE/2, WALL_WIDTH);
             
-            addNodeToGroupGridXYZ(edges, rearEdge, i/2d - 0.25, -0.75, -0.5);
-            addNodeToGroupGridXYZ(edges, frontEdge, i/2d - 0.25, height - 0.25, -0.5);
+            addNodeToGroupGridXYZ(edges, rearEdge, 0.5*i - 0.25, -0.75, -0.5);
+            addNodeToGroupGridXYZ(edges, frontEdge, 0.5*i - 0.25, height - 0.25, -0.5);
         }
         
         for (int i = 0; i < 2*height; i++) {
             Box leftEdge = new Box(FIELD_SIZE/2, FIELD_SIZE/2, WALL_WIDTH);
             Box rightEdge = new Box(FIELD_SIZE/2, FIELD_SIZE/2, WALL_WIDTH);
             
-            addNodeToGroupGridXYZ(edges, leftEdge, -0.75, i/2d - 0.25, -0.5);
-            addNodeToGroupGridXYZ(edges, rightEdge, width - 0.25, i/2d - 0.25, -0.5);
+            addNodeToGroupGridXYZ(edges, leftEdge, -0.75, 0.5*i - 0.25, -0.5);
+            addNodeToGroupGridXYZ(edges, rightEdge, width - 0.25, 0.5*i - 0.25, -0.5);
         }
         
         edges.getChildren().forEach(node -> ((Shape3D)node).setMaterial(edgeMaterial));
@@ -284,11 +290,72 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         this.getChildren().add(bottom);
     }
     
+    public final void makeMeshView(){
+        meshView = new Group();
+        
+        // VERTICAL BEAMS
+        for (int i = 0; i <= height; i++) {
+            addNodeToGroupGridXYZ(meshView, zAxisBeam(),
+                -0.5, i-0.5, 0.5*depth - 0.5);
+            addNodeToGroupGridXYZ(meshView, zAxisBeam(),
+                width - 0.5, i-0.5, 0.5*depth - 0.5);
+        }
+        for (int i = 1; i < width; i++) {
+            addNodeToGroupGridXYZ(meshView, zAxisBeam(),
+                i-0.5, -0.5, 0.5*depth - 0.5);
+            addNodeToGroupGridXYZ(meshView, zAxisBeam(),
+                i-0.5, height - 0.5, 0.5*depth - 0.5);
+        }
+        
+        // HORIZONTAL BEAMS
+        for (int i = 0; i < depth; i++) {
+            addNodeToGroupGridXYZ(meshView, yAxisBeam(),
+                -0.5, 0.5*height - 0.5, i - 0.5);
+            addNodeToGroupGridXYZ(meshView, yAxisBeam(),
+                width - 0.5, 0.5*height - 0.5, i - 0.5);
+            addNodeToGroupGridXYZ(meshView, xAxisBeam(),
+                0.5*width - 0.5, -0.5, i - 0.5);
+            addNodeToGroupGridXYZ(meshView, xAxisBeam(),
+                0.5*width - 0.5, height - 0.5, i - 0.5);
+        }
+        
+        
+        // BOTTOM
+        for (int i = 0; i <= height; i++) {
+            addNodeToGroupGridXYZ(meshView, xAxisBeam(),
+            0.5*width - 0.5, i - 0.5, depth - 0.5);
+        }
+        for (int i = 0; i <= width; i++) {
+            addNodeToGroupGridXYZ(meshView, yAxisBeam(),
+            i - 0.5, 0.5*height - 0.5, depth - 0.5);
+        }
+        
+        this.getChildren().add(meshView);
+    }
+    
+    public final Cylinder xAxisBeam(){
+        Cylinder beam = new Cylinder(BEAM_WIDTH, width*FIELD_SIZE);
+        beam.setRotationAxis(Z_AXIS);
+        beam.setRotate(90.0);
+        
+        return beam;
+    }
+    
+    public final Cylinder yAxisBeam(){ return new Cylinder(BEAM_WIDTH, height*FIELD_SIZE); }
+    
+    public final Cylinder zAxisBeam(){
+        Cylinder beam = new Cylinder(BEAM_WIDTH, depth*FIELD_SIZE);
+        beam.setRotationAxis(X_AXIS);
+        beam.setRotate(90.0);
+        
+        return beam;
+    }
+    
     public final void moveNodeToGridXYZ(Node node, double x, double y, double z){
         if (node == null) return;
         
-        node.setTranslateX(-FIELD_SIZE*width/2 + (x+0.5)*FIELD_SIZE);
-        node.setTranslateY(-FIELD_SIZE*height/2 + (y+0.5)*FIELD_SIZE);
+        node.setTranslateX(-FIELD_SIZE*width/2d + (x+0.5)*FIELD_SIZE);
+        node.setTranslateY(-FIELD_SIZE*height/2d + (y+0.5)*FIELD_SIZE);
         node.setTranslateZ(FIELD_SIZE/2 + z*FIELD_SIZE);
     }
     
@@ -304,11 +371,11 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     }
     
     public final int getGridIndexX(double positionX){
-        return (int) Math.floor(( positionX + FIELD_SIZE*width/2 )/FIELD_SIZE);
+        return (int) Math.floor(( positionX + FIELD_SIZE*width/2d )/FIELD_SIZE);
     }
     
     public final int getGridIndexY(double positionY){
-        return (int) Math.floor(( positionY + FIELD_SIZE*height/2 )/FIELD_SIZE);
+        return (int) Math.floor(( positionY + FIELD_SIZE*height/2d )/FIELD_SIZE);
     }
     
     public final int getGridIndexZ(double positionZ){
