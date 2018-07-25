@@ -166,16 +166,14 @@ public class Main extends Application implements Updateable{
                 frontCameraHolderRotateZ.setAngle(0);
                 break;
             case DIGIT1: case NUMPAD1:
-                if (frontCameraLightIntensity>0){
-                    frontCameraLightIntensity-=0.1;
-                    setLightIntensity(frontCameraLight, frontCameraLightColor, frontCameraLightIntensity);
-                }
+                frontCameraLightIntensity -= 0.1;
+                if (frontCameraLightIntensity < 0 ) frontCameraLightIntensity = 0;
+                setLightIntensity(frontCameraLight, frontCameraLightColor, frontCameraLightIntensity);
                 break;
             case DIGIT2: case NUMPAD2:
-                if (frontCameraLightIntensity<1){
-                    frontCameraLightIntensity+=0.1;
-                    setLightIntensity(frontCameraLight, frontCameraLightColor, frontCameraLightIntensity);
-                }
+                frontCameraLightIntensity += 0.1;
+                if (frontCameraLightIntensity > 1 ) frontCameraLightIntensity = 1;
+                setLightIntensity(frontCameraLight, frontCameraLightColor, frontCameraLightIntensity);
                 break;
             default: break;
         }
