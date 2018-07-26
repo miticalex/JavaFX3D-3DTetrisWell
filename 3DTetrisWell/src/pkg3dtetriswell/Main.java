@@ -49,7 +49,7 @@ public class Main extends Application implements Updateable{
     private static final double TRANSLATION_SPEED = 0.2;
     private static final double ALT_FACTOR = 5.0;
     
-    private static final double INITIAL_CAMERA_LIGHT_INTENSITY = 0;
+    private static final double INITIAL_CAMERA_LIGHT_INTENSITY = 0.1;
     
     private static final double BIRDSEYE_CAMERA_POSITION_X = 0;
     private static final double BIRDSEYE_CAMERA_POSITION_Y = 0;
@@ -93,7 +93,7 @@ public class Main extends Application implements Updateable{
         well = new Well(0, 5,5,12);
         
         double wellScaleFactor = MAX_WELL_SIZE/(well.FIELD_SIZE * 
-                ((well.getHeight()>well.getWidth()? well.getHeight() : well.getWidth())+1));
+                (Math.max(well.getHeight(), well.getWidth()) + 1));
         well.getTransforms().setAll(new Scale(wellScaleFactor, wellScaleFactor, 1.5*wellScaleFactor));
         
         root = new Group(well);
@@ -110,7 +110,10 @@ public class Main extends Application implements Updateable{
         setCamera(BIRDSEYE_CAMERA_POSITION_X, BIRDSEYE_CAMERA_POSITION_Y, BIRDSEYE_CAMERA_POSITION_Z, 
                 BIRDSEYE_CAMERA_ROTATE, CameraView.BIRDSEYE_VIEW, WellView.REALISTIC);
         
-        cameraLight.setTranslateZ(0.4 * 
+        
+        double smallerDimension = Math.min(well.getHeight(), well.getWidth());
+        cameraLight.setTranslateZ(
+                0.49 * (smallerDimension / (smallerDimension+1)) * 
                 Math.min(well.getBoundsInParent().getWidth(), well.getBoundsInParent().getHeight()));
         setLightIntensity(cameraLight, cameraLightColor, cameraLightIntensity);
         
@@ -133,6 +136,7 @@ public class Main extends Application implements Updateable{
         window.setTitle("3D Tetris Well");
         window.setScene(gameScene);
         window.show();
+        
         gameScene.widthProperty().addListener(e -> adjustSize(window));
         gameScene.heightProperty().addListener(e -> adjustSize(window));
         
@@ -152,6 +156,12 @@ public class Main extends Application implements Updateable{
         gameStats.setTranslateX(gamePlayScene.getBoundsInParent().getWidth());
         gameStats.getBackground().setWidth(window.getWidth() - gamePlayScene.getBoundsInParent().getWidth());
         gameStats.getBackground().setHeight(window.getHeight());
+        
+        double smallerDimension = Math.min(well.getHeight(), well.getWidth());
+        
+        cameraLight.setTranslateZ(
+                Math.max(gameScene.getHeight()/HEIGHT, gameScene.getWidth()/WIDTH) * 0.49 * (smallerDimension / (smallerDimension+1)) * 
+                Math.min(well.getBoundsInParent().getWidth(), well.getBoundsInParent().getHeight()));
     }
     
     private void setCamera(double endCameraTramslateX, double endCameraTramslateY, double endCameraTramslateZ, 
@@ -213,7 +223,7 @@ public class Main extends Application implements Updateable{
                 break;
             case DIGIT1: case NUMPAD1:
                 cameraLightIntensity -= 0.1;
-                if (cameraLightIntensity < 0 ) cameraLightIntensity = 0;
+                if (cameraLightIntensity <= 0.01 ) cameraLightIntensity = 0.01;
                 setLightIntensity(cameraLight, cameraLightColor, cameraLightIntensity);
                 break;
             case DIGIT2: case NUMPAD2:
