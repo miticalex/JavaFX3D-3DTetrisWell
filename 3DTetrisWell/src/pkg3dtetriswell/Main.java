@@ -39,6 +39,9 @@ import javafx.util.Duration;
  * @author AM
  */
 public class Main extends Application implements Updateable{
+    private static enum State {MENU, GAMEPLAY}
+    private State state;
+    
     private static final double WIDTH = 1300;
     private static final double HEIGHT = 800;
     private static final double MAX_WELL_SIZE = 260;
@@ -97,6 +100,7 @@ public class Main extends Application implements Updateable{
     }
     
     private void startGamePlay(){
+        state = State.GAMEPLAY;
         well = new Well(0, 5,5,12);
         
         double wellScaleFactor = MAX_WELL_SIZE/(well.FIELD_SIZE * 
@@ -197,10 +201,10 @@ public class Main extends Application implements Updateable{
     
     @Override
     public void update() {
+        if (state != State.GAMEPLAY) return;
+        
         root.getChildren().remove(well);
-        
         well.update();
-        
         root.getChildren().add(well);
         
         gameStats.update();
