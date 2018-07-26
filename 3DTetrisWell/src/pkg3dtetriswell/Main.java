@@ -160,7 +160,7 @@ public class Main extends Application implements Updateable{
         double smallerDimension = Math.min(well.getHeight(), well.getWidth());
         
         cameraLight.setTranslateZ(
-                Math.max(gameScene.getHeight()/HEIGHT, gameScene.getWidth()/WIDTH) * 0.49 * (smallerDimension / (smallerDimension+1)) * 
+                Math.min(gameScene.getHeight()/HEIGHT, gameScene.getWidth()/WIDTH) * 0.49 * (smallerDimension / (smallerDimension+1)) * 
                 Math.min(well.getBoundsInParent().getWidth(), well.getBoundsInParent().getHeight()));
     }
     
