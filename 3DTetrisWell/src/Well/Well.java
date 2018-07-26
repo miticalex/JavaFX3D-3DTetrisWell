@@ -77,8 +77,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     };
     
     public static final Color[] fallenBlocksColors = {
-        Color.color(0.2, 0.1, 0), Color.LIME, Color.RED, Color.PURPLE, Color.color(0.6, 0.4, 0), 
-        Color.YELLOW, Color.VIOLET, Color.AQUA 
+        Color.color(0.2, 0.1, 0), Color.GREEN, Color.color(0.5, 0, 0), Color.PURPLE, Color.DARKBLUE, 
+        Color.color(0.7, 0.7, 0), Color.VIOLET, Color.AQUA 
     };
     public static final PhongMaterial[] fallenBlocksMaterials = new PhongMaterial[fallenBlocksColors.length];
     
