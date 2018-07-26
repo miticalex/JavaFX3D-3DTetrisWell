@@ -117,6 +117,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     
     private Tetrimino fallingTetrimino;
     private Tetrimino futureTetrimino;
+    private Tetrimino nextTetrimino;
+    public Tetrimino getNextTetrimino() { return nextTetrimino; }
     
     private int level;
     private int floorsCleared;
@@ -158,6 +160,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         
         fallenBlocks = new Box[depth][width][height];
         instantiateFallenBlockMaterials();
+        
+        nextTetrimino = tetriminoes[RANDOM.nextInt(tetriminoes.length)];
         setFallingTetrimino();
         setLights();
         
@@ -177,7 +181,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     }
     
     private void setFallingTetrimino(){
-        fallingTetrimino = tetriminoes[RANDOM.nextInt(tetriminoes.length)];
+        fallingTetrimino = new Tetrimino(nextTetrimino);
         fallingTetrimino.getTransforms().add(new Rotate(180.0 * RANDOM.nextInt(2), Rotate.X_AXIS));
         fallingTetrimino.getTransforms().add(new Rotate(90.0 * RANDOM.nextInt(4), Rotate.Z_AXIS));
         this.addNodeToGridXYZ(fallingTetrimino, (width-1)/2, (height-1)/2, 0);
@@ -187,6 +191,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         if (collidesWithFallenBlocks(fallingTetrimino)) state = State.GAMEOVER;
         
         futureTetrimino = new Tetrimino(fallingTetrimino);
+        nextTetrimino = tetriminoes[RANDOM.nextInt(tetriminoes.length)];
     }
     
     private void setLights(){

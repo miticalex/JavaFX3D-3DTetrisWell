@@ -39,7 +39,7 @@ import javafx.util.Duration;
  * @author AM
  */
 public class Main extends Application implements Updateable{
-    private static final double WIDTH = 1250;
+    private static final double WIDTH = 1300;
     private static final double HEIGHT = 800;
     private static final double MAX_WELL_SIZE = 260;
     

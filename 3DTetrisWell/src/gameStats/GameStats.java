@@ -49,9 +49,19 @@ public class GameStats extends Group implements Updateable {
     private Text linesCleared = new Text("");
     private Text blocksClearedLabel = new Text("Blocks Cleared: ");
     private Text blocksCleared = new Text("");
+    private Text gameStateLabel = new Text("");
+    private Group nextTetrimino = new Group();
+    public void setNextTetrimino(Group newNextTetrimino) {
+        this.getChildren().remove(nextTetrimino);
+        
+        nextTetrimino = newNextTetrimino;
+        nextTetrimino.setScaleX(3);nextTetrimino.setScaleY(3);
+        nextTetrimino.setTranslateX(width/2);
+        nextTetrimino.setTranslateY(320);
+        
+        this.getChildren().add(3, nextTetrimino);
+    }
     
-    private Text gameStateLabel = new Text("Pera");
-
     public void setDimensionsText(int x, int y, int z) { 
         dimensions.setText(x + "x" + y + "x" + z); 
     }
@@ -81,6 +91,7 @@ public class GameStats extends Group implements Updateable {
     public void setLinesClearedText(int linesCleared) { this.linesCleared.setText("" + linesCleared); }
     public void setBlocksClearedText(int blocksCleared) { this.blocksCleared.setText("" + blocksCleared); }
     
+    
     public GameStats(Well well, double width, double height) { 
         this.well = well;
         
@@ -90,6 +101,7 @@ public class GameStats extends Group implements Updateable {
         setBackGround();
         setInitialStats();
         setButtons();
+        setNextTetrimino(well.getNextTetrimino().get2DAppearance());
         setLabels();
     }
     
@@ -117,8 +129,15 @@ public class GameStats extends Group implements Updateable {
         
         this.getChildren().addAll(labelsVBox);
         
-        Text pauseLabel = new Text("Pause Button: \t\t\t\tPause/P/F3");
+        Text nextTetriminoLabel = new Text("Next shape:");
+        nextTetriminoLabel.setFont(Font.font(20));
+        nextTetriminoLabel.setFill(Color.YELLOW);
+        nextTetriminoLabel.setTranslateX(width/6);
+        nextTetriminoLabel.setTranslateY(330);
+        this.getChildren().add(nextTetriminoLabel);
+        
         Text newGameLabel = new Text("New Game Button: \t\t\tF2");
+        Text pauseLabel = new Text("Pause Button: \t\t\t\tPause/P/F3");
         Text cameraManeuvring = new Text("Camera Maneuvring: \t\tMouse Drag&Scroll");
         Text cameraReset = new Text("Camera Reset: \t\t\t\t0");
         Text adjustCameraLight = new Text("Camera Light Adjustment: \t1 & 2");
@@ -271,5 +290,6 @@ public class GameStats extends Group implements Updateable {
         setPointsText(well.getPoints());
         setTimeText(well.getTime());    
         setStateText(well.getState());
+        setNextTetrimino(well.getNextTetrimino().get2DAppearance());
     }
 }

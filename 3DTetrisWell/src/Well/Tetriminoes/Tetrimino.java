@@ -7,6 +7,7 @@ import javafx.scene.shape.Box;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.CullFace;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Transform;
 
 /**
@@ -15,6 +16,9 @@ import javafx.scene.transform.Transform;
  */
 public class Tetrimino extends Group {
     final protected double fieldSize;
+    
+    private Group appearance2D = new Group();
+    public Group get2DAppearance() { return appearance2D; }
     
     public Tetrimino(double fieldSize) {
         this.fieldSize = fieldSize;
@@ -54,5 +58,10 @@ public class Tetrimino extends Group {
         box.setTranslateZ(posZ * fieldSize);
         
         this.getChildren().add(box);
+        
+        Rectangle rectangle = new Rectangle(posX * fieldSize, posY * fieldSize, fieldSize, fieldSize);
+        rectangle.setFill(Color.BLACK);
+        rectangle.setStroke(Color.BLUE);
+        appearance2D.getChildren().add(rectangle);
     }
 }
