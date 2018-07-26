@@ -621,7 +621,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         if (keyCode == KeyCode.PAUSE || keyCode == KeyCode.P || keyCode == KeyCode.F3)
             paused = !paused;
         
-        if (state != State.PLAYING) return;
+        if ((state != State.PLAYING) || (paused)) return;
         
         int futureMinX = getGridIndexX(futureTetrimino.getBoundsInParent().getMinX() + 0.5*FIELD_SIZE);
         int futureMaxX = getGridIndexX(futureTetrimino.getBoundsInParent().getMaxX() - 0.5*FIELD_SIZE);
@@ -674,7 +674,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     }
 
     public void rotateFallingTetrimino(Point3D axis, double angle) {
-        if (state!= State.PLAYING) return;
+        if ((state!= State.PLAYING) || (paused)) return;
         if ((axis!=X_AXIS && axis!=Y_AXIS && axis!=Z_AXIS) || (Math.abs(angle) !=90.0)) return;
 
         futureTetrimino.getTransforms().add(0, new Rotate(angle, axis));
