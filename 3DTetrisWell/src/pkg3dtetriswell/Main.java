@@ -67,6 +67,7 @@ public class Main extends Application implements Updateable{
     private double oldMousePositionX, oldMousePositionY;
     private double mouseMovedX, mouseMovedY;
     
+    private Stage window;
     private Scene gameScene;
     private SubScene gamePlayScene;
     private Group root;
@@ -90,6 +91,12 @@ public class Main extends Application implements Updateable{
     
     @Override
     public void start(Stage window) {
+        this.window = window;
+        startGamePlay();
+        eventHandling();
+    }
+    
+    private void startGamePlay(){
         well = new Well(0, 5,5,12);
         
         double wellScaleFactor = MAX_WELL_SIZE/(well.FIELD_SIZE * 
@@ -146,8 +153,6 @@ public class Main extends Application implements Updateable{
                 update();
             }  
         }.start();
-        
-        eventHandling();
     }
     
     private void adjustSize(Stage window) {
@@ -159,6 +164,7 @@ public class Main extends Application implements Updateable{
         
         double smallerDimension = Math.min(well.getHeight(), well.getWidth());
         
+        // NOTE: this is a workaround. It should not work like this. The environment should scale the light position by default
         cameraLight.setTranslateZ(
                 Math.min(gameScene.getHeight()/HEIGHT, gameScene.getWidth()/WIDTH) * 0.49 * (smallerDimension / (smallerDimension+1)) * 
                 Math.min(well.getBoundsInParent().getWidth(), well.getBoundsInParent().getHeight()));
