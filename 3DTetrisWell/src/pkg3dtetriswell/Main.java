@@ -196,14 +196,17 @@ public class Main extends Application implements Updateable{
         window.setScene(gameScene);
         window.show();
         
+        gameScene.widthProperty().addListener(e -> adjustSize(window));
+        gameScene.heightProperty().addListener(e -> adjustSize(window));
+        
         eventHandling();
     }
     
     private void adjustSize(Stage window) {
         switch (state) {
             case GAMEPLAY:
-                windowScale.setY((window.getHeight()-37)/HEIGHT);
-                windowScale.setX((window.getWidth()-15)/WIDTH);
+                windowScale.setY(gameScene.getHeight()/HEIGHT);
+                windowScale.setX(gameScene.getWidth()/WIDTH);
                 gameStats.setTranslateX(gamePlayScene.getBoundsInParent().getWidth());
                 gameStats.getBackground().setWidth(window.getWidth() - gamePlayScene.getBoundsInParent().getWidth());
                 gameStats.getBackground().setHeight(window.getHeight());
