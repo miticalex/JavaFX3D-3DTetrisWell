@@ -136,14 +136,14 @@ public class GameStats extends Group implements Updateable {
         nextTetriminoLabel.setTranslateY(330);
         this.getChildren().add(nextTetriminoLabel);
         
-        Text newGameLabel = new Text("New Game Button: \t\t\tF2");
-        Text pauseLabel = new Text("Pause Button: \t\t\t\tPause/P/F3");
-        Text cameraManeuvring = new Text("Camera Maneuvring: \t\tMouse Drag&Scroll");
-        Text cameraReset = new Text("Camera Reset: \t\t\t\t0");
-        Text adjustCameraLight = new Text("Camera Light Adjustment: \t1 & 2");
-        Text fastDrop = new Text("Fast Drop: \t\t\t\tSPACE/CTRL");
-        Text wellViewToggle = new Text("Realistic / Mesh View: \t\t3");
-        Text cameraViewToggle = new Text("Bird's Eye / Side View: \t\tTAB");
+        Text newGameLabel = new Text("New Game Button: \t\t\t\tF2");
+        Text pauseLabel = new Text("Pause Button: \t\t\t\t\tPause/P/F3");
+        Text cameraManeuvring = new Text("Camera Maneuvring: \t\t\tMouse Drag&Scroll");
+        Text cameraReset = new Text("Camera Reset: \t\t\t\t\t0");
+        Text adjustCameraLight = new Text("Camera Light Adjustment: \t\t1 & 2");
+        Text fastDrop = new Text("Fast Drop: \t\t\t\t\tSPACE/CTRL");
+        Text wellViewToggle = new Text("Realistic / Gamer / Mesh View: \t3");
+        Text cameraViewToggle = new Text("Bird's Eye / Side Camera: \t\tTAB");
         
         newGameLabel.setFont(Font.font(15));
         newGameLabel.setFill(Color.YELLOW);

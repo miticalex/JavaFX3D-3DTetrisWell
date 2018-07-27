@@ -8,7 +8,6 @@ import Well.Tetriminoes.Tetrimino;
 import Well.Tetriminoes.ZTetrimino;
 import java.util.LinkedList;
 import java.util.Random;
-import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -45,18 +44,31 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     public boolean isPaused() { return paused; }
     public void setPaused(boolean paused) { this.paused = paused; }
     
-    public static enum WellView {REALISTIC, MESHVIEW}
+    public static enum WellView {REALISTIC, GAMER, MESH}
     private WellView wellView;
     public WellView getView() { return wellView; }
     public void setView(WellView view) { 
         this.wellView = view; 
         
-        walls.setVisible((view == WellView.REALISTIC) ? true : false);
-        edges.setVisible((view == WellView.REALISTIC) ? true : false);
-        bottom.setVisible((view == WellView.REALISTIC) ? true : false);
+        walls.setVisible((view == WellView.MESH) ? false : true);
+        edges.setVisible((view == WellView.MESH) ? false : true);
+        bottom.setVisible((view == WellView.MESH) ? false : true);
         meshView.setVisible((view == WellView.REALISTIC) ? false : true);
+        
+        setWallMaterial();
+        setShiningWallMaterial();
+        setEdgeMaterial();
+        setBottomMaterial();
+        setWallProjection(fallingTetrimino, true);
     }
-    public void changeView(){ setView((wellView == WellView.REALISTIC) ? WellView.MESHVIEW : WellView.REALISTIC); }
+    public void changeView(){ 
+        switch (wellView) {
+            case REALISTIC: setView(WellView.GAMER); break;
+            case GAMER: setView(WellView.MESH); break;
+            case MESH: setView(WellView.REALISTIC); break;
+            default: throw new AssertionError();
+        }
+    }
     
     
     private static enum Direction {POSITIVE, NEGATIVE};
@@ -66,7 +78,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     private static final int    ROTATION_DURATION = 300;
     
     public static final double  FIELD_SIZE = 10.0;
-    public static final double  BOX_SIZE = FIELD_SIZE-0.2;
+    public static final double  BOX_SIZE = 0.98 * FIELD_SIZE;
     public static final double  WALL_WIDTH = 0.4;
     public static final double  BEAM_WIDTH = 0.2;
     
@@ -81,6 +93,9 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         Color.color(0.7, 0.7, 0), Color.VIOLET, Color.AQUA 
     };
     public static final PhongMaterial[] fallenBlocksMaterials = new PhongMaterial[fallenBlocksColors.length];
+    
+    private static final Color GAMER_COLOR = Color.color(0.0, 0.1, 0.4, 1);
+    private static final Color GAMER_COLOR_TRANSPARENT = Color.color(0.0, 0.0, 0.0, 0.0);
     
     
     private final int startingLevel;
@@ -143,6 +158,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     
     private void initialise(int level, int x, int y, int z){
         this.getChildren().clear();
+        wellView = WellView.REALISTIC;
         
         this.level = level>15 ? 15 : (level<0 ? 0 : level);
         setFallingTetriminoDroppingSpeed(level);
@@ -156,7 +172,6 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         makeEdges();
         makeBottom();
         makeMeshView();
-        setView(WellView.REALISTIC);
         
         fallenBlocks = new Box[depth][width][height];
         instantiateFallenBlockMaterials();
@@ -165,6 +180,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         setFallingTetrimino();
         setLights();
         
+        setView(wellView);
         state = State.PLAYING;
     }
     
@@ -221,16 +237,6 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     }
     
     private final void makeWalls() {
-        wallMaterial = new PhongMaterial();//Color.color(0, 0.1, 1, 0.5)); // TRANSPARENT BLUE
-        wallMaterial.setDiffuseMap(new Image("resources/WellBricksDiffuse.jpg"));
-        wallMaterial.setBumpMap(new Image("resources/WellBricksBump.jpg"));
-        wallMaterial.setSpecularMap(new Image("resources/WellBricksSpecular.jpg"));
-        
-        shiningWallMaterial = new PhongMaterial();//Color.color(0, 0.1, 1, 0.5));
-        shiningWallMaterial.setDiffuseMap(new Image("resources/WellBricksDiffuse.jpg"));
-        shiningWallMaterial.setBumpMap(new Image("resources/WellBricksBump.jpg"));
-        shiningWallMaterial.setSelfIlluminationMap(new Image("resources/red.png"));
-        
         walls = new Group();
         leftWall = new Box[height][depth];
         rightWall = new Box[height][depth];
@@ -262,16 +268,12 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             }   
         }
         
-        walls.getChildren().forEach(node -> ((Shape3D) node).setMaterial(wallMaterial));
+        setWallMaterial();
+        setShiningWallMaterial();
         this.getChildren().addAll(walls);
     }
     
     private final void makeEdges(){
-        edgeMaterial = new PhongMaterial();
-        edgeMaterial.setDiffuseMap(new Image("resources/StonesDiffuse.jpg"));
-        edgeMaterial.setBumpMap(new Image("resources/StonesBump.jpg"));
-        edgeMaterial.setSpecularMap(new Image("resources/StonesSpecular.jpg"));
-        
         edges = new Group();
         for (int i = -1; i < 2*width+1; i++) {
             Box rearEdge = new Box(FIELD_SIZE/2, FIELD_SIZE/2, WALL_WIDTH);
@@ -289,16 +291,11 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             addNodeToGroupGridXYZ(edges, rightEdge, width - 0.25, 0.5*i - 0.25, -0.5);
         }
         
-        edges.getChildren().forEach(node -> ((Shape3D)node).setMaterial(edgeMaterial));
+        setEdgeMaterial();
         this.getChildren().add(edges);
     }
     
     private final void makeBottom(){
-        bottomMaterial = new PhongMaterial();
-        bottomMaterial.setDiffuseMap(new Image("resources/BottomDiffuse.jpg"));
-        bottomMaterial.setBumpMap(new Image("resources/BottomBump.jpg"));
-        bottomMaterial.setSpecularMap(new Image("resources/BottomSpecular.jpg"));
-        
         bottom = new Group();
         tiles = new Box[width][height];
         for (int i = 0; i < width; i++) {
@@ -310,6 +307,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             }   
         }
         
+        setBottomMaterial();
         this.getChildren().add(bottom);
     }
     
@@ -355,6 +353,56 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         
         this.getChildren().add(meshView);
     }
+    
+    private void setWallMaterial(){
+        if (wellView == WellView.REALISTIC){
+            wallMaterial = new PhongMaterial();//Color.color(0, 0.1, 1, 0.5)); // TRANSPARENT BLUE
+            wallMaterial.setDiffuseMap(new Image("resources/WellBricksDiffuse.jpg"));
+            wallMaterial.setBumpMap(new Image("resources/WellBricksBump.jpg"));
+            wallMaterial.setSpecularMap(new Image("resources/WellBricksSpecular.jpg"));
+        }
+        else wallMaterial = new PhongMaterial(GAMER_COLOR);
+        
+        walls.getChildren().forEach(node -> ((Shape3D) node).setMaterial(wallMaterial));
+    }
+    private void setShiningWallMaterial(){
+        if (wellView == WellView.REALISTIC){
+            shiningWallMaterial = new PhongMaterial();//Color.color(0, 0.1, 1, 0.5));
+            shiningWallMaterial.setDiffuseMap(new Image("resources/WellBricksDiffuse.jpg"));
+            shiningWallMaterial.setBumpMap(new Image("resources/WellBricksBump.jpg"));
+            shiningWallMaterial.setSelfIlluminationMap(new Image("resources/red.png"));
+        }
+        else {
+            shiningWallMaterial = new PhongMaterial(GAMER_COLOR);
+            shiningWallMaterial.setSelfIlluminationMap(new Image("resources/red.png"));
+        }
+    }
+    private void setEdgeMaterial(){
+        if (wellView == WellView.REALISTIC){
+            edgeMaterial = new PhongMaterial();
+            edgeMaterial.setDiffuseMap(new Image("resources/StonesDiffuse.jpg"));
+            edgeMaterial.setBumpMap(new Image("resources/StonesBump.jpg"));
+            edgeMaterial.setSpecularMap(new Image("resources/StonesSpecular.jpg"));
+        }
+        else edgeMaterial = new PhongMaterial(GAMER_COLOR);
+        
+        edges.getChildren().forEach(node -> ((Shape3D) node).setMaterial(edgeMaterial));
+    }
+    private void setBottomMaterial(){
+        if (wellView == WellView.REALISTIC){
+            bottomMaterial = new PhongMaterial();
+            bottomMaterial.setDiffuseMap(new Image("resources/BottomDiffuse.jpg"));
+            bottomMaterial.setBumpMap(new Image("resources/BottomBump.jpg"));
+            bottomMaterial.setSpecularMap(new Image("resources/BottomSpecular.jpg"));
+        }
+        else {
+            bottomMaterial = new PhongMaterial(GAMER_COLOR);
+            bottomMaterial.setSpecularColor(Color.BLACK);
+        }
+        
+        bottom.getChildren().forEach(node -> ((Shape3D) node).setMaterial(bottomMaterial));
+    }
+    
     
     public final Cylinder xAxisBeam(){
         Cylinder beam = new Cylinder(BEAM_WIDTH, width*FIELD_SIZE);

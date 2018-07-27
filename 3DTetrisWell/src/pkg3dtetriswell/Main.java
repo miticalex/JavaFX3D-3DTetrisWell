@@ -366,7 +366,7 @@ public class Main extends Application implements Updateable{
             case TAB:
                 if (cameraView == CameraView.BIRDSEYE_VIEW) 
                     setCamera(SIDE_CAMERA_POSITION_X, SIDE_CAMERA_POSITION_Y, SIDE_CAMERA_POSITION_Z, 
-                            SIDE_CAMERA_ROTATE, CameraView.SIDE_VIEW, WellView.MESHVIEW);
+                            SIDE_CAMERA_ROTATE, CameraView.SIDE_VIEW, WellView.MESH);
                 else 
                     setCamera(BIRDSEYE_CAMERA_POSITION_X, BIRDSEYE_CAMERA_POSITION_Y, BIRDSEYE_CAMERA_POSITION_Z, 
                             BIRDSEYE_CAMERA_ROTATE, CameraView.BIRDSEYE_VIEW, WellView.REALISTIC);
