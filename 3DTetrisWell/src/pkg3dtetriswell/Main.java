@@ -15,6 +15,7 @@ import javafx.animation.KeyValue;
 import javafx.animation.ParallelTransition;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Camera;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
@@ -33,13 +34,14 @@ import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import menus.*;
 
 /**
  *
  * @author AM
  */
 public class Main extends Application implements Updateable{
-    private static enum State {MENU, GAMEPLAY}
+    private static enum State {MAIN_MENU, PARAMETERS_MENU, GAMEPLAY}
     private State state;
     
     private static final double WIDTH = 1300;
@@ -77,6 +79,9 @@ public class Main extends Application implements Updateable{
     private Well well;
     private GameStats gameStats;
     
+    MainMenu mainMenu;
+    ParametersMenu parametersMenu;
+    
     private static enum CameraView {BIRDSEYE_VIEW, SIDE_VIEW};
     private CameraView cameraView;
     
@@ -95,13 +100,55 @@ public class Main extends Application implements Updateable{
     @Override
     public void start(Stage window) {
         this.window = window;
-        startGamePlay();
+        
+        window.widthProperty().addListener(e -> adjustSize(window));
+        window.heightProperty().addListener(e -> adjustSize(window));
+        
+        new AnimationTimer(){
+            @Override
+            public void handle(long now) {
+                update();
+            }  
+        }.start();
+        
+        openMainMenu();
+    }
+    
+    private void openMainMenu(){
+        state = State.MAIN_MENU;
+        mainMenu = new MainMenu();
+        gameScene = new Scene(mainMenu, WIDTH, HEIGHT, true, SceneAntialiasing.BALANCED);
+        mainMenu.adjustPositions(gameScene.getWidth(), gameScene.getHeight());
+        
+        window.setTitle("3D Tetris Well");
+        window.setScene(gameScene);
+        window.show();
+        
         eventHandling();
     }
     
-    private void startGamePlay(){
+    private void openParametersMenu(){
+        state = State.PARAMETERS_MENU;
+        parametersMenu = new ParametersMenu();
+        gameScene = new Scene(parametersMenu, WIDTH, HEIGHT, true, SceneAntialiasing.BALANCED);
+        parametersMenu.adjustPositions(gameScene.getWidth(), gameScene.getHeight());
+        
+        window.setTitle("3D Tetris Well");
+        window.setScene(gameScene);
+        window.show();
+        
+        eventHandling();
+    }
+    
+    private void startGamePlay(int level, int width, int height, int depth){
         state = State.GAMEPLAY;
-        well = new Well(0, 5,5,12);
+        gameScene = null;
+        gamePlayScene = null;
+        root = null;
+        well = null;
+        gameStats = null;
+        
+        well = new Well(level, width, height, depth);
         
         double wellScaleFactor = MAX_WELL_SIZE/(well.FIELD_SIZE * 
                 (Math.max(well.getHeight(), well.getWidth()) + 1));
@@ -109,6 +156,7 @@ public class Main extends Application implements Updateable{
         
         root = new Group(well);
         
+        camera = new PerspectiveCamera(true);
         cameraHolder = new Group(camera, cameraLight);
         
         cameraHolder.setRotationAxis(Rotate.X_AXIS);
@@ -148,30 +196,34 @@ public class Main extends Application implements Updateable{
         window.setScene(gameScene);
         window.show();
         
-        gameScene.widthProperty().addListener(e -> adjustSize(window));
-        gameScene.heightProperty().addListener(e -> adjustSize(window));
-        
-        new AnimationTimer(){
-            @Override
-            public void handle(long now) {
-                update();
-            }  
-        }.start();
+        eventHandling();
     }
     
     private void adjustSize(Stage window) {
-        windowScale.setY(gameScene.getHeight()/HEIGHT);
-        windowScale.setX(gameScene.getWidth()/WIDTH);
-        gameStats.setTranslateX(gamePlayScene.getBoundsInParent().getWidth());
-        gameStats.getBackground().setWidth(window.getWidth() - gamePlayScene.getBoundsInParent().getWidth());
-        gameStats.getBackground().setHeight(window.getHeight());
-        
-        double smallerDimension = Math.min(well.getHeight(), well.getWidth());
-        
-        // NOTE: this is a workaround. It should not work like this. The environment should scale the light position by default
-        cameraLight.setTranslateZ(
-                Math.min(gameScene.getHeight()/HEIGHT, gameScene.getWidth()/WIDTH) * 0.49 * (smallerDimension / (smallerDimension+1)) * 
-                Math.min(well.getBoundsInParent().getWidth(), well.getBoundsInParent().getHeight()));
+        switch (state) {
+            case GAMEPLAY:
+                windowScale.setY((window.getHeight()-37)/HEIGHT);
+                windowScale.setX((window.getWidth()-15)/WIDTH);
+                gameStats.setTranslateX(gamePlayScene.getBoundsInParent().getWidth());
+                gameStats.getBackground().setWidth(window.getWidth() - gamePlayScene.getBoundsInParent().getWidth());
+                gameStats.getBackground().setHeight(window.getHeight());
+
+                double smallerDimension = Math.min(well.getHeight(), well.getWidth());
+
+                // NOTE: this is a workaround. It should not work like this. The environment should scale the light position by default
+                cameraLight.setTranslateZ(
+                        Math.min(gameScene.getHeight()/HEIGHT, gameScene.getWidth()/WIDTH) * 0.49 * (smallerDimension / (smallerDimension+1)) * 
+                        Math.min(well.getBoundsInParent().getWidth(), well.getBoundsInParent().getHeight()));
+                break;
+            case PARAMETERS_MENU:
+                parametersMenu.adjustPositions(gameScene.getWidth(), gameScene.getHeight());
+                break;
+            case MAIN_MENU:
+                mainMenu.adjustPositions(gameScene.getWidth(), gameScene.getHeight());
+                break;
+            default:
+                throw new AssertionError();
+        }       
     }
     
     private void setCamera(double endCameraTramslateX, double endCameraTramslateY, double endCameraTramslateZ, 
@@ -201,22 +253,86 @@ public class Main extends Application implements Updateable{
     
     @Override
     public void update() {
-        if (state != State.GAMEPLAY) return;
-        
-        root.getChildren().remove(well);
-        well.update();
-        root.getChildren().add(well);
-        
-        gameStats.update();
+        switch (state) {
+            case MAIN_MENU:
+                mainMenu.adjustPositions(gameScene.getWidth(), gameScene.getHeight());
+                switch (mainMenu.getChoice()) {
+                    case MainMenu.NEW_GAME:
+                        openParametersMenu();
+                        break;
+                    case MainMenu.EXIT:
+                        Platform.exit();
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case PARAMETERS_MENU: 
+                parametersMenu.adjustPositions(gameScene.getWidth(), gameScene.getHeight());
+                switch (parametersMenu.getChoice()) {
+                    case ParametersMenu.PARAMETERS_ENTERED:
+                        int width=0, height=0, depth=0, level=0;
+                        try {
+                            width = Integer.parseInt(parametersMenu.getWidthField().getText());
+                            height = Integer.parseInt(parametersMenu.getHeightField().getText());
+                            depth = Integer.parseInt(parametersMenu.getDepthField().getText());
+                            level = Integer.parseInt(parametersMenu.getLevelField().getText());
+                            
+                            if ((width<3) || (width>8) || (height<3) || (height>8) ||
+                               (depth<6) || (depth>20) || (level<0) || (level>15)){
+                                throw new NumberFormatException();
+                            }
+                        }
+                        catch (NumberFormatException e){
+                            parametersMenu.setWarning(); 
+                        }
+                        
+                        if (parametersMenu.getChoice() == ParametersMenu.PARAMETERS_ENTERED)
+                            startGamePlay(level, width, height, depth);
+                        
+                        break;
+                    case ParametersMenu.ENTER_PARAMETERS_AGAIN:
+                        break;
+                    case Menu.NO_CHOICE_MADE:
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case GAMEPLAY:
+                root.getChildren().remove(well);
+                well.update();
+                root.getChildren().add(well);
+
+                gameStats.update();
+                break;
+            default:
+                throw new AssertionError();
+        }
     }
     
     private void eventHandling() {
-        gameScene.setOnKeyPressed(well);
-        gameScene.addEventHandler(KeyEvent.KEY_PRESSED, e-> onKeyPressed(e));
-        
-        gamePlayScene.setOnMousePressed(e -> onMousePressed(e));
-        gamePlayScene.setOnMouseDragged(e -> onMouseDragged(e));
-        gamePlayScene.setOnScroll(e -> onScroll(e));
+        switch (state) {
+            case MAIN_MENU:
+                break;
+            case PARAMETERS_MENU:
+                gameScene.setOnKeyPressed(keyEvent-> {
+                    if (keyEvent.getCode() == KeyCode.ENTER){
+                        parametersMenu.setChoice(ParametersMenu.PARAMETERS_ENTERED);
+                    }
+                });
+                break;
+            case GAMEPLAY:
+                gameScene.setOnKeyPressed(well);
+                gameScene.addEventHandler(KeyEvent.KEY_PRESSED, e-> onKeyPressed(e));
+
+                gamePlayScene.setOnMousePressed(e -> onMousePressed(e));
+                gamePlayScene.setOnMouseDragged(e -> onMouseDragged(e));
+                gamePlayScene.setOnScroll(e -> onScroll(e));
+                break;
+            default: 
+                throw new AssertionError();
+        }
     }
     
     private void setLightIntensity(PointLight light, Color color, double intensity){
@@ -252,6 +368,8 @@ public class Main extends Application implements Updateable{
                     setCamera(BIRDSEYE_CAMERA_POSITION_X, BIRDSEYE_CAMERA_POSITION_Y, BIRDSEYE_CAMERA_POSITION_Z, 
                             BIRDSEYE_CAMERA_ROTATE, CameraView.BIRDSEYE_VIEW, WellView.REALISTIC);
                 break; 
+            case ESCAPE:
+                openMainMenu();
             default: break;
         }
     }
