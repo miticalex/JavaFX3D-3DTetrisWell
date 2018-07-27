@@ -398,11 +398,11 @@ public class Main extends Application implements Updateable{
         if (mouseEvent.isPrimaryButtonDown()) {
             if (cameraView == CameraView.BIRDSEYE_VIEW){
                 cameraHolderRotateZ.setAngle(cameraHolderRotateZ.getAngle() - mouseMovedX*ROTATION_SPEED*speedModificator);
-                cameraHolderRotateX.setAngle(cameraHolderRotateX.getAngle() + mouseMovedY*ROTATION_SPEED*speedModificator);
+                cameraHolderRotateX.setAngle((cameraHolderRotateX.getAngle() + mouseMovedY*ROTATION_SPEED*speedModificator) % 360.0);
             }
             else { // SIDE_VIEW
                 cameraHolderRotateY.setAngle(cameraHolderRotateY.getAngle() - mouseMovedX*ROTATION_SPEED*speedModificator);
-                cameraHolderRotateX.setAngle(cameraHolderRotateX.getAngle() - mouseMovedY*ROTATION_SPEED*speedModificator);
+                cameraHolderRotateX.setAngle((cameraHolderRotateX.getAngle() + mouseMovedY*ROTATION_SPEED*speedModificator) % 360.0);
             }
         }
     }
