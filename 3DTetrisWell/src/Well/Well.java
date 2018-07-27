@@ -144,7 +144,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     private void initialise(int level, int x, int y, int z){
         this.getChildren().clear();
         
-        this.level = level>10 ? 10 : (level<0 ? 0 : level);
+        this.level = level>15 ? 15 : (level<0 ? 0 : level);
         setFallingTetriminoDroppingSpeed(level);
         time=0;
         floorsCleared = 0;
