@@ -527,7 +527,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             }
         }
         
-        points+=10;
+        points+= 10;
         dropFloorsCheck();
 
         this.getChildren().remove(fallingTetrimino);
@@ -562,7 +562,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         }
         
         if (floorsToClear.size() > 0){
-            points += 50 * (int)Math.pow(2, floorsToClear.size());
+            points+= Math.round(100.0 * Math.pow(3, floorsToClear.size()-1) * Math.pow(SPEEDING_UP_FACTOR, level));
             state = State.CLEARING;
             clearFloor(floorsToClear, 0);
         }
@@ -707,7 +707,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             case SPACE:
                 while (moveFallingTetriminoOnGrid(Z_AXIS, Direction.POSITIVE));
                 integrateFallingTetrimino();
-                points+=10;
+                points+= 10;
                 break;
                 
             case U: case INSERT:    rotateFallingTetrimino(Rotate.Z_AXIS, 90); break;
