@@ -98,7 +98,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     private static final Color GAMER_COLOR_TRANSPARENT = Color.color(0.0, 0.0, 0.0, 0.0);
     
     
-    private final int startingLevel;
+    private final int initialLevel;
     private final int width, height, depth;
     public int getWidth() { return width;}
     public int getHeight() { return height;}
@@ -142,26 +142,27 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     private int points;
 
     public double getTime() { return time; }
-    public int getLevel() { return level; }
+    public int getLevel() { return (level > initialLevel) ? level : initialLevel; }
     public int getFloorsCleared() { return floorsCleared; }
     public int getBlocksCleared() { return blocksCleared; }
     public int getPoints() { return points; }
     
-    public Well(int level, int x, int y, int z) {
-        this.startingLevel = level; 
+    public Well(int initialLevel, int x, int y, int z) {
+        this.initialLevel = initialLevel>20 ? 20 : (initialLevel<0 ? 0 : initialLevel); 
         width = x>8 ? 8 : (x<3 ? 3 : x);
         height = y>8 ? 8 : (y<3 ? 3 : y);
         depth = z>20 ? 20 : (z<6 ? 6 : z);
         
-        initialise(startingLevel, x, y, z);
+        initialise();
     }
     
-    private void initialise(int level, int x, int y, int z){
+    private void initialise(){
         this.getChildren().clear();
         wellView = WellView.REALISTIC;
         
-        this.level = level>15 ? 15 : (level<0 ? 0 : level);
-        setFallingTetriminoDroppingSpeed(level);
+        this.level = 0; // until level reaches initialLevel points and speed will be counted for initialLevel
+        
+        setFallingTetriminoDroppingSpeed(getLevel());
         time=0;
         floorsCleared = 0;
         blocksCleared = 0;
@@ -232,7 +233,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         if (timeUntilFallingTetriminoDrops <=0){
             if (moveFallingTetriminoOnGrid(Z_AXIS, Direction.POSITIVE) == false)
                 integrateFallingTetrimino();
-            setFallingTetriminoDroppingSpeed(level);
+            setFallingTetriminoDroppingSpeed(getLevel());
         }
     }
     
@@ -535,7 +536,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         fallingTetrimino = null;
         
         setFallingTetrimino();
-        setFallingTetriminoDroppingSpeed(level);
+        setFallingTetriminoDroppingSpeed(getLevel());
         
         return true;
     }
@@ -562,7 +563,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         }
         
         if (floorsToClear.size() > 0){
-            points+= Math.round(100.0 * Math.pow(3, floorsToClear.size()-1) * Math.pow(SPEEDING_UP_FACTOR, level));
+            points+= Math.round(100.0 * Math.pow(3, floorsToClear.size()-1) * Math.pow(SPEEDING_UP_FACTOR, getLevel()));
             state = State.CLEARING;
             clearFloor(floorsToClear, 0);
         }
@@ -581,7 +582,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         blocksUntilNextLevel -= width*height;
         
         if (blocksUntilNextLevel <= 0) {
-            setFallingTetriminoDroppingSpeed(++level);
+            level++;
+            setFallingTetriminoDroppingSpeed(getLevel());
             blocksUntilNextLevel += BLOCKS_TO_CLEAR_PER_LEVEL;
         }
         
@@ -663,7 +665,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     public void handle(KeyEvent event) {
         KeyCode keyCode = event.getCode();
         
-        if (keyCode == KeyCode.F2) initialise(startingLevel, width, height, depth);
+        if (keyCode == KeyCode.F2) initialise();
         if (state == State.GAMEOVER) return;
         
         if (keyCode == KeyCode.PAUSE || keyCode == KeyCode.P || keyCode == KeyCode.F3)

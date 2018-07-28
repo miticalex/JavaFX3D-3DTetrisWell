@@ -282,7 +282,7 @@ public class Main extends Application implements Updateable{
                             level = Integer.parseInt(parametersMenu.getLevelField().getText());
                             
                             if ((width<3) || (width>8) || (height<3) || (height>8) ||
-                               (depth<6) || (depth>20) || (level<0) || (level>15)){
+                               (depth<6) || (depth>20) || (level<0) || (level>20)){
                                 throw new NumberFormatException();
                             }
                         }

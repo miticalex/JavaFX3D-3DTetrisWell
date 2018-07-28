@@ -77,8 +77,8 @@ public class ParametersMenu extends Menu{
         
         warning = new Text("Ranges must be:\n"
                             + "3<= height, width <=8,\n"
-                            + "6<= depth <= 20\n"
-                            + "0<= level <=15");
+                            + "6<= depth <=20\n"
+                            + "0<= level <=20");
         warning.setFont(new Font(20));
         warning.setWrappingWidth(250);
         warning.setTextAlignment(TextAlignment.CENTER);
