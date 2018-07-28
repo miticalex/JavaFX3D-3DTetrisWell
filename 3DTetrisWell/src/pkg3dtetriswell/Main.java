@@ -111,13 +111,13 @@ public class Main extends Application implements Updateable{
             }  
         }.start();
         
-        openMainMenu();
+        openMainMenu(WIDTH, HEIGHT);
     }
     
-    private void openMainMenu(){
+    private void openMainMenu(double width, double height){
         state = State.MAIN_MENU;
         mainMenu = new MainMenu();
-        gameScene = new Scene(mainMenu, WIDTH, HEIGHT, true, SceneAntialiasing.BALANCED);
+        gameScene = new Scene(mainMenu, width, height, true, SceneAntialiasing.BALANCED);
         mainMenu.adjustPositions(gameScene.getWidth(), gameScene.getHeight());
         
         window.setTitle("3D Tetris Well");
@@ -126,11 +126,12 @@ public class Main extends Application implements Updateable{
         
         eventHandling();
     }
+    private void openMainMenu() { openMainMenu(gameScene.getWidth(), gameScene.getHeight()); }
     
-    private void openParametersMenu(){
+    private void openParametersMenu(double width, double height){
         state = State.PARAMETERS_MENU;
         parametersMenu = new ParametersMenu();
-        gameScene = new Scene(parametersMenu, WIDTH, HEIGHT, true, SceneAntialiasing.BALANCED);
+        gameScene = new Scene(parametersMenu, width, height, true, SceneAntialiasing.BALANCED);
         parametersMenu.adjustPositions(gameScene.getWidth(), gameScene.getHeight());
         
         window.setTitle("3D Tetris Well");
@@ -142,8 +143,6 @@ public class Main extends Application implements Updateable{
     
     private void startGamePlay(int level, int width, int height, int depth){
         state = State.GAMEPLAY;
-        gameScene = null;
-        gamePlayScene = null;
         root = null;
         well = null;
         gameStats = null;
@@ -188,7 +187,9 @@ public class Main extends Application implements Updateable{
         gamePlayPane.getChildren().add(gameStats);
         gameStats.setTranslateX(HEIGHT);
         
-        gameScene = new Scene(gamePlayPane, WIDTH, HEIGHT, true, SceneAntialiasing.BALANCED);
+        double sceneWidth = (gameScene != null) ? gameScene.getWidth() : WIDTH;
+        double sceneHeight = (gameScene != null) ? gameScene.getHeight() : HEIGHT;
+        gameScene = new Scene(gamePlayPane, sceneWidth, sceneHeight, true, SceneAntialiasing.BALANCED);
         
         gamePlayScene.getTransforms().add(windowScale);
         
@@ -196,6 +197,7 @@ public class Main extends Application implements Updateable{
         window.setScene(gameScene);
         window.show();
         
+        adjustSize(window);
         gameScene.widthProperty().addListener(e -> adjustSize(window));
         gameScene.heightProperty().addListener(e -> adjustSize(window));
         
@@ -261,12 +263,12 @@ public class Main extends Application implements Updateable{
                 mainMenu.adjustPositions(gameScene.getWidth(), gameScene.getHeight());
                 switch (mainMenu.getChoice()) {
                     case MainMenu.NEW_GAME:
-                        openParametersMenu();
+                        openParametersMenu(gameScene.getWidth(), gameScene.getHeight());
                         break;
                     case MainMenu.EXIT:
                         Platform.exit();
                         break;
-                    default:
+                    case MainMenu.NO_CHOICE_MADE: default:
                         break;
                 }
                 break;
