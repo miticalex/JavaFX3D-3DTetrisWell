@@ -123,7 +123,7 @@ public class GameStats extends Group implements Updateable {
         
         for (Node node : labelsVBox.getChildren()) {
             Text label = (Text)node;
-            label.setFont(Font.font(20));
+            label.setFont(Font.font(19));
             label.setFill(Color.YELLOW);
         }
         
@@ -186,7 +186,7 @@ public class GameStats extends Group implements Updateable {
         
         for (Node node : statsVBox.getChildren()) {
             Text label = (Text)node;
-            label.setFont(Font.font(20));
+            label.setFont(Font.font(19));
             label.setFill(Color.YELLOW);
         }
         
