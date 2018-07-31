@@ -49,7 +49,7 @@ public class Tetrimino extends Group {
             (Color.color(0.3, 0.4, 0.3, 0.5));
         boxMaterial.setBumpMap(new Image("resources/cubeBumpMap.png"));
         
-        Box box = new Box(0.98*fieldSize, 0.98*fieldSize, 0.98*fieldSize);
+        Box box = new Box(0.96*fieldSize, 0.96*fieldSize, 0.96*fieldSize);
         box.setMaterial(boxMaterial);
         box.setCullFace(CullFace.BACK);
         
