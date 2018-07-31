@@ -155,6 +155,22 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         nextTetrimino = tetriminoes[RANDOM.nextInt(tetriminoes.length)];
     }
     
+    public void setWallProjection(Tetrimino tetrimino){
+        construction.resetWalls();
+        
+        for (Node node : tetrimino.getChildren()) {
+            Box box = (Box)node;
+            Point3D boxCoordinatesInWell = fallingTetrimino.localToParent(box.getTranslateX(), box.getTranslateY(), box.getTranslateZ());
+            
+            int boxX = getGridIndexX(boxCoordinatesInWell.getX());
+            int boxY = getGridIndexY(boxCoordinatesInWell.getY());
+            int boxZ = getGridIndexZ(boxCoordinatesInWell.getZ());
+            
+            if (boxX>=0 && boxX<width && boxY>=0 && boxY<height && boxZ>=0 && boxZ<depth)
+                construction.setWallIllumination(boxX, boxY, boxZ);
+        }
+    }
+    
     private void setLights(){
         AmbientLight ambientLight = new AmbientLight(Color.color(0, 0.15, 0.0));
         
@@ -241,6 +257,76 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         setWallProjection(fallingTetrimino);
         
         return true;
+    }
+    
+    public void rotateFallingTetrimino(Point3D axis, double angle) {
+        if ((state!= State.PLAYING) || (paused)) return;
+        if ((axis!=X_AXIS && axis!=Y_AXIS && axis!=Z_AXIS) || (Math.abs(angle) !=90.0)) return;
+
+        futureTetrimino.getTransforms().add(0, new Rotate(angle, axis));
+        
+        // BOUNDS OF A TETRIMINO AFTER ROTATION
+        int futureMinX = getGridIndexX(futureTetrimino.getBoundsInParent().getMinX() + 0.5*FIELD_SIZE);
+        int futureMaxX = getGridIndexX(futureTetrimino.getBoundsInParent().getMaxX() - 0.5*FIELD_SIZE);
+        int futureMinY = getGridIndexY(futureTetrimino.getBoundsInParent().getMinY() + 0.5*FIELD_SIZE);
+        int futureMaxY = getGridIndexY(futureTetrimino.getBoundsInParent().getMaxY() - 0.5*FIELD_SIZE);
+        int futureMaxZ = getGridIndexZ(futureTetrimino.getBoundsInParent().getMaxZ() - 0.5*FIELD_SIZE);
+        
+        // PERFORM NO ROTATION IF IT CAUSES A TETRIMINO TO FALL BELOW THE BOTTOM OF THE WELL OR IF IT CAUSES A COLLISION WITH ANY OF THE FALLEN BLOCKS
+        if ((futureMaxZ >= depth) || (collidesWithFallenBlocks(futureTetrimino))){
+            futureTetrimino.getTransforms().remove(0);
+            return;   
+        }
+        
+        // PERFORM A TRANSLATION ALSO IF A ROTATION CAUSES COLLISIONS WITH WALLS
+        double displacementX=0, displacementY=0;
+        if (futureMinX < 0)
+            displacementX = - futureMinX*FIELD_SIZE;
+        else if (futureMaxX >= width)
+            displacementX = (width-1 - futureMaxX)*FIELD_SIZE;
+        if (futureMinY < 0)
+            displacementY = - futureMinY*FIELD_SIZE;
+        else if (futureMaxY >= height)
+            displacementY = (height-1 - futureMaxY)*FIELD_SIZE;
+        
+        
+        ParallelTransition tetriminoTransition = new ParallelTransition();
+        if ((displacementX != 0) || (displacementY != 0)){
+            futureTetrimino.setTranslateX(futureTetrimino.getTranslateX() + displacementX);
+            futureTetrimino.setTranslateY(futureTetrimino.getTranslateY() + displacementY);
+            
+            // PERFORM NO ROTATION IF IT CAUSES A COLLISION WITH ANY OF THE FALLEN BLOCKS
+            if (collidesWithFallenBlocks(futureTetrimino)){
+                futureTetrimino.setTranslateX(futureTetrimino.getTranslateX() - displacementX);
+                futureTetrimino.setTranslateY(futureTetrimino.getTranslateY() - displacementY);
+                futureTetrimino.getTransforms().remove(0);
+                return;   
+            }
+            
+            TranslateTransition translateTransition = new TranslateTransition(Duration.millis(ROTATION_DURATION), fallingTetrimino);
+            translateTransition.setByX(displacementX);
+            translateTransition.setByY(displacementY);
+            
+            state = state.CRITICAL_ROTATION;
+            tetriminoTransition.getChildren().add(translateTransition);
+        }
+        
+        construction.resetWalls();
+        
+        Rotate rotate = new Rotate(0, axis);
+        fallingTetrimino.getTransforms().add(0, rotate);
+
+        KeyValue endAngle = new KeyValue(rotate.angleProperty(), angle);
+        
+        tetriminoTransition.getChildren().add(0, new ParallelTransition(
+                new Timeline(new KeyFrame(Duration.millis(ROTATION_DURATION), endAngle)))); //ROTATION
+        tetriminoTransition.setInterpolator(Interpolator.LINEAR);
+        tetriminoTransition.play();
+        tetriminoTransition.setOnFinished(e -> { 
+            setWallProjection(fallingTetrimino);
+            if (state == State.CRITICAL_ROTATION)
+                state = state.PLAYING;
+        });
     }
     
     public final boolean collidesWithFallenBlocks(Tetrimino tetrimino){
@@ -382,22 +468,6 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         });
     }
     
-    public void setWallProjection(Tetrimino tetrimino){
-        construction.resetWalls();
-        
-        for (Node node : tetrimino.getChildren()) {
-            Box box = (Box)node;
-            Point3D boxCoordinatesInWell = fallingTetrimino.localToParent(box.getTranslateX(), box.getTranslateY(), box.getTranslateZ());
-            
-            int boxX = getGridIndexX(boxCoordinatesInWell.getX());
-            int boxY = getGridIndexY(boxCoordinatesInWell.getY());
-            int boxZ = getGridIndexZ(boxCoordinatesInWell.getZ());
-            
-            if (boxX>=0 && boxX<width && boxY>=0 && boxY<height && boxZ>=0 && boxZ<depth)
-                construction.setWallIllumination(boxX, boxY, boxZ);
-        }
-    }
-    
     @Override
     public void handle(KeyEvent event) {
         KeyCode keyCode = event.getCode();
@@ -460,73 +530,4 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         }
     }
 
-    public void rotateFallingTetrimino(Point3D axis, double angle) {
-        if ((state!= State.PLAYING) || (paused)) return;
-        if ((axis!=X_AXIS && axis!=Y_AXIS && axis!=Z_AXIS) || (Math.abs(angle) !=90.0)) return;
-
-        futureTetrimino.getTransforms().add(0, new Rotate(angle, axis));
-        
-        // BOUNDS OF A TETRIMINO AFTER ROTATION
-        int futureMinX = getGridIndexX(futureTetrimino.getBoundsInParent().getMinX() + 0.5*FIELD_SIZE);
-        int futureMaxX = getGridIndexX(futureTetrimino.getBoundsInParent().getMaxX() - 0.5*FIELD_SIZE);
-        int futureMinY = getGridIndexY(futureTetrimino.getBoundsInParent().getMinY() + 0.5*FIELD_SIZE);
-        int futureMaxY = getGridIndexY(futureTetrimino.getBoundsInParent().getMaxY() - 0.5*FIELD_SIZE);
-        int futureMaxZ = getGridIndexZ(futureTetrimino.getBoundsInParent().getMaxZ() - 0.5*FIELD_SIZE);
-        
-        // PERFORM NO ROTATION IF IT CAUSES A TETRIMINO TO FALL BELOW THE BOTTOM OF THE WELL OR IF IT CAUSES A COLLISION WITH ANY OF THE FALLEN BLOCKS
-        if ((futureMaxZ >= depth) || (collidesWithFallenBlocks(futureTetrimino))){
-            futureTetrimino.getTransforms().remove(0);
-            return;   
-        }
-        
-        // PERFORM A TRANSLATION ALSO IF A ROTATION CAUSES COLLISIONS WITH WALLS
-        double displacementX=0, displacementY=0;
-        if (futureMinX < 0)
-            displacementX = - futureMinX*FIELD_SIZE;
-        else if (futureMaxX >= width)
-            displacementX = (width-1 - futureMaxX)*FIELD_SIZE;
-        if (futureMinY < 0)
-            displacementY = - futureMinY*FIELD_SIZE;
-        else if (futureMaxY >= height)
-            displacementY = (height-1 - futureMaxY)*FIELD_SIZE;
-        
-        
-        ParallelTransition tetriminoTransition = new ParallelTransition();
-        if ((displacementX != 0) || (displacementY != 0)){
-            futureTetrimino.setTranslateX(futureTetrimino.getTranslateX() + displacementX);
-            futureTetrimino.setTranslateY(futureTetrimino.getTranslateY() + displacementY);
-            
-            // PERFORM NO ROTATION IF IT CAUSES A COLLISION WITH ANY OF THE FALLEN BLOCKS
-            if (collidesWithFallenBlocks(futureTetrimino)){
-                futureTetrimino.setTranslateX(futureTetrimino.getTranslateX() - displacementX);
-                futureTetrimino.setTranslateY(futureTetrimino.getTranslateY() - displacementY);
-                futureTetrimino.getTransforms().remove(0);
-                return;   
-            }
-            
-            TranslateTransition translateTransition = new TranslateTransition(Duration.millis(ROTATION_DURATION), fallingTetrimino);
-            translateTransition.setByX(displacementX);
-            translateTransition.setByY(displacementY);
-            
-            state = state.CRITICAL_ROTATION;
-            tetriminoTransition.getChildren().add(translateTransition);
-        }
-        
-        construction.resetWalls();
-        
-        Rotate rotate = new Rotate(0, axis);
-        fallingTetrimino.getTransforms().add(0, rotate);
-
-        KeyValue endAngle = new KeyValue(rotate.angleProperty(), angle);
-        
-        tetriminoTransition.getChildren().add(0, new ParallelTransition(
-                new Timeline(new KeyFrame(Duration.millis(ROTATION_DURATION), endAngle)))); //ROTATION
-        tetriminoTransition.setInterpolator(Interpolator.LINEAR);
-        tetriminoTransition.play();
-        tetriminoTransition.setOnFinished(e -> { 
-            setWallProjection(fallingTetrimino);
-            if (state == State.CRITICAL_ROTATION)
-                state = state.PLAYING;
-        });
-    }
 }
