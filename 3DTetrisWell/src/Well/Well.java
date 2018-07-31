@@ -1,7 +1,9 @@
 package Well;
 
+import Well.Tetriminoes.CrossHoleTetrimino;
 import Well.Tetriminoes.CrossPolycube;
 import Well.Tetriminoes.ITetrimino;
+import Well.Tetriminoes.JCrossPolycube;
 import Well.Tetriminoes.LTetrimino;
 import Well.Tetriminoes.OTetrimino;
 import Well.Tetriminoes.SatelitePolycube;
@@ -74,7 +76,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     
     public static final Tetrimino[] tetriminoes = {
         new ITetrimino(), new LTetrimino(), new OTetrimino(), new TTetrimino(), new ZTetrimino() //list of basic 2D tetriminoes
-        //, new TripodTetrimino(), new TowerLeftTetrimino(), new TowerRightTetrimino(), new CrossPolycube(), new SatelitePolycube(), new TargetPolycube()
+        , new TripodTetrimino(), new TowerLeftTetrimino(), new TowerRightTetrimino(), new CrossPolycube()
+        , new CrossHoleTetrimino(), new JCrossPolycube(), new TargetPolycube(), new SatelitePolycube()
     };
     
     private final int initialLevel;
@@ -245,11 +248,15 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         
         int displacement = direction == direction.POSITIVE ? +1 : -1;
         
-        if (axis == X_AXIS)         futureTetrimino.setTranslateX(futureTetrimino.getTranslateX() + displacement*FIELD_SIZE);
-        else if (axis == Y_AXIS)    futureTetrimino.setTranslateY(futureTetrimino.getTranslateY() + displacement*FIELD_SIZE);
-        else /* Z_AXIS */           futureTetrimino.setTranslateZ(futureTetrimino.getTranslateZ() + displacement*FIELD_SIZE);
+        if (axis == X_AXIS)         
+            futureTetrimino.setTranslateX(futureTetrimino.getTranslateX() + displacement*FIELD_SIZE);
+        else if (axis == Y_AXIS)    
+            futureTetrimino.setTranslateY(futureTetrimino.getTranslateY() + displacement*FIELD_SIZE);
+        else /* Z_AXIS */           
+            futureTetrimino.setTranslateZ(futureTetrimino.getTranslateZ() + displacement*FIELD_SIZE);
         
         if ((getGridIndexZ(futureTetrimino.getBoundsInParent().getMaxZ() - 0.5*FIELD_SIZE) == depth) || 
+            //(getGridIndexY(futureTetrimino.getBoundsInParent().getMaxZ() - 0.5*FIELD_SIZE) == depth)
                 collidesWithFallenBlocks(futureTetrimino)) {
             if (axis == X_AXIS)         futureTetrimino.setTranslateX(futureTetrimino.getTranslateX() - displacement*FIELD_SIZE);
             else if (axis == Y_AXIS)    futureTetrimino.setTranslateY(futureTetrimino.getTranslateY() - displacement*FIELD_SIZE);
