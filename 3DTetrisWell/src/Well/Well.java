@@ -65,7 +65,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     private static final Point3D X_AXIS = Rotate.X_AXIS;
     private static final Point3D Y_AXIS = Rotate.Y_AXIS;
     private static final Point3D Z_AXIS = Rotate.Z_AXIS;
-    private static final int    ROTATION_DURATION = 300;
+    private static final int    MOVEMENT_DURATION = 300;
     
     public static final double  FIELD_SIZE = 10.0;
     public static final double  BOX_SIZE = 0.98 * FIELD_SIZE;
@@ -195,7 +195,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     
     @Override
     public void update() {
-        if ((state != State.PLAYING) || this.paused) return;
+        if ((state == State.GAMEOVER) || (state == State.CLEARING) || (paused)) return;
         
         time += FRAME_PERIOD;
         timeUntilFallingTetriminoDrops -= FRAME_PERIOD;
@@ -264,10 +264,14 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             return false;
         }
         construction.resetWalls();
-        if (axis == X_AXIS)         fallingTetrimino.setTranslateX(fallingTetrimino.getTranslateX() + displacement*FIELD_SIZE);
-        else if (axis == Y_AXIS)    fallingTetrimino.setTranslateY(fallingTetrimino.getTranslateY() + displacement*FIELD_SIZE);
-        else /* Z_AXIS */           fallingTetrimino.setTranslateZ(fallingTetrimino.getTranslateZ() + displacement*FIELD_SIZE);
-        setWallProjection(fallingTetrimino);
+        TranslateTransition translation = new TranslateTransition(Duration.millis(MOVEMENT_DURATION), fallingTetrimino);
+        
+        if (axis == X_AXIS)         translation.setToX(futureTetrimino.getTranslateX());
+        else if (axis == Y_AXIS)    translation.setToY(futureTetrimino.getTranslateY());
+        else /* Z_AXIS */           translation.setToZ(futureTetrimino.getTranslateZ());
+        
+        translation.play();
+        translation.setOnFinished(e -> setWallProjection(fallingTetrimino));
         
         return true;
     }
@@ -316,7 +320,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
                 return;   
             }
             
-            TranslateTransition translateTransition = new TranslateTransition(Duration.millis(ROTATION_DURATION), fallingTetrimino);
+            TranslateTransition translateTransition = new TranslateTransition(Duration.millis(MOVEMENT_DURATION), fallingTetrimino);
             translateTransition.setToX(futureTetrimino.getTranslateX());
             translateTransition.setToY(futureTetrimino.getTranslateY()); //PAY ATTENTION TO THIS BUG
             
@@ -331,7 +335,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
 
         KeyValue endAngle = new KeyValue(rotate.angleProperty(), angle);
         
-        tetriminoTransition.getChildren().add(0, new Timeline(new KeyFrame(Duration.millis(ROTATION_DURATION), endAngle))); //ROTATION
+        tetriminoTransition.getChildren().add(0, new Timeline(new KeyFrame(Duration.millis(MOVEMENT_DURATION), endAngle))); //ROTATION
         tetriminoTransition.setInterpolator(Interpolator.LINEAR);
         tetriminoTransition.play();
         tetriminoTransition.setOnFinished(e -> { 
@@ -490,7 +494,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         if (keyCode == KeyCode.PAUSE || keyCode == KeyCode.P || keyCode == KeyCode.F3)
             paused = !paused;
         
-        if ((state != State.PLAYING) || (paused)) return;
+        if (((state == State.CLEARING)) || (paused)) return;
         
         int futureMinX = getGridIndexX(futureTetrimino.getBoundsInParent().getMinX() + 0.5*FIELD_SIZE);
         int futureMaxX = getGridIndexX(futureTetrimino.getBoundsInParent().getMaxX() - 0.5*FIELD_SIZE);
