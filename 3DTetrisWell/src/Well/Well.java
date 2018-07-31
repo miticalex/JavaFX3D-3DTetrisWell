@@ -76,8 +76,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     
     public static final Tetrimino[] tetriminoes = {
         new ITetrimino(), new LTetrimino(), new OTetrimino(), new TTetrimino(), new ZTetrimino() //list of basic 2D tetriminoes
-        , new TripodTetrimino(), new TowerLeftTetrimino(), new TowerRightTetrimino(), new CrossPolycube()
-        , new CrossHoleTetrimino(), new JCrossPolycube(), new TargetPolycube(), new SatelitePolycube()
+//        , new TripodTetrimino(), new TowerLeftTetrimino(), new TowerRightTetrimino(), new CrossPolycube()
+//        , new CrossHoleTetrimino(), new JCrossPolycube(), new TargetPolycube(), new SatelitePolycube()
     };
     
     private final int initialLevel;
