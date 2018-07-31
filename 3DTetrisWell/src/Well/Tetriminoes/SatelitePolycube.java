@@ -12,10 +12,11 @@ public class SatelitePolycube extends Tetrimino {
         addBox(-1, 0, 0);
         addBox(+1, 0, 0);
         addBox(0, +1, 0);
+        addBox(0, 0, 0);
         addBox(0, 0, -1);
         addBox(0, 0, +1);
-        addBox(0, 0, 0);
     }
+    
     public SatelitePolycube() {
         this(Well.Well.FIELD_SIZE);
     }

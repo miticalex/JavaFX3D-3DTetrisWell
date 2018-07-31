@@ -10,10 +10,10 @@ public class TowerLeftTetrimino extends Tetrimino {
        
         addBox(-1, 0, 0);
         addBox(0, +1, 0);
-        addBox(0, +1, -1);
         addBox(0, 0, 0);
-        
+        addBox(0, +1, -1);
     }
+    
     public TowerLeftTetrimino() {
         this(Well.Well.FIELD_SIZE);
     }

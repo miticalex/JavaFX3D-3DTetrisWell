@@ -13,6 +13,7 @@ public class OTetrimino extends Tetrimino {
         addBox(0, 1, 0);
         addBox(1, 1, 0);
     }
+    
     public OTetrimino() {
         this(Well.Well.FIELD_SIZE);
     }

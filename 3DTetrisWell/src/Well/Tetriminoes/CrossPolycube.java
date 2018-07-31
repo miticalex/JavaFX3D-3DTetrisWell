@@ -14,6 +14,7 @@ public class CrossPolycube extends Tetrimino {
         addBox(0, +1, 0);
         addBox(0, 0, 0);
     }
+    
     public CrossPolycube() {
         this(Well.Well.FIELD_SIZE);
     }

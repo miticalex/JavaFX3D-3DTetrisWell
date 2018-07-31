@@ -19,8 +19,6 @@ import javafx.scene.transform.Rotate;
  * @author AM
  */
 public class GameStats extends Group implements Updateable {
-    private static final int ALWAYS_ON_TOP = -100;
-    
     public static Text gameName = new Text("BlockWell");
     
     private Well well;
@@ -173,8 +171,7 @@ public class GameStats extends Group implements Updateable {
         otherControls.setTranslateX(width/6);otherControls.setTranslateY(600);
         this.getChildren().addAll(otherControls);
         
-        gameStateLabel.setTranslateY(height/2);
-        gameStateLabel.setTranslateZ(ALWAYS_ON_TOP);
+        gameStateLabel.setTranslateY(2*height/3);
         gameStateLabel.setFont(Font.font(80));
         gameStateLabel.setFill(Color.RED);
         gameStateLabel.setStroke(Color.YELLOW);

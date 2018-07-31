@@ -12,6 +12,7 @@ public class ITetrimino extends Tetrimino {
         addBox(-1, 0, 0);
         addBox(1, 0, 0);
     }
+    
     public ITetrimino() {
         this(Well.Well.FIELD_SIZE);
     }

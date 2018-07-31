@@ -62,7 +62,6 @@ public class Tetrimino extends Group {
         Rectangle rectangle = new Rectangle(posX * fieldSize, posY * fieldSize, fieldSize, fieldSize);
         if (posZ!=0){
             if (posZ==1) posZ= -2;
-            rectangle.setTranslateZ(- Math.abs(posZ));
             rectangle.setScaleX(Math.pow(0.7, Math.abs(posZ)));
             rectangle.setScaleY(Math.pow(0.7, Math.abs(posZ)));
         }
