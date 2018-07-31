@@ -40,7 +40,7 @@ public class WellConstruction extends Group{
     SteelFramework steelFramework;
     
     
-    public WellConstruction(int width, int height, int depth, double wallWidth, double fieldSize) {
+    public WellConstruction(int width, int height, int depth, double wallWidth, double fieldSize, WellView wellView) {
         this.width = width; 
         this.height = height;
         this.depth = depth;
@@ -51,7 +51,7 @@ public class WellConstruction extends Group{
         addEdges();
         addBottom();
         addSteelFramework();
-        setView(WellView.REALISTIC_MESH);
+        setView(wellView);
     }
     
     private void addWalls() {

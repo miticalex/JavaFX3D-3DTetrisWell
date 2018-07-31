@@ -352,6 +352,8 @@ public class Main extends Application implements Updateable{
         KeyCode keyCode = keyEvent.getCode();
         
         switch (keyCode) {
+            case F2:
+                well.initialise(WellView.REALISTIC);
             case DIGIT0: case NUMPAD0:
                 setCamera(BIRDSEYE_CAMERA_POSITION_X, BIRDSEYE_CAMERA_POSITION_Y, BIRDSEYE_CAMERA_POSITION_Z, 
                         BIRDSEYE_CAMERA_ROTATE, CameraView.BIRDSEYE_VIEW, WellView.REALISTIC);

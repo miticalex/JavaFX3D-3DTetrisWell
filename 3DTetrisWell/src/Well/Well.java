@@ -121,10 +121,10 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         height = y>8 ? 8 : (y<3 ? 3 : y);
         depth = z>20 ? 20 : (z<6 ? 6 : z);
         
-        initialise();
+        initialise(WellView.REALISTIC_MESH);
     }
     
-    private void initialise(){
+    public void initialise(WellView initialView){
         this.getChildren().clear();
         
         this.level = 0; // until level reaches initialLevel points and speed will be counted for initialLevel
@@ -135,7 +135,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         blocksUntilNextLevel = BLOCKS_TO_CLEAR_PER_LEVEL;
         points = 0;
         
-        construction = new WellConstruction(width, height, depth, WALL_WIDTH, FIELD_SIZE);
+        construction = new WellConstruction(width, height, depth, WALL_WIDTH, FIELD_SIZE, initialView);
         this.getChildren().add(construction);
                 
         fallenBlocks = new Box[depth][width][height];
@@ -488,7 +488,6 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     public void handle(KeyEvent event) {
         KeyCode keyCode = event.getCode();
         
-        if (keyCode == KeyCode.F2) initialise();
         if (state == State.GAMEOVER) return;
         
         if (keyCode == KeyCode.PAUSE || keyCode == KeyCode.P || keyCode == KeyCode.F3)
