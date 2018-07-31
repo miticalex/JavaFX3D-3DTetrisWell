@@ -256,7 +256,6 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             futureTetrimino.setTranslateZ(futureTetrimino.getTranslateZ() + displacement*FIELD_SIZE);
         
         if ((getGridIndexZ(futureTetrimino.getBoundsInParent().getMaxZ() - 0.5*FIELD_SIZE) == depth) || 
-            //(getGridIndexY(futureTetrimino.getBoundsInParent().getMaxZ() - 0.5*FIELD_SIZE) == depth)
                 collidesWithFallenBlocks(futureTetrimino)) {
             if (axis == X_AXIS)         futureTetrimino.setTranslateX(futureTetrimino.getTranslateX() - displacement*FIELD_SIZE);
             else if (axis == Y_AXIS)    futureTetrimino.setTranslateY(futureTetrimino.getTranslateY() - displacement*FIELD_SIZE);
@@ -318,8 +317,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             }
             
             TranslateTransition translateTransition = new TranslateTransition(Duration.millis(ROTATION_DURATION), fallingTetrimino);
-            translateTransition.setByX(displacementX);
-            translateTransition.setByY(displacementY);
+            translateTransition.setToX(futureTetrimino.getTranslateX());
+            translateTransition.setToY(futureTetrimino.getTranslateY()); //PAY ATTENTION TO THIS BUG
             
             state = state.CRITICAL_ROTATION;
             tetriminoTransition.getChildren().add(translateTransition);
@@ -332,8 +331,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
 
         KeyValue endAngle = new KeyValue(rotate.angleProperty(), angle);
         
-        tetriminoTransition.getChildren().add(0, new ParallelTransition(
-                new Timeline(new KeyFrame(Duration.millis(ROTATION_DURATION), endAngle)))); //ROTATION
+        tetriminoTransition.getChildren().add(0, new Timeline(new KeyFrame(Duration.millis(ROTATION_DURATION), endAngle))); //ROTATION
         tetriminoTransition.setInterpolator(Interpolator.LINEAR);
         tetriminoTransition.play();
         tetriminoTransition.setOnFinished(e -> { 
