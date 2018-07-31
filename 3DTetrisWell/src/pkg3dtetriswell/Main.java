@@ -7,7 +7,7 @@ package pkg3dtetriswell;
 
 import Well.Updateable;
 import Well.Well;
-import Well.Well.WellView;
+import Well.construction.WellConstruction.WellView;
 import gameStats.GameStats;
 import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;

@@ -6,6 +6,9 @@ import Well.Tetriminoes.OTetrimino;
 import Well.Tetriminoes.TTetrimino;
 import Well.Tetriminoes.Tetrimino;
 import Well.Tetriminoes.ZTetrimino;
+import Well.construction.ConstructionMaterials;
+import Well.construction.WellConstruction;
+import Well.construction.WellConstruction.WellView;
 import java.util.LinkedList;
 import java.util.Random;
 import javafx.animation.Interpolator;
@@ -20,14 +23,10 @@ import javafx.scene.AmbientLight;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.PointLight;
-import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
-import javafx.scene.shape.Cylinder;
-import javafx.scene.shape.Shape3D;
 import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
 
@@ -44,30 +43,13 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     public boolean isPaused() { return paused; }
     public void setPaused(boolean paused) { this.paused = paused; }
     
-    public static enum WellView {REALISTIC, GAMER, MESH}
-    private WellView wellView;
-    public WellView getView() { return wellView; }
     public void setView(WellView view) { 
-        this.wellView = view; 
-        
-        walls.setVisible((view == WellView.MESH) ? false : true);
-        edges.setVisible((view == WellView.MESH) ? false : true);
-        bottom.setVisible((view == WellView.MESH) ? false : true);
-        meshView.setVisible((view == WellView.REALISTIC) ? false : true);
-        
-        setWallMaterial();
-        setShiningWallMaterial();
-        setEdgeMaterial();
-        setBottomMaterial();
-        setWallProjection(fallingTetrimino, true);
+        construction.setView(view);
+        setWallProjection(fallingTetrimino);
     }
-    public void changeView(){ 
-        switch (wellView) {
-            case REALISTIC: setView(WellView.GAMER); break;
-            case GAMER: setView(WellView.MESH); break;
-            case MESH: setView(WellView.REALISTIC); break;
-            default: throw new AssertionError();
-        }
+    public void changeView(){
+        construction.changeView();
+        setWallProjection(fallingTetrimino);
     }
     
     
@@ -88,37 +70,13 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         new ITetrimino(), new LTetrimino(), new OTetrimino(), new TTetrimino(), new ZTetrimino() //list of basic 2D tetriminoes
     };
     
-    public static final Color[] fallenBlocksColors = {
-        Color.color(0.2, 0.1, 0), Color.GREEN, Color.color(0.5, 0, 0), Color.PURPLE, Color.DARKBLUE, 
-        Color.color(0.7, 0.7, 0), Color.VIOLET, Color.AQUA 
-    };
-    public static final PhongMaterial[] fallenBlocksMaterials = new PhongMaterial[fallenBlocksColors.length];
-    
-    private static final Color GAMER_COLOR = Color.color(0.0, 0.1, 0.4, 1);
-    private static final Color GAMER_COLOR_TRANSPARENT = Color.color(0.0, 0.0, 0.0, 0.0);
-    
-    
     private final int initialLevel;
     private final int width, height, depth;
     public int getWidth() { return width;}
     public int getHeight() { return height;}
     public int getDepth() { return depth;}
     
-    PhongMaterial wallMaterial; // TRANSPARENT BLUE
-    PhongMaterial shiningWallMaterial; // SAME COLOR - WITH RED SELF ILLUMINATION
-    PhongMaterial edgeMaterial;
-    PhongMaterial bottomMaterial;
-    
-    Group walls;
-    private Box[][] leftWall, rightWall;
-    private Box[][] frontWall, rearWall;
-    
-    Group bottom;
-    private Box[][] tiles;
-    
-    Group edges;
-    
-    Group meshView;
+    WellConstruction construction; 
     
     private Box[][][] fallenBlocks;
     
@@ -158,10 +116,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     
     private void initialise(){
         this.getChildren().clear();
-        wellView = WellView.REALISTIC;
         
         this.level = 0; // until level reaches initialLevel points and speed will be counted for initialLevel
-        
         setFallingTetriminoDroppingSpeed(getLevel());
         time=0;
         floorsCleared = 0;
@@ -169,32 +125,20 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         blocksUntilNextLevel = BLOCKS_TO_CLEAR_PER_LEVEL;
         points = 0;
         
-        makeWalls();
-        makeEdges();
-        makeBottom();
-        makeMeshView();
-        
+        construction = new WellConstruction(width, height, depth, WALL_WIDTH, FIELD_SIZE);
+        this.getChildren().add(construction);
+                
         fallenBlocks = new Box[depth][width][height];
-        instantiateFallenBlockMaterials();
         
         nextTetrimino = tetriminoes[RANDOM.nextInt(tetriminoes.length)];
         setFallingTetrimino();
         setLights();
         
-        setView(wellView);
         state = State.PLAYING;
     }
     
     private void setFallingTetriminoDroppingSpeed(int level){ // EACH LEVEL SPEEDS UP TETRIMINO BY SPEEDING_UP_FACTOR
         timeUntilFallingTetriminoDrops = INITIAL_FALLING_PERIOD/Math.pow(SPEEDING_UP_FACTOR, level);
-    }
-    
-    private static void instantiateFallenBlockMaterials(){
-        for (int i = 0; i < fallenBlocksMaterials.length; i++) {
-            fallenBlocksMaterials[i] = new PhongMaterial(fallenBlocksColors[i]);
-            fallenBlocksMaterials[i].setSpecularColor(Color.color(0.25, 0.25, 0.25));
-            fallenBlocksMaterials[i].setBumpMap(new Image("resources/cubeBumpMap.png"));
-        }
     }
     
     private void setFallingTetrimino(){
@@ -203,7 +147,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         fallingTetrimino.getTransforms().add(new Rotate(90.0 * RANDOM.nextInt(4), Rotate.Z_AXIS));
         this.addNodeToGridXYZ(fallingTetrimino, (width-1)/2, (height-1)/2, 0);
         
-        setWallProjection(fallingTetrimino, true);
+        setWallProjection(fallingTetrimino);
         
         if (collidesWithFallenBlocks(fallingTetrimino)) state = State.GAMEOVER;
         
@@ -235,192 +179,6 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
                 integrateFallingTetrimino();
             setFallingTetriminoDroppingSpeed(getLevel());
         }
-    }
-    
-    private final void makeWalls() {
-        walls = new Group();
-        leftWall = new Box[height][depth];
-        rightWall = new Box[height][depth];
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < depth; j++) {
-                leftWall[i][j] = new Box(WALL_WIDTH, FIELD_SIZE, FIELD_SIZE);
-                leftWall[i][j].setRotationAxis(X_AXIS);
-                leftWall[i][j].setRotate(90.);
-                rightWall[i][j] = new Box(WALL_WIDTH, FIELD_SIZE, FIELD_SIZE);
-                rightWall[i][j].setRotationAxis(X_AXIS);
-                rightWall[i][j].setRotate(90.);
-                
-                addNodeToGroupGridXYZ(walls, leftWall[i][j], -0.5 -0.5*WALL_WIDTH/FIELD_SIZE, i, j);
-                addNodeToGroupGridXYZ(walls, rightWall[i][j], width -0.5 +0.5*WALL_WIDTH/FIELD_SIZE, i, j);
-            }
-        }
-        
-        frontWall = new Box[width][depth];
-        rearWall = new Box[width][depth];
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < depth; j++) {
-                frontWall[i][j] = new Box(FIELD_SIZE, WALL_WIDTH, FIELD_SIZE);
-                rearWall[i][j] = new Box(FIELD_SIZE, WALL_WIDTH, FIELD_SIZE);
-                frontWall[i][j].setRotationAxis(Y_AXIS);
-                frontWall[i][j].setRotate(180.);
-                
-                addNodeToGroupGridXYZ(walls, frontWall[i][j], i, height -0.5 +0.5*WALL_WIDTH/FIELD_SIZE, j);
-                addNodeToGroupGridXYZ(walls, rearWall[i][j], i, -0.5 -0.5*WALL_WIDTH/FIELD_SIZE, j);
-            }   
-        }
-        
-        setWallMaterial();
-        setShiningWallMaterial();
-        this.getChildren().addAll(walls);
-    }
-    
-    private final void makeEdges(){
-        edges = new Group();
-        for (int i = -1; i < 2*width+1; i++) {
-            Box rearEdge = new Box(FIELD_SIZE/2, FIELD_SIZE/2, WALL_WIDTH);
-            Box frontEdge = new Box(FIELD_SIZE/2, FIELD_SIZE/2, WALL_WIDTH);
-            
-            addNodeToGroupGridXYZ(edges, rearEdge, 0.5*i - 0.25, -0.75, -0.5);
-            addNodeToGroupGridXYZ(edges, frontEdge, 0.5*i - 0.25, height - 0.25, -0.5);
-        }
-        
-        for (int i = 0; i < 2*height; i++) {
-            Box leftEdge = new Box(FIELD_SIZE/2, FIELD_SIZE/2, WALL_WIDTH);
-            Box rightEdge = new Box(FIELD_SIZE/2, FIELD_SIZE/2, WALL_WIDTH);
-            
-            addNodeToGroupGridXYZ(edges, leftEdge, -0.75, 0.5*i - 0.25, -0.5);
-            addNodeToGroupGridXYZ(edges, rightEdge, width - 0.25, 0.5*i - 0.25, -0.5);
-        }
-        
-        setEdgeMaterial();
-        this.getChildren().add(edges);
-    }
-    
-    private final void makeBottom(){
-        bottom = new Group();
-        tiles = new Box[width][height];
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                tiles[i][j] = new Box(FIELD_SIZE, FIELD_SIZE, WALL_WIDTH);
-                tiles[i][j].setMaterial(bottomMaterial);
-                
-                addNodeToGroupGridXYZ(bottom, tiles[i][j], i, j, depth - 0.5 + 0.5*WALL_WIDTH/FIELD_SIZE);
-            }   
-        }
-        
-        setBottomMaterial();
-        this.getChildren().add(bottom);
-    }
-    
-    public final void makeMeshView(){
-        meshView = new Group();
-        
-        // VERTICAL BEAMS
-        for (int i = 0; i <= height; i++) {
-            addNodeToGroupGridXYZ(meshView, zAxisBeam(),
-                -0.5, i-0.5, 0.5*depth - 0.5);
-            addNodeToGroupGridXYZ(meshView, zAxisBeam(),
-                width - 0.5, i-0.5, 0.5*depth - 0.5);
-        }
-        for (int i = 1; i < width; i++) {
-            addNodeToGroupGridXYZ(meshView, zAxisBeam(),
-                i-0.5, -0.5, 0.5*depth - 0.5);
-            addNodeToGroupGridXYZ(meshView, zAxisBeam(),
-                i-0.5, height - 0.5, 0.5*depth - 0.5);
-        }
-        
-        // HORIZONTAL BEAMS
-        for (int i = 0; i < depth; i++) {
-            addNodeToGroupGridXYZ(meshView, yAxisBeam(),
-                -0.5, 0.5*height - 0.5, i - 0.5);
-            addNodeToGroupGridXYZ(meshView, yAxisBeam(),
-                width - 0.5, 0.5*height - 0.5, i - 0.5);
-            addNodeToGroupGridXYZ(meshView, xAxisBeam(),
-                0.5*width - 0.5, -0.5, i - 0.5);
-            addNodeToGroupGridXYZ(meshView, xAxisBeam(),
-                0.5*width - 0.5, height - 0.5, i - 0.5);
-        }
-        
-        
-        // BOTTOM
-        for (int i = 0; i <= height; i++) {
-            addNodeToGroupGridXYZ(meshView, xAxisBeam(),
-            0.5*width - 0.5, i - 0.5, depth - 0.5);
-        }
-        for (int i = 0; i <= width; i++) {
-            addNodeToGroupGridXYZ(meshView, yAxisBeam(),
-            i - 0.5, 0.5*height - 0.5, depth - 0.5);
-        }
-        
-        this.getChildren().add(meshView);
-    }
-    
-    private void setWallMaterial(){
-        if (wellView == WellView.REALISTIC){
-            wallMaterial = new PhongMaterial();//Color.color(0, 0.1, 1, 0.5)); // TRANSPARENT BLUE
-            wallMaterial.setDiffuseMap(new Image("resources/WellBricksDiffuse.jpg"));
-            wallMaterial.setBumpMap(new Image("resources/WellBricksBump.jpg"));
-            wallMaterial.setSpecularMap(new Image("resources/WellBricksSpecular.jpg"));
-        }
-        else wallMaterial = new PhongMaterial(GAMER_COLOR);
-        
-        walls.getChildren().forEach(node -> ((Shape3D) node).setMaterial(wallMaterial));
-    }
-    private void setShiningWallMaterial(){
-        if (wellView == WellView.REALISTIC){
-            shiningWallMaterial = new PhongMaterial();//Color.color(0, 0.1, 1, 0.5));
-            shiningWallMaterial.setDiffuseMap(new Image("resources/WellBricksDiffuse.jpg"));
-            shiningWallMaterial.setBumpMap(new Image("resources/WellBricksBump.jpg"));
-            shiningWallMaterial.setSelfIlluminationMap(new Image("resources/red.png"));
-        }
-        else {
-            shiningWallMaterial = new PhongMaterial(GAMER_COLOR);
-            shiningWallMaterial.setSelfIlluminationMap(new Image("resources/red.png"));
-        }
-    }
-    private void setEdgeMaterial(){
-        if (wellView == WellView.REALISTIC){
-            edgeMaterial = new PhongMaterial();
-            edgeMaterial.setDiffuseMap(new Image("resources/StonesDiffuse.jpg"));
-            edgeMaterial.setBumpMap(new Image("resources/StonesBump.jpg"));
-            edgeMaterial.setSpecularMap(new Image("resources/StonesSpecular.jpg"));
-        }
-        else edgeMaterial = new PhongMaterial(GAMER_COLOR);
-        
-        edges.getChildren().forEach(node -> ((Shape3D) node).setMaterial(edgeMaterial));
-    }
-    private void setBottomMaterial(){
-        if (wellView == WellView.REALISTIC){
-            bottomMaterial = new PhongMaterial();
-            bottomMaterial.setDiffuseMap(new Image("resources/BottomDiffuse.jpg"));
-            bottomMaterial.setBumpMap(new Image("resources/BottomBump.jpg"));
-            bottomMaterial.setSpecularMap(new Image("resources/BottomSpecular.jpg"));
-        }
-        else {
-            bottomMaterial = new PhongMaterial(GAMER_COLOR);
-            bottomMaterial.setSpecularColor(Color.BLACK);
-        }
-        
-        bottom.getChildren().forEach(node -> ((Shape3D) node).setMaterial(bottomMaterial));
-    }
-    
-    
-    public final Cylinder xAxisBeam(){
-        Cylinder beam = new Cylinder(BEAM_WIDTH, width*FIELD_SIZE);
-        beam.setRotationAxis(Z_AXIS);
-        beam.setRotate(90.0);
-        
-        return beam;
-    }
-    
-    public final Cylinder yAxisBeam(){ return new Cylinder(BEAM_WIDTH, height*FIELD_SIZE); }
-    
-    public final Cylinder zAxisBeam(){
-        Cylinder beam = new Cylinder(BEAM_WIDTH, depth*FIELD_SIZE);
-        beam.setRotationAxis(X_AXIS);
-        beam.setRotate(90.0);
-        
-        return beam;
     }
     
     public final void moveNodeToGridXYZ(Node node, double x, double y, double z){
@@ -476,11 +234,11 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             
             return false;
         }
-        setWallProjection(fallingTetrimino, false);
+        construction.resetWalls();
         if (axis == X_AXIS)         fallingTetrimino.setTranslateX(fallingTetrimino.getTranslateX() + displacement*FIELD_SIZE);
         else if (axis == Y_AXIS)    fallingTetrimino.setTranslateY(fallingTetrimino.getTranslateY() + displacement*FIELD_SIZE);
         else /* Z_AXIS */           fallingTetrimino.setTranslateZ(fallingTetrimino.getTranslateZ() + displacement*FIELD_SIZE);
-        setWallProjection(fallingTetrimino, true);
+        setWallProjection(fallingTetrimino);
         
         return true;
     }
@@ -505,7 +263,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     public final boolean integrateFallingTetrimino(){
         if (futureTetrimino==null || fallingTetrimino==null) return false;
         
-        refreshWalls();//setWallProjection(fallingTetrimino, false);
+        construction.resetWalls();
         
         for (Node node : futureTetrimino.getChildren()) {
             Box box = (Box)node;
@@ -522,7 +280,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             
             if (boxX>=0 && boxX<width && boxY>=0 && boxY<height && boxZ>=0 && boxZ<depth){
                 fallenBlocks[boxZ][boxX][boxY] = new Box(BOX_SIZE, BOX_SIZE, BOX_SIZE);
-                fallenBlocks[boxZ][boxX][boxY].setMaterial(fallenBlocksMaterials[(depth-1 - boxZ) % fallenBlocksMaterials.length]);
+                fallenBlocks[boxZ][boxX][boxY].setMaterial(ConstructionMaterials.fallenBlocksMaterials[
+                        (depth-1 - boxZ) % ConstructionMaterials.fallenBlocksMaterials.length]);
                 
                 this.addNodeToGridXYZ(fallenBlocks[boxZ][boxX][boxY], boxX, boxY, boxZ);
             }
@@ -608,7 +367,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
                     
                     final int j1 = j, k1 = k, l1 = l;
                     translateTransition.setOnFinished(e->{
-                        fallenBlocks[j1][k1][l1].setMaterial(fallenBlocksMaterials[(depth-1 - j1) % fallenBlocksColors.length]);
+                        fallenBlocks[j1][k1][l1].setMaterial(ConstructionMaterials.fallenBlocksMaterials[
+                                (depth-1 - j1) % ConstructionMaterials.fallenBlocksMaterials.length]);
                     });
                     
                     dropping.getChildren().add(translateTransition);
@@ -622,26 +382,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         });
     }
     
-    private void refreshWalls() {
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < depth; j++) {
-                leftWall[i][j].setMaterial(wallMaterial);
-                rightWall[i][j].setMaterial(wallMaterial);
-            }
-        }
-        
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < depth; j++) {
-                frontWall[i][j].setMaterial(wallMaterial);
-                rearWall[i][j].setMaterial(wallMaterial);  
-            }
-        }
-            
-    }
-    
-    public void setWallProjection(Tetrimino tetrimino, boolean set){
-        // TODO: TETRIMINO PROJECTION ON THE WALL DOESN'T ALWAYS DISAPPEAR - BUG SOLVED - TRY TO FIND A BETTER SOLUTION
-        if (set) refreshWalls();
+    public void setWallProjection(Tetrimino tetrimino){
+        construction.resetWalls();
         
         for (Node node : tetrimino.getChildren()) {
             Box box = (Box)node;
@@ -651,13 +393,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             int boxY = getGridIndexY(boxCoordinatesInWell.getY());
             int boxZ = getGridIndexZ(boxCoordinatesInWell.getZ());
             
-            if (boxX>=0 && boxX<width && boxY>=0 && boxY<height && boxZ>=0 && boxZ<depth){
-                PhongMaterial material = set ? shiningWallMaterial : wallMaterial;
-                leftWall[boxY][boxZ].setMaterial(material);
-                rightWall[boxY][boxZ].setMaterial(material);
-                frontWall[boxX][boxZ].setMaterial(material);
-                rearWall[boxX][boxZ].setMaterial(material);
-            }
+            if (boxX>=0 && boxX<width && boxY>=0 && boxY<height && boxZ>=0 && boxZ<depth)
+                construction.setWallIllumination(boxX, boxY, boxZ);
         }
     }
     
@@ -775,7 +512,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             tetriminoTransition.getChildren().add(translateTransition);
         }
         
-        setWallProjection(fallingTetrimino, false);
+        construction.resetWalls();
         
         Rotate rotate = new Rotate(0, axis);
         fallingTetrimino.getTransforms().add(0, rotate);
@@ -787,7 +524,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         tetriminoTransition.setInterpolator(Interpolator.LINEAR);
         tetriminoTransition.play();
         tetriminoTransition.setOnFinished(e -> { 
-            setWallProjection(fallingTetrimino, true); 
+            setWallProjection(fallingTetrimino);
             if (state == State.CRITICAL_ROTATION)
                 state = state.PLAYING;
         });
