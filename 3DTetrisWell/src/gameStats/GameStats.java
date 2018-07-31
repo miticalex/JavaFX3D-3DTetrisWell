@@ -3,14 +3,9 @@ package gameStats;
 import Well.Updateable;
 import Well.Well;
 import Well.Well.State;
-import javafx.event.EventType;
-import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.image.Image;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
@@ -39,32 +34,12 @@ public class GameStats extends Group implements Updateable {
     
     private Text dimensionsLabel = new Text("Dimensions: ");
     private Text dimensions = new Text("");
-    private Text timeLabel = new Text("Time: ");
-    private Text time = new Text("");
-    private Text levelLabel = new Text("Level: ");
-    private Text level = new Text("");
-    private Text pointsLabel = new Text("Points: ");
-    private Text points = new Text("");
-    private Text linesClearedLabel = new Text("Lines Cleared: ");
-    private Text linesCleared = new Text("");
-    private Text blocksClearedLabel = new Text("Blocks Cleared: ");
-    private Text blocksCleared = new Text("");
-    private Text gameStateLabel = new Text("");
-    private Group nextTetrimino = new Group();
-    public void setNextTetrimino(Group newNextTetrimino) {
-        this.getChildren().remove(nextTetrimino);
-        
-        nextTetrimino = newNextTetrimino;
-        nextTetrimino.setScaleX(3);nextTetrimino.setScaleY(3);
-        nextTetrimino.setTranslateX(width/2);
-        nextTetrimino.setTranslateY(320);
-        
-        this.getChildren().add(3, nextTetrimino);
-    }
-    
     public void setDimensionsText(int x, int y, int z) { 
         dimensions.setText(x + "x" + y + "x" + z); 
     }
+    
+    private Text timeLabel = new Text("Time: ");
+    private Text time = new Text("");
     public void setTimeText(double time) { 
         int seconds = ((int)time) % 60;
         int minutes = ((int)time) / 60;
@@ -74,6 +49,24 @@ public class GameStats extends Group implements Updateable {
                 (seconds<10 ? "0" : "") + seconds);
         else this.time.setText(minutes/60 + ":" + minutes%60 + ":" + seconds);
     }
+    
+    private Text levelLabel = new Text("Level: ");
+    private Text level = new Text("");
+    public void setLevelText(int level) { this.level.setText("" + level); }
+    
+    private Text pointsLabel = new Text("Points: ");
+    private Text points = new Text("");
+    public void setPointsText(int points) { this.points.setText("" + points); }
+    
+    private Text linesClearedLabel = new Text("Lines Cleared: ");
+    private Text linesCleared = new Text("");
+    public void setLinesClearedText(int linesCleared) { this.linesCleared.setText("" + linesCleared); }
+    
+    private Text blocksClearedLabel = new Text("Blocks Cleared: ");
+    private Text blocksCleared = new Text("");
+    public void setBlocksClearedText(int blocksCleared) { this.blocksCleared.setText("" + blocksCleared); }
+    
+    private Text gameStateLabel = new Text("");
     private void setStateText(Well.State state) {
         gameStateLabel.setText(state.toString());
         if ((state != state.GAMEOVER) && (well.isPaused()))
@@ -86,10 +79,18 @@ public class GameStats extends Group implements Updateable {
         else 
             gameStateLabel.setVisible(false);
     }
-    public void setLevelText(int level) { this.level.setText("" + level); }
-    public void setPointsText(int points) { this.points.setText("" + points); }
-    public void setLinesClearedText(int linesCleared) { this.linesCleared.setText("" + linesCleared); }
-    public void setBlocksClearedText(int blocksCleared) { this.blocksCleared.setText("" + blocksCleared); }
+    
+    private Group nextTetrimino = new Group();
+    public void setNextTetrimino(Group newNextTetrimino) {
+        this.getChildren().remove(nextTetrimino);
+        
+        nextTetrimino = newNextTetrimino;
+        nextTetrimino.setScaleX(3);nextTetrimino.setScaleY(3);
+        nextTetrimino.setTranslateX(width/2);
+        nextTetrimino.setTranslateY(320);
+        
+        this.getChildren().add(3, nextTetrimino);
+    }
     
     
     public GameStats(Well well, double width, double height) { 
