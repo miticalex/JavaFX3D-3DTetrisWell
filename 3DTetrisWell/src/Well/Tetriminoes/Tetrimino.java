@@ -60,6 +60,12 @@ public class Tetrimino extends Group {
         this.getChildren().add(box);
         
         Rectangle rectangle = new Rectangle(posX * fieldSize, posY * fieldSize, fieldSize, fieldSize);
+        if (posZ!=0){
+            if (posZ==1) posZ= -2;
+            rectangle.setTranslateZ(- Math.abs(posZ));
+            rectangle.setScaleX(Math.pow(0.7, Math.abs(posZ)));
+            rectangle.setScaleY(Math.pow(0.7, Math.abs(posZ)));
+        }
         rectangle.setFill(Color.LIMEGREEN);
         rectangle.setStroke(Color.BLUE);
         appearance2D.getChildren().add(rectangle);

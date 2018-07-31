@@ -1,10 +1,16 @@
 package Well;
 
+import Well.Tetriminoes.CrossPolycube;
 import Well.Tetriminoes.ITetrimino;
 import Well.Tetriminoes.LTetrimino;
 import Well.Tetriminoes.OTetrimino;
+import Well.Tetriminoes.SatelitePolycube;
 import Well.Tetriminoes.TTetrimino;
+import Well.Tetriminoes.TargetPolycube;
 import Well.Tetriminoes.Tetrimino;
+import Well.Tetriminoes.TowerLeftTetrimino;
+import Well.Tetriminoes.TowerRightTetrimino;
+import Well.Tetriminoes.TripodTetrimino;
 import Well.Tetriminoes.ZTetrimino;
 import Well.construction.ConstructionMaterials;
 import Well.construction.WellConstruction;
@@ -68,6 +74,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     
     public static final Tetrimino[] tetriminoes = {
         new ITetrimino(), new LTetrimino(), new OTetrimino(), new TTetrimino(), new ZTetrimino() //list of basic 2D tetriminoes
+        //, new TripodTetrimino(), new TowerLeftTetrimino(), new TowerRightTetrimino(), new CrossPolycube(), new SatelitePolycube(), new TargetPolycube()
     };
     
     private final int initialLevel;
