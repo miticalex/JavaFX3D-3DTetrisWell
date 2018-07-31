@@ -90,6 +90,7 @@ public class Main extends Application implements Updateable{
     private double cameraLightIntensity = INITIAL_CAMERA_LIGHT_INTENSITY;
     private Color cameraLightColor = Color.BLUE;
     private PointLight cameraLight = new PointLight();
+    private Translate cameraHolderTranslate = new Translate();
     private Rotate cameraHolderRotateX = new Rotate(0, Rotate.X_AXIS);
     private Rotate cameraHolderRotateY = new Rotate(0, Rotate.Y_AXIS);
     private Rotate cameraHolderRotateZ = new Rotate(0, Rotate.Z_AXIS);
@@ -160,7 +161,7 @@ public class Main extends Application implements Updateable{
         
         cameraHolder.setRotationAxis(Rotate.X_AXIS);
         cameraHolderRotateY.setPivotZ(SIDE_CAMERA_POSITION_Y);
-        cameraHolder.getTransforms().addAll(cameraHolderRotateZ, cameraHolderRotateY, cameraHolderRotateX);
+        cameraHolder.getTransforms().addAll(cameraHolderRotateZ, cameraHolderRotateY, cameraHolderRotateX, cameraHolderTranslate);
         
         root.getChildren().add(cameraHolder);
         
@@ -241,18 +242,21 @@ public class Main extends Application implements Updateable{
         KeyValue endCameraHolderRotateY = new KeyValue(cameraHolderRotateY.angleProperty(), 0);
         KeyValue endCameraHolderRotateZ = new KeyValue(cameraHolderRotateZ.angleProperty(), 0);
         KeyValue endCameraHolderRotate = new KeyValue(cameraHolder.rotateProperty(), endCameraRotate);
-        KeyValue endCammeraHolderTranslateX = new KeyValue(cameraHolder.translateXProperty(), endCameraTramslateX);
-        KeyValue endCammeraHolderTranslateY = new KeyValue(cameraHolder.translateYProperty(), endCameraTramslateY);
-        KeyValue endCammeraHolderTranslateZ = new KeyValue(cameraHolder.translateZProperty(), endCameraTramslateZ);
-        
+        KeyValue endCameraHolderTranslateX = new KeyValue(cameraHolder.translateXProperty(), endCameraTramslateX);
+        KeyValue endCameraHolderTranslateY = new KeyValue(cameraHolder.translateYProperty(), endCameraTramslateY);
+        KeyValue endCameraHolderTranslateZ = new KeyValue(cameraHolder.translateZProperty(), endCameraTramslateZ);
+
+        KeyValue endCameraHolderTranslateXAttribute = new KeyValue(cameraHolderTranslate.xProperty(), 0);
+        KeyValue endCameraHolderTranslateYAttribute = new KeyValue(cameraHolderTranslate.yProperty(), 0);        
         ParallelTransition parallelTransition = new ParallelTransition(
             new Timeline(new KeyFrame(Duration.millis(CAMERA_ANIMATION_DURATION), 
-                    endCammeraHolderTranslateX, endCammeraHolderTranslateY, endCammeraHolderTranslateZ, 
-                    endCameraHolderRotateX, endCameraHolderRotateY, endCameraHolderRotateZ, endCameraHolderRotate)));
+                    endCameraHolderTranslateX, endCameraHolderTranslateY, endCameraHolderTranslateZ, 
+                    endCameraHolderRotateX, endCameraHolderRotateY, endCameraHolderRotateZ, endCameraHolderRotate, 
+                    endCameraHolderTranslateXAttribute, endCameraHolderTranslateYAttribute)));
         parallelTransition.play();
         parallelTransition.setOnFinished(e-> {
             well.setView(endWellView);
-            well.setPaused(false);
+            //well.setPaused(false);
         });
     }
     
@@ -406,6 +410,14 @@ public class Main extends Application implements Updateable{
                 cameraHolderRotateY.setAngle(cameraHolderRotateY.getAngle() - mouseMovedX*ROTATION_SPEED*speedModificator);
                 cameraHolderRotateX.setAngle((cameraHolderRotateX.getAngle() + mouseMovedY*ROTATION_SPEED*speedModificator) % 360.0);
             }
+        }
+        else if (mouseEvent.isSecondaryButtonDown()) {
+            // TODO: improve this translation
+            if (cameraView == CameraView.BIRDSEYE_VIEW){
+                cameraHolderTranslate.setX(cameraHolderTranslate.getX() + mouseMovedX*ROTATION_SPEED*speedModificator);
+                cameraHolderTranslate.setY(cameraHolderTranslate.getY() + mouseMovedY*ROTATION_SPEED*speedModificator);
+            }
+            else { } //SIDE_VIEW
         }
     }
     
