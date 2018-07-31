@@ -260,6 +260,10 @@ public class Main extends Application implements Updateable{
         });
     }
     
+    private void setLightIntensity(PointLight light, Color color, double intensity){
+        light.setColor(Color.color(intensity * color.getRed(), intensity * color.getGreen(), intensity * color.getBlue()));
+    }
+    
     @Override
     public void update() {
         switch (state) {
@@ -342,10 +346,6 @@ public class Main extends Application implements Updateable{
             default: 
                 throw new AssertionError();
         }
-    }
-    
-    private void setLightIntensity(PointLight light, Color color, double intensity){
-        light.setColor(Color.color(intensity * color.getRed(), intensity * color.getGreen(), intensity * color.getBlue()));
     }
     
     private void onKeyPressed(KeyEvent keyEvent) {
