@@ -42,6 +42,7 @@ import menus.*;
  * @author AM
  */
 public class Main extends Application implements Updateable{
+    public static enum CameraView {BIRDSEYE_VIEW, SIDE_VIEW};
     private static enum State {MAIN_MENU, PARAMETERS_MENU, GAMEPLAY}
     private State state;
     
@@ -83,7 +84,6 @@ public class Main extends Application implements Updateable{
     MainMenu mainMenu;
     ParametersMenu parametersMenu;
     
-    private static enum CameraView {BIRDSEYE_VIEW, SIDE_VIEW};
     private CameraView cameraView;
     
     private Group cameraHolder;
@@ -262,7 +262,7 @@ public class Main extends Application implements Updateable{
                     endCameraHolderTranslateXAttribute, endCameraHolderTranslateYAttribute)));
         parallelTransition.play();
         parallelTransition.setOnFinished(e-> {
-            well.setView(endWellView);
+            well.setView(endWellView, endCameraView);
             //well.setPaused(false);
         });
     }

@@ -37,6 +37,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Box;
 import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
+import pkg3dtetriswell.Main.CameraView;
 
 /**
  *
@@ -58,8 +59,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     public boolean isPaused() { return paused; }
     public void setPaused(boolean paused) { this.paused = paused; }
     
-    public void setView(WellView view) { 
-        construction.setView(view);
+    public void setView(WellView wellView, CameraView cameraView) { 
+        construction.setView(wellView, cameraView);
         setWallProjection(fallingTetrimino);
     }
     public void changeView(){

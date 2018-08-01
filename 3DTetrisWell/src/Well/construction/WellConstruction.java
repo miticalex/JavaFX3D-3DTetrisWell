@@ -2,29 +2,32 @@ package Well.construction;
 
 import javafx.scene.Group;
 import javafx.scene.paint.PhongMaterial;
+import pkg3dtetriswell.Main.CameraView;
 
 /**
  *
  * @author AM
  */
 public class WellConstruction extends Group{
-    int width, height, depth;
-    double wallWidth;
-    double fieldSize;
+    private int width, height, depth;
+    private double wallWidth;
+    private double fieldSize;
+    private CameraView cameraView;
     
     public static enum WellView {REALISTIC_MESH, REALISTIC, GAMER, MESH}
     private WellView wellView;
     public WellView getView() { return wellView; }
-    public void setView(WellView view) { 
-        this.wellView = view; 
+    public void setView(WellView wellView, CameraView cameraView) { 
+        this.wellView = wellView; 
+        this.cameraView = cameraView;
         refreshMaterials();
     }
     public void changeView(){ 
         switch (wellView) {
-            case REALISTIC_MESH: setView(WellView.REALISTIC); break;
-            case REALISTIC: setView(WellView.GAMER); break;
-            case GAMER: setView(WellView.MESH); break;
-            case MESH: setView(WellView.REALISTIC_MESH); break;
+            case REALISTIC_MESH:    setView(WellView.REALISTIC, this.cameraView); break;
+            case REALISTIC:         setView(WellView.GAMER, this.cameraView); break;
+            case GAMER:             setView(WellView.MESH, this.cameraView); break;
+            case MESH:              setView(WellView.REALISTIC_MESH, this.cameraView); break;
             default: throw new AssertionError();
         }
     }
@@ -47,11 +50,13 @@ public class WellConstruction extends Group{
         this.wallWidth = wallWidth;
         this.fieldSize = fieldSize;
         
+        this.cameraView = CameraView.BIRDSEYE_VIEW;
+        
         addWalls();
         addEdges();
         addBottom();
         addSteelFramework();
-        setView(wellView);
+        setView(wellView, this.cameraView);
     }
     
     private void addWalls() {
@@ -106,6 +111,9 @@ public class WellConstruction extends Group{
         edges.setVisible((wellView == WellView.MESH) ? false : true);
         bottom.setVisible((wellView == WellView.MESH) ? false : true);
         steelFramework.setVisible((wellView == WellView.MESH || wellView == WellView.REALISTIC_MESH) ? true : false);
+        
+        rearWall.setVisible(((cameraView == CameraView.SIDE_VIEW) && (wellView != WellView.MESH)) ? false : true);
+        rightWall.setVisible(((cameraView == CameraView.SIDE_VIEW) && (wellView != WellView.MESH)) ? false : true);
         
         switch (wellView) {
             case MESH:
