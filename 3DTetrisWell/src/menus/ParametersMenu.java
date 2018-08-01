@@ -1,7 +1,10 @@
 package menus;
 
+import Well.Well.Skill;
 import javafx.scene.control.Button;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -18,12 +21,20 @@ public class ParametersMenu extends Menu{
     
     private TextField widthField;
     public TextField getWidthField() { return widthField; }
+    
     private TextField heightField;
     public TextField getHeightField() { return heightField; }
+    
     private TextField depthField;
     public TextField getDepthField() { return depthField; }
+    
     private TextField levelField;
     public TextField getLevelField() { return levelField; }
+    
+    private ToggleGroup professionality;
+    public Skill getProfessionality(){ 
+        return Skill.valueOf(((RadioButton) professionality.getSelectedToggle()).getText().toUpperCase()); 
+    }
     
     private Text warning;
     public void setWarning() { 
@@ -69,6 +80,26 @@ public class ParametersMenu extends Menu{
         levelField.setMaxWidth(100);
         menuButtons.getChildren().add(new HBox(20, levelText, levelField));
         
+        professionality = new ToggleGroup();
+        RadioButton rookie = new RadioButton("Rookie");
+        rookie.setFont(new Font(15)); 
+        rookie.setTextFill(Color.YELLOW);
+        rookie.setMinWidth(110);
+        rookie.setSelected(true);
+        RadioButton amateur = new RadioButton("Amateur");
+        amateur.setFont(new Font(15)); 
+        amateur.setTextFill(Color.YELLOW);
+        RadioButton professional = new RadioButton("Professional");
+        professional.setFont(new Font(15)); 
+        professional.setTextFill(Color.YELLOW);
+        professional.setMinWidth(110);
+        RadioButton guru = new RadioButton("Guru");
+        guru.setFont(new Font(15)); 
+        guru.setTextFill(Color.YELLOW);
+        professionality.getToggles().addAll(rookie, amateur, professional, guru);
+        menuButtons.getChildren().add(new HBox(10, rookie, amateur));
+        menuButtons.getChildren().add(new HBox(10, professional, guru));
+
         Button enterButton = new Button("Start New Game");
         enterButton.setFont(new Font(20));
         enterButton.setMinWidth(100);

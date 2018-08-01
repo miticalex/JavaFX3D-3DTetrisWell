@@ -7,6 +7,7 @@ package pkg3dtetriswell;
 
 import Well.Updateable;
 import Well.Well;
+import Well.Well.Skill;
 import Well.construction.WellConstruction.WellView;
 import gameStats.GameStats;
 import javafx.animation.AnimationTimer;
@@ -142,13 +143,13 @@ public class Main extends Application implements Updateable{
         eventHandling();
     }
     
-    private void startGamePlay(int level, int width, int height, int depth){
+    private void startGamePlay(int level, Skill professionality, int width, int height, int depth){
         state = State.GAMEPLAY;
         root = null;
         well = null;
         gameStats = null;
         
-        well = new Well(level, width, height, depth);
+        well = new Well(level, professionality, width, height, depth);
         
         double wellScaleFactor = MAX_WELL_SIZE/(well.FIELD_SIZE * 
                 (Math.max(well.getHeight(), well.getWidth()) + 1));
@@ -300,8 +301,9 @@ public class Main extends Application implements Updateable{
                             parametersMenu.setWarning(); 
                         }
                         
-                        if (parametersMenu.getChoice() == ParametersMenu.PARAMETERS_ENTERED)
-                            startGamePlay(level, width, height, depth);
+                        if (parametersMenu.getChoice() == ParametersMenu.PARAMETERS_ENTERED){
+                            startGamePlay(level, parametersMenu.getProfessionality(), width, height, depth);
+                        }
                         
                         break;
                     case ParametersMenu.ENTER_PARAMETERS_AGAIN:

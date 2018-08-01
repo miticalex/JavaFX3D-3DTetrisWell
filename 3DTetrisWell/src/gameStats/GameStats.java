@@ -80,6 +80,9 @@ public class GameStats extends Group implements Updateable {
             gameStateLabel.setVisible(false);
     }
     
+    private Text skillLabel = new Text("Skill: ");
+    private Text skill = new Text("");
+    
     private Group nextTetrimino = new Group();
     public void setNextTetrimino(Group newNextTetrimino) {
         this.getChildren().remove(nextTetrimino);
@@ -87,7 +90,7 @@ public class GameStats extends Group implements Updateable {
         nextTetrimino = newNextTetrimino;
         nextTetrimino.setScaleX(3);nextTetrimino.setScaleY(3);
         nextTetrimino.setTranslateX(width/2);
-        nextTetrimino.setTranslateY(320);
+        nextTetrimino.setTranslateY(330);
         
         this.getChildren().add(3, nextTetrimino);
     }
@@ -118,7 +121,7 @@ public class GameStats extends Group implements Updateable {
     
     private void setLabels() {
         labelsVBox = new VBox(dimensionsLabel, timeLabel, levelLabel, 
-                pointsLabel, linesClearedLabel, blocksClearedLabel);
+                pointsLabel, linesClearedLabel, blocksClearedLabel, skillLabel);
         labelsVBox.setTranslateY(100);
         labelsVBox.setTranslateX(width/6);
         
@@ -181,7 +184,7 @@ public class GameStats extends Group implements Updateable {
     
     private void setInitialStats() {
         statsVBox = new VBox(dimensions, time, level, 
-                points, linesCleared, blocksCleared);
+                points, linesCleared, blocksCleared, skill);
         statsVBox.setTranslateY(100);
         statsVBox.setTranslateX(width/2);
         
@@ -190,6 +193,7 @@ public class GameStats extends Group implements Updateable {
             label.setFont(Font.font(19));
             label.setFill(Color.YELLOW);
         }
+        skill.setText(well.getSkill());
         
         this.getChildren().add(statsVBox);
     }

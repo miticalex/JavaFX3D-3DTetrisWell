@@ -43,6 +43,13 @@ import javafx.util.Duration;
  * @author AM
  */
 public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
+    public static enum Skill {ROOKIE, AMATEUR, PROFESSIONAL, GURU}
+    private static final int ROOKIE = 5;
+    private static final int AMATEUR = 8;
+    private static final int PROFESSIONAL = 10;
+    private final Skill skill;
+    public String getSkill() { return skill.toString(); }
+    
     public static enum State {PLAYING, CLEARING, CRITICAL_ROTATION, GAMEOVER};
     private State state;
     public State getState() { return state; }
@@ -60,7 +67,6 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         setWallProjection(fallingTetrimino);
     }
     
-    
     private static enum Direction {POSITIVE, NEGATIVE};
     private static final Point3D X_AXIS = Rotate.X_AXIS;
     private static final Point3D Y_AXIS = Rotate.Y_AXIS;
@@ -75,9 +81,10 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     public static final Random  RANDOM = new Random();
     
     public static final Tetrimino[] tetriminoes = {
-        new ITetrimino(), new LTetrimino(), new OTetrimino(), new TTetrimino(), new ZTetrimino() //list of basic 2D tetriminoes
-//        , new TripodTetrimino(), new TowerLeftTetrimino(), new TowerRightTetrimino(), new CrossPolycube()
-//        , new CrossHoleTetrimino(), new JCrossPolycube(), new TargetPolycube(), new SatelitePolycube()
+        new ITetrimino(), new LTetrimino(), new OTetrimino(), new TTetrimino(), new ZTetrimino(), //list of basic 2D tetriminoes
+        new TripodTetrimino(), new TowerLeftTetrimino(), new TowerRightTetrimino(), 
+        new CrossPolycube(), new TargetPolycube(), 
+        new CrossHoleTetrimino(), new JCrossPolycube(), new SatelitePolycube()
     };
     
     private final int initialLevel;
@@ -115,7 +122,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     public int getBlocksCleared() { return blocksCleared; }
     public int getPoints() { return points; }
     
-    public Well(int initialLevel, int x, int y, int z) {
+    public Well(int initialLevel, Skill professionality,  int x, int y, int z) {
+        this.skill = professionality;
         this.initialLevel = initialLevel>20 ? 20 : (initialLevel<0 ? 0 : initialLevel); 
         width = x>8 ? 8 : (x<3 ? 3 : x);
         height = y>8 ? 8 : (y<3 ? 3 : y);
@@ -140,7 +148,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
                 
         fallenBlocks = new Box[depth][width][height];
         
-        nextTetrimino = tetriminoes[RANDOM.nextInt(tetriminoes.length)];
+        setNextTetrimino();
         setFallingTetrimino();
         setLights();
         
@@ -162,7 +170,13 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         if (collidesWithFallenBlocks(fallingTetrimino)) state = State.GAMEOVER;
         
         futureTetrimino = new Tetrimino(fallingTetrimino);
-        nextTetrimino = tetriminoes[RANDOM.nextInt(tetriminoes.length)];
+        setNextTetrimino();
+    }
+    private void setNextTetrimino(){
+        nextTetrimino = tetriminoes[RANDOM.nextInt( 
+                skill == skill.ROOKIE ? ROOKIE: 
+                skill == skill.AMATEUR ? AMATEUR:
+                skill == skill.PROFESSIONAL ? PROFESSIONAL : tetriminoes.length)];
     }
     
     public void setWallProjection(Tetrimino tetrimino){
