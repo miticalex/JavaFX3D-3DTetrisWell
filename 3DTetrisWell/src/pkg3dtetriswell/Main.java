@@ -312,10 +312,8 @@ public class Main extends Application implements Updateable{
                         break;
                     case ParametersMenu.ENTER_PARAMETERS_AGAIN:
                         break;
-                    case Menu.NO_CHOICE_MADE:
-                        break;
-                    default:
-                        break;
+                    case ParametersMenu.EXIT: openMainMenu(); break;
+                    case Menu.NO_CHOICE_MADE: default: break;
                 }
                 break;
             case GAMEPLAY:

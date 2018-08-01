@@ -18,6 +18,7 @@ import javafx.scene.text.TextAlignment;
 public class ParametersMenu extends Menu{
     public static final int ENTER_PARAMETERS_AGAIN = 1;
     public static final int PARAMETERS_ENTERED = 10;
+    public  static final int EXIT = 9;
     
     private TextField widthField;
     public TextField getWidthField() { return widthField; }
@@ -44,6 +45,12 @@ public class ParametersMenu extends Menu{
 
     @Override
     protected void setButtons() {
+        Button exitButton = new Button("Back To Main Menu");
+        exitButton.setFont(new Font(20));
+        exitButton.setMinWidth(100);
+        exitButton.setOnMouseClicked(e -> choice = EXIT);
+        menuButtons.getChildren().add(exitButton);
+        
         Text widthText =  new Text ("Field Width: ");
         widthText.setFont(new Font(20));
         widthText.setWrappingWidth(100);
