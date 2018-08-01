@@ -27,4 +27,10 @@ public class MainMenu extends Menu {
         
         menuButtons.getChildren().addAll(newGame, exit);
     }
+    
+    public void adjustPositions(double width, double height){
+        gameName.setTranslateX(width/2 - gameName.getBoundsInParent().getWidth()/2);
+        
+        menuButtons.setTranslateX(width/2 - 75/*menuButtons.getBoundsInParent().getWidth()/2*/);
+    }
 }

@@ -50,6 +50,7 @@ abstract public class Menu extends Group{
         menuButtons.setTranslateX(background.getWidth()/2);
         menuButtons.setTranslateY(background.getHeight()/2);
         menuButtons.setAlignment(Pos.CENTER);
+        menuButtons.setTranslateY(150);
         this.getChildren().add(menuButtons);
     }
     
@@ -57,7 +58,6 @@ abstract public class Menu extends Group{
         gameName.setTranslateX(width/2 - gameName.getBoundsInParent().getWidth()/2);
         
         menuButtons.setTranslateX(width/2 - menuButtons.getBoundsInParent().getWidth()/2);
-        menuButtons.setTranslateY(height/2 - menuButtons.getBoundsInParent().getHeight()/2);
     }
     
     abstract protected void setButtons();

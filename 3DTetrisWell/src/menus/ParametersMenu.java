@@ -50,7 +50,7 @@ public class ParametersMenu extends Menu{
         widthText.setFill(Color.YELLOW);
         widthField = new TextField("5");
         widthField.setFont(new Font(20));
-        widthField.setMaxWidth(100);
+        widthField.setMaxWidth(130);
         menuButtons.getChildren().add(new HBox(20, widthText, widthField));
         
         Text heightText =  new Text ("Field Height: ");
@@ -59,7 +59,7 @@ public class ParametersMenu extends Menu{
         heightText.setFill(Color.YELLOW);
         heightField = new TextField("5");
         heightField.setFont(new Font(20));
-        heightField.setMaxWidth(100);
+        heightField.setMaxWidth(130);
         menuButtons.getChildren().add(new HBox(20, heightText, heightField));
         
         Text depthText =  new Text ("Field Depth: ");
@@ -68,7 +68,7 @@ public class ParametersMenu extends Menu{
         depthText.setFill(Color.YELLOW);
         depthField = new TextField("12");
         depthField.setFont(new Font(20));
-        depthField.setMaxWidth(100);
+        depthField.setMaxWidth(130);
         menuButtons.getChildren().add(new HBox(20, depthText, depthField));
         
         Text levelText =  new Text ("Level: ");
@@ -77,7 +77,7 @@ public class ParametersMenu extends Menu{
         levelText.setFill(Color.YELLOW);
         levelField = new TextField("0");
         levelField.setFont(new Font(20));
-        levelField.setMaxWidth(100);
+        levelField.setMaxWidth(130);
         menuButtons.getChildren().add(new HBox(20, levelText, levelField));
         
         professionality = new ToggleGroup();
@@ -116,6 +116,5 @@ public class ParametersMenu extends Menu{
         warning.setFill(Color.RED);
         menuButtons.getChildren().add(warning);
     }
-    
     
 }

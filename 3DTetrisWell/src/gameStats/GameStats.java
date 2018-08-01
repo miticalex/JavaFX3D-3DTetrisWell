@@ -145,7 +145,7 @@ public class GameStats extends Group implements Updateable {
         Text cameraManeuvring = new Text("Camera Maneuvring: \t\t\t\tMouse Drag&Scroll");
         Text cameraReset = new Text("Camera Reset: \t\t\t\t\t\t0");
         Text adjustCameraLight = new Text("Camera Light Adjustment: \t\t\t1 & 2");
-        Text fastDrop = new Text("Fast Drop: \t\t\t\t\t\tSPACE/CTRL");
+        Text fastDrop = new Text("Fast/Slow Drop: \t\t\t\t\tSPACE/CTRL");
         Text wellViewToggle = new Text("Realistic / Gamer / Mesh View Switch: \t3");
         Text cameraViewToggle = new Text("Bird's Eye / Side Camera Switch: \t\tTAB");
         Text exitGameLabel = new Text("Exit to Main Menu: \t\t\t\t\tESCAPE");

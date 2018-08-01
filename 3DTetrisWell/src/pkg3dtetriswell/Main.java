@@ -119,12 +119,15 @@ public class Main extends Application implements Updateable{
     private void openMainMenu(double width, double height){
         state = State.MAIN_MENU;
         mainMenu = new MainMenu();
+        mainMenu.adjustPositions(width, height);
         gameScene = new Scene(mainMenu, width, height, true, SceneAntialiasing.BALANCED);
-        mainMenu.adjustPositions(gameScene.getWidth(), gameScene.getHeight());
         
         window.setTitle("3D Tetris Well");
         window.setScene(gameScene);
         window.show();
+        
+        gameScene.widthProperty().addListener(e -> adjustSize(window));
+        gameScene.heightProperty().addListener(e -> adjustSize(window));
         
         eventHandling();
     }
@@ -133,12 +136,15 @@ public class Main extends Application implements Updateable{
     private void openParametersMenu(double width, double height){
         state = State.PARAMETERS_MENU;
         parametersMenu = new ParametersMenu();
+        parametersMenu.adjustPositions(width, height);
         gameScene = new Scene(parametersMenu, width, height, true, SceneAntialiasing.BALANCED);
-        parametersMenu.adjustPositions(gameScene.getWidth(), gameScene.getHeight());
         
         window.setTitle("3D Tetris Well");
         window.setScene(gameScene);
         window.show();
+        
+        gameScene.widthProperty().addListener(e -> adjustSize(window));
+        gameScene.heightProperty().addListener(e -> adjustSize(window));
         
         eventHandling();
     }
@@ -269,7 +275,6 @@ public class Main extends Application implements Updateable{
     public void update() {
         switch (state) {
             case MAIN_MENU:
-                mainMenu.adjustPositions(gameScene.getWidth(), gameScene.getHeight());
                 switch (mainMenu.getChoice()) {
                     case MainMenu.NEW_GAME:
                         openParametersMenu(gameScene.getWidth(), gameScene.getHeight());
@@ -282,7 +287,6 @@ public class Main extends Application implements Updateable{
                 }
                 break;
             case PARAMETERS_MENU: 
-                parametersMenu.adjustPositions(gameScene.getWidth(), gameScene.getHeight());
                 switch (parametersMenu.getChoice()) {
                     case ParametersMenu.PARAMETERS_ENTERED:
                         int width=0, height=0, depth=0, level=0;
