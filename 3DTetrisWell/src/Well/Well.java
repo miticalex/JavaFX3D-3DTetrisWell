@@ -73,6 +73,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     private static final Point3D Y_AXIS = Rotate.Y_AXIS;
     private static final Point3D Z_AXIS = Rotate.Z_AXIS;
     private static final int    MOVEMENT_DURATION = 300;
+    private static final int    MINIMUM_MOVEMENT_DURATION = 100;
     
     public static final double  FIELD_SIZE = 10.0;
     public static final double  BOX_SIZE = 0.98 * FIELD_SIZE;
@@ -104,6 +105,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     
     private static final double FRAME_PERIOD = 1./60.;
     private double time;
+    private double fallingPeriod;
     private double timeUntilFallingTetriminoDrops;
     
     private Tetrimino fallingTetrimino;
@@ -157,7 +159,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     }
     
     private void setFallingTetriminoDroppingSpeed(int level){ // EACH LEVEL SPEEDS UP TETRIMINO BY SPEEDING_UP_FACTOR
-        timeUntilFallingTetriminoDrops = INITIAL_FALLING_PERIOD/Math.pow(SPEEDING_UP_FACTOR, level);
+        fallingPeriod = INITIAL_FALLING_PERIOD/Math.pow(SPEEDING_UP_FACTOR, level);
+        timeUntilFallingTetriminoDrops = fallingPeriod;
     }
     
     private void setFallingTetrimino(){
@@ -218,7 +221,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         if (timeUntilFallingTetriminoDrops <=0){
             if (moveFallingTetriminoOnGrid(Z_AXIS, Direction.POSITIVE) == false)
                 integrateFallingTetrimino();
-            setFallingTetriminoDroppingSpeed(getLevel());
+            timeUntilFallingTetriminoDrops = fallingPeriod;
         }
     }
     
@@ -279,7 +282,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             return false;
         }
         construction.resetWalls();
-        TranslateTransition translation = new TranslateTransition(Duration.millis(MOVEMENT_DURATION), fallingTetrimino);
+        TranslateTransition translation = new TranslateTransition(
+                Duration.millis(Math.min(MOVEMENT_DURATION, Math.max(MINIMUM_MOVEMENT_DURATION,fallingPeriod))), fallingTetrimino);
         
         if (axis == X_AXIS)         translation.setToX(futureTetrimino.getTranslateX());
         else if (axis == Y_AXIS)    translation.setToY(futureTetrimino.getTranslateY());
@@ -335,7 +339,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
                 return;   
             }
             
-            TranslateTransition translateTransition = new TranslateTransition(Duration.millis(MOVEMENT_DURATION), fallingTetrimino);
+            TranslateTransition translateTransition = new TranslateTransition(Duration.millis(
+                    Math.min(MOVEMENT_DURATION, Math.max(MINIMUM_MOVEMENT_DURATION, fallingPeriod))), fallingTetrimino);
             translateTransition.setToX(futureTetrimino.getTranslateX());
             translateTransition.setToY(futureTetrimino.getTranslateY()); //PAY ATTENTION TO THIS BUG
             
@@ -350,7 +355,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
 
         KeyValue endAngle = new KeyValue(rotate.angleProperty(), angle);
         
-        tetriminoTransition.getChildren().add(0, new Timeline(new KeyFrame(Duration.millis(MOVEMENT_DURATION), endAngle))); //ROTATION
+        tetriminoTransition.getChildren().add(0, new Timeline(new KeyFrame(Duration.millis(
+                Math.min(MOVEMENT_DURATION, Math.max(MINIMUM_MOVEMENT_DURATION,fallingPeriod))), endAngle))); //ROTATION
         tetriminoTransition.setInterpolator(Interpolator.LINEAR);
         tetriminoTransition.play();
         tetriminoTransition.setOnFinished(e -> { 
@@ -412,7 +418,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         fallingTetrimino = null;
         
         setFallingTetrimino();
-        setFallingTetriminoDroppingSpeed(getLevel());
+        timeUntilFallingTetriminoDrops = fallingPeriod;
         
         return true;
     }
