@@ -74,6 +74,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     private static final Point3D Z_AXIS = Rotate.Z_AXIS;
     private static final int    MOVEMENT_DURATION = 300;
     private static final int    MINIMUM_MOVEMENT_DURATION = 100;
+    private static final int    SECOND_IN_MILLIS = 1000;
     
     public static final double  FIELD_SIZE = 10.0;
     public static final double  BOX_SIZE = 0.98 * FIELD_SIZE;
@@ -317,7 +318,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         }
         construction.resetWalls();
         TranslateTransition translation = new TranslateTransition(
-                Duration.millis(Math.min(MOVEMENT_DURATION, Math.max(MINIMUM_MOVEMENT_DURATION,fallingPeriod))), fallingTetrimino);
+                Duration.millis(Math.min(MOVEMENT_DURATION, Math.max(MINIMUM_MOVEMENT_DURATION, SECOND_IN_MILLIS*fallingPeriod))), fallingTetrimino);
         
         if (axis == X_AXIS)         translation.setToX(futureTetrimino.getTranslateX());
         else if (axis == Y_AXIS)    translation.setToY(futureTetrimino.getTranslateY());
@@ -374,7 +375,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             }
             
             TranslateTransition translateTransition = new TranslateTransition(Duration.millis(
-                    Math.min(MOVEMENT_DURATION, Math.max(MINIMUM_MOVEMENT_DURATION, fallingPeriod))), fallingTetrimino);
+                    Math.min(MOVEMENT_DURATION, Math.max(MINIMUM_MOVEMENT_DURATION, SECOND_IN_MILLIS*fallingPeriod))), fallingTetrimino);
             translateTransition.setToX(futureTetrimino.getTranslateX());
             translateTransition.setToY(futureTetrimino.getTranslateY()); //PAY ATTENTION TO THIS BUG
             
@@ -390,7 +391,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         KeyValue endAngle = new KeyValue(rotate.angleProperty(), angle);
         
         tetriminoTransition.getChildren().add(0, new Timeline(new KeyFrame(Duration.millis(
-                Math.min(MOVEMENT_DURATION, Math.max(MINIMUM_MOVEMENT_DURATION,fallingPeriod))), endAngle))); //ROTATION
+                Math.min(MOVEMENT_DURATION, Math.max(MINIMUM_MOVEMENT_DURATION, SECOND_IN_MILLIS*fallingPeriod))), endAngle))); //ROTATION
         tetriminoTransition.setInterpolator(Interpolator.LINEAR);
         tetriminoTransition.play();
         tetriminoTransition.setOnFinished(e -> { 
@@ -519,7 +520,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
                 for (int l = 0; l < fallenBlocks[j][k].length; l++) {
                     if (fallenBlocks[j][k][l] == null) continue;
                     
-                    TranslateTransition translateTransition = new TranslateTransition(Duration.millis(1000), fallenBlocks[j][k][l]);
+                    TranslateTransition translateTransition = new TranslateTransition(Duration.millis(SECOND_IN_MILLIS), fallenBlocks[j][k][l]);
                     translateTransition.setByZ(FIELD_SIZE);
                     translateTransition.play();
                     
