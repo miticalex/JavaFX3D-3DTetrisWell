@@ -127,6 +127,14 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     public int getFloorsCleared() { return floorsCleared; }
     public int getBlocksCleared() { return blocksCleared; }
     public int getPoints() { return points; }
+    public int getFallingTetriminoFloor(){
+        if ((fallingTetrimino == null) && (futureTetrimino == null)) return -1;
+        
+        if (futureTetrimino == null)
+            return depth - 1 - getGridIndexZ(fallingTetrimino.getBoundsInParent().getMaxZ() - 0.5*BOX_SIZE);
+        else
+            return depth - 1 - getGridIndexZ(futureTetrimino.getBoundsInParent().getMaxZ() - 0.5*BOX_SIZE);
+    }
     public int getHighestOccupiedFloor(){
         int i;
         for (i = 0; i < fallenBlocks.length; i++) {

@@ -5,6 +5,7 @@ import Well.Well;
 import Well.construction.ConstructionMaterials;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -29,6 +30,7 @@ public class LeftSidebar extends Group implements Updateable{
     private Group occupiedFloorsBracket;
     Rectangle[] occupiedFloors;
     private Group savedTetrimino = new Group();
+    private Circle fallingTetriminoFloorIndicator;
     
     public LeftSidebar(Well well, double width, double height) {
         this.well = well; 
@@ -39,7 +41,6 @@ public class LeftSidebar extends Group implements Updateable{
     }
     
     private void setBackGround(){
-        
         background = new Rectangle(width, height, Color.BLACK);
         
         Text savedTetriminoLabel = new Text("Saved shape:");
@@ -51,29 +52,31 @@ public class LeftSidebar extends Group implements Updateable{
         
         this.getChildren().addAll(background, savedTetriminoLabel);
         
+        occupiedFloorsBracket = new Group();
         addOccupiedFloors();
         addOccupiedFloorsBracket();
     }
     
     private void addOccupiedFloorsBracket() {
-        occupiedFloorsBracket = new Group();
+        occupiedFloorsBracket.setTranslateX(width/2);
+        occupiedFloorsBracket.setTranslateY(background.getHeight()-20);
+        this.getChildren().add(occupiedFloorsBracket);
         
         double bgHeight = background.getHeight();
         
         occupiedFloorsBracket.getChildren().add(makeLine(
-                new Line(0, bgHeight - 20, 40, bgHeight - 20), Color.AQUA));
+                new Line(0, 0, 40, 0), Color.AQUA));
         
         for (int i = 0; i < well.getDepth(); i++) {
             occupiedFloorsBracket.getChildren().add(makeLine(new Line(
-                    0, bgHeight - 20 - 30*(i+1), 40, bgHeight - 20 - 30*(i+1)), Color.GREY));
+                    0, -30*(i+1), 40, -30*(i+1)), Color.GREY));
             occupiedFloorsBracket.getChildren().add(makeLine(
-                    new Line(0, bgHeight - 20 - 30*i, 0, bgHeight - 20 - 30*(i+1)), Color.AQUA));
+                    new Line(0, -30*i, 0, -30*(i+1)), Color.AQUA));
             occupiedFloorsBracket.getChildren().add(makeLine(new Line(
-                    40, bgHeight - 20 - 30*i, 40, bgHeight - 20 - 30*(i+1)), Color.AQUA));
+                    40, -30*i, 40, -30*(i+1)), Color.AQUA));
         }
         
-        occupiedFloorsBracket.setTranslateX(width/2);
-        this.getChildren().add(occupiedFloorsBracket);
+        
     }
     
     private void addOccupiedFloors() {
@@ -82,18 +85,16 @@ public class LeftSidebar extends Group implements Updateable{
         
         for (int i = 0; i < well.getDepth(); i++){
             occupiedFloors[i] = 
-                    new Rectangle(width/2, bgHeight - 20 - 30*(i+1), 40, 30);
+                    new Rectangle(0, -30*(i+1), 40, 30);
             occupiedFloors[i].setFill(ConstructionMaterials.fallenBlocksColors2D[
                     i % ConstructionMaterials.fallenBlocksColors2D.length]);
             
             occupiedFloors[i].setVisible(false);
-            this.getChildren().add(occupiedFloors[i]);
+            occupiedFloorsBracket.getChildren().add(occupiedFloors[i]);
         }
     }
     
     private void setHighestOccupiedFloor(){
-        int hof = well.getHighestOccupiedFloor();
-        
         for (int i = 0; i <= well.getHighestOccupiedFloor(); i++)
             occupiedFloors[i].setVisible(true);
         
@@ -112,6 +113,21 @@ public class LeftSidebar extends Group implements Updateable{
         this.getChildren().add(savedTetrimino);
     }
     
+    void setFallingTetriminoFloorIndicator(){
+        if (fallingTetriminoFloorIndicator != null)
+            occupiedFloorsBracket.getChildren().remove(fallingTetriminoFloorIndicator);
+        
+        double bgHeight = background.getHeight();
+        
+        if (well.getFallingTetriminoFloor() < well.getDepth()) {
+            fallingTetriminoFloorIndicator = new Circle(
+                20, -15 - 30*(well.getFallingTetriminoFloor()), 5, Color.BROWN);
+            fallingTetriminoFloorIndicator.setStroke(Color.WHITE);
+            fallingTetriminoFloorIndicator.setStrokeWidth(2);
+            occupiedFloorsBracket.getChildren().add(fallingTetriminoFloorIndicator);
+        }
+    }
+    
     private Line makeLine(Line line, Color color){
         if (line == null) return null;
         
@@ -127,5 +143,6 @@ public class LeftSidebar extends Group implements Updateable{
             setSavedTetrimino(well.getSavedTetrimino().get2DAppearance());
         
         setHighestOccupiedFloor();
+        setFallingTetriminoFloorIndicator();
     }
 }
