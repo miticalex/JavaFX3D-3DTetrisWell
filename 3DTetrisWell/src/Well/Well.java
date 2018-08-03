@@ -111,7 +111,9 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     private Tetrimino fallingTetrimino;
     private Tetrimino futureTetrimino;
     private Tetrimino nextTetrimino;
+    private Tetrimino savedTetrimino;
     public Tetrimino getNextTetrimino() { return nextTetrimino; }
+    public Tetrimino getSavedTetrimino() { return savedTetrimino; }
     
     private int level;
     private int floorsCleared;
@@ -152,7 +154,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         fallenBlocks = new Box[depth][width][height];
         
         setNextTetrimino();
-        setFallingTetrimino();
+        setFallingTetrimino(nextTetrimino);
         setLights();
         
         state = State.PLAYING;
@@ -163,8 +165,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         timeUntilFallingTetriminoDrops = fallingPeriod;
     }
     
-    private void setFallingTetrimino(){
-        fallingTetrimino = new Tetrimino(nextTetrimino);
+    private void setFallingTetrimino(Tetrimino tetrimino){
+        fallingTetrimino = new Tetrimino(tetrimino);
         fallingTetrimino.getTransforms().add(new Rotate(180.0 * RANDOM.nextInt(2), Rotate.X_AXIS));
         fallingTetrimino.getTransforms().add(new Rotate(90.0 * RANDOM.nextInt(4), Rotate.Z_AXIS));
         this.addNodeToGridXYZ(fallingTetrimino, (width-1)/2, (height-1)/2, 0);
@@ -174,13 +176,26 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         if (collidesWithFallenBlocks(fallingTetrimino)) state = State.GAMEOVER;
         
         futureTetrimino = new Tetrimino(fallingTetrimino);
-        setNextTetrimino();
     }
     private void setNextTetrimino(){
         nextTetrimino = tetriminoes[RANDOM.nextInt( 
                 skill == skill.ROOKIE ? ROOKIE: 
                 skill == skill.AMATEUR ? AMATEUR:
                 skill == skill.PROFESSIONAL ? PROFESSIONAL : tetriminoes.length)];
+    }
+    private void saveTetrimino(){
+        this.getChildren().remove(fallingTetrimino);
+        if (savedTetrimino == null){
+            savedTetrimino = fallingTetrimino;
+            savedTetrimino.getTransforms().clear();
+            setFallingTetrimino(nextTetrimino);
+        }
+        else {
+            Tetrimino tempTetrimino = fallingTetrimino;
+            tempTetrimino.getTransforms().clear();
+            setFallingTetrimino(savedTetrimino);
+            savedTetrimino = tempTetrimino;
+        }
     }
     
     public void setWallProjection(Tetrimino tetrimino){
@@ -417,7 +432,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         fallingTetrimino.getTransforms().setAll();
         fallingTetrimino = null;
         
-        setFallingTetrimino();
+        setFallingTetrimino(nextTetrimino);
+        setNextTetrimino();
         timeUntilFallingTetriminoDrops = fallingPeriod;
         
         return true;
@@ -554,6 +570,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
                 integrateFallingTetrimino();
                 points+= 10;
                 break;
+            case ENTER: saveTetrimino(); break;
                 
             case U: case INSERT:    rotateFallingTetrimino(Rotate.Z_AXIS, 90); break;
             case J: case DELETE:    rotateFallingTetrimino(Rotate.Z_AXIS, -90); break; 

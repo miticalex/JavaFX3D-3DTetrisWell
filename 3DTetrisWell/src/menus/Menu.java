@@ -1,6 +1,6 @@
 package menus;
 
-import static gameStats.GameStats.gameName;
+import static sidebars.GameStatsSidebar.gameName;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;

@@ -1,4 +1,4 @@
-package gameStats;
+package sidebars;
 
 import Well.Updateable;
 import Well.Well;
@@ -18,7 +18,7 @@ import javafx.scene.transform.Rotate;
  *
  * @author AM
  */
-public class GameStats extends Group implements Updateable {
+public class GameStatsSidebar extends Group implements Updateable {
     public static Text gameName = new Text("BlockWell");
     
     private Well well;
@@ -96,7 +96,7 @@ public class GameStats extends Group implements Updateable {
     }
     
     
-    public GameStats(Well well, double width, double height) { 
+    public GameStatsSidebar(Well well, double width, double height) { 
         this.well = well;
         
         this.width = width;
@@ -146,6 +146,7 @@ public class GameStats extends Group implements Updateable {
         Text cameraReset = new Text("Camera Reset: \t\t\t\t\t\t0");
         Text adjustCameraLight = new Text("Camera Light Adjustment: \t\t\t1 & 2");
         Text fastDrop = new Text("Fast/Slow Drop: \t\t\t\t\tSPACE/CTRL");
+        Text saveShapeLabel = new Text("Save Shape: \t\t\t\t\tENTER");
         Text wellViewToggle = new Text("Realistic / Gamer / Mesh View Switch: \t3");
         Text cameraViewToggle = new Text("Bird's Eye / Side Camera Switch: \t\tTAB");
         Text exitGameLabel = new Text("Exit to Main Menu: \t\t\t\t\tESCAPE");
@@ -162,6 +163,8 @@ public class GameStats extends Group implements Updateable {
         adjustCameraLight.setFill(Color.YELLOW);
         fastDrop.setFont(Font.font(15));
         fastDrop.setFill(Color.YELLOW);
+        saveShapeLabel.setFont(Font.font(15));
+        saveShapeLabel.setFill(Color.YELLOW);
         wellViewToggle.setFont(Font.font(15));
         wellViewToggle.setFill(Color.YELLOW);
         cameraViewToggle.setFont(Font.font(15));
@@ -170,7 +173,7 @@ public class GameStats extends Group implements Updateable {
         exitGameLabel.setFill(Color.YELLOW);
         
         VBox otherControls = new VBox(newGameLabel, pauseLabel, cameraManeuvring, 
-                cameraReset, adjustCameraLight, fastDrop, wellViewToggle, cameraViewToggle, exitGameLabel);
+                cameraReset, adjustCameraLight, fastDrop, saveShapeLabel, wellViewToggle, cameraViewToggle, exitGameLabel);
         otherControls.setTranslateX(width/6);otherControls.setTranslateY(600);
         this.getChildren().addAll(otherControls);
         

@@ -9,7 +9,7 @@ import Well.Updateable;
 import Well.Well;
 import Well.Well.Skill;
 import Well.construction.WellConstruction.WellView;
-import gameStats.GameStats;
+import sidebars.*;
 import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -46,9 +46,11 @@ public class Main extends Application implements Updateable{
     private static enum State {MAIN_MENU, PARAMETERS_MENU, GAMEPLAY}
     private State state;
     
-    private static final double WIDTH = 1300;
+    private static final double WIDTH = 1450;
     private static final double HEIGHT = 800;
     private static final double MAX_WELL_SIZE = 260;
+    private static final double GAMESTATS_SIDEBAR_WIDTH = 500;
+    private static final double LEFT_SIDEBAR_WIDTH = 150;
     
     private static final double WELL_SCALE_FACTOR_Z = 1.5;
     
@@ -79,7 +81,8 @@ public class Main extends Application implements Updateable{
     private SubScene gamePlayScene;
     private Group root;
     private Well well;
-    private GameStats gameStats;
+    private GameStatsSidebar gameStats;
+    private LeftSidebar leftSidebar;
     
     MainMenu mainMenu;
     ParametersMenu parametersMenu;
@@ -188,12 +191,12 @@ public class Main extends Application implements Updateable{
         gamePlayScene.setCamera(camera);
         gamePlayScene.setFill(Color.BLACK);//Color.color(0.2, 0.1, 0));
         
-        Pane gamePlayPane = new Pane(gamePlayScene);
+        gameStats = new GameStatsSidebar(well, GAMESTATS_SIDEBAR_WIDTH, HEIGHT);
+        leftSidebar = new LeftSidebar(well, LEFT_SIDEBAR_WIDTH, HEIGHT);
         
-        gameStats = new GameStats(well, WIDTH-HEIGHT, HEIGHT);
-        
-        gamePlayPane.getChildren().add(gameStats);
-        gameStats.setTranslateX(HEIGHT);
+        Pane gamePlayPane = new Pane(leftSidebar, gamePlayScene, gameStats);
+        gamePlayScene.setTranslateX(LEFT_SIDEBAR_WIDTH);
+        gameStats.setTranslateX(HEIGHT + LEFT_SIDEBAR_WIDTH);
         
         double sceneWidth = (gameScene != null) ? gameScene.getWidth() : WIDTH;
         double sceneHeight = (gameScene != null) ? gameScene.getHeight() : HEIGHT;
@@ -216,10 +219,11 @@ public class Main extends Application implements Updateable{
         switch (state) {
             case GAMEPLAY:
                 windowScale.setY(gameScene.getHeight()/HEIGHT);
-                windowScale.setX(gameScene.getWidth()/WIDTH);
-                gameStats.setTranslateX(gamePlayScene.getBoundsInParent().getWidth());
+                windowScale.setX(gameScene.getHeight()/HEIGHT);
+                gameStats.setTranslateX(LEFT_SIDEBAR_WIDTH + gamePlayScene.getBoundsInParent().getWidth());
                 gameStats.getBackground().setWidth(window.getWidth() - gamePlayScene.getBoundsInParent().getWidth());
                 gameStats.getBackground().setHeight(window.getHeight());
+                leftSidebar.getBackground().setHeight(window.getHeight());
 
                 double smallerDimension = Math.min(well.getHeight(), well.getWidth());
 
@@ -322,6 +326,7 @@ public class Main extends Application implements Updateable{
                 root.getChildren().add(well);
 
                 gameStats.update();
+                leftSidebar.update();
                 break;
             default:
                 throw new AssertionError();
