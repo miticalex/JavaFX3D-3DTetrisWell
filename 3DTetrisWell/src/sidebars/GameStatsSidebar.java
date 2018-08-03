@@ -58,9 +58,9 @@ public class GameStatsSidebar extends Group implements Updateable {
     private Text points = new Text("");
     public void setPointsText(int points) { this.points.setText("" + points); }
     
-    private Text linesClearedLabel = new Text("Lines Cleared: ");
-    private Text linesCleared = new Text("");
-    public void setLinesClearedText(int linesCleared) { this.linesCleared.setText("" + linesCleared); }
+    private Text floorsClearedLabel = new Text("Floors Cleared: ");
+    private Text floorsCleared = new Text("");
+    public void setFloorsClearedText(int floorsCleared) { this.floorsCleared.setText("" + floorsCleared); }
     
     private Text blocksClearedLabel = new Text("Blocks Cleared: ");
     private Text blocksCleared = new Text("");
@@ -121,7 +121,7 @@ public class GameStatsSidebar extends Group implements Updateable {
     
     private void setLabels() {
         labelsVBox = new VBox(dimensionsLabel, timeLabel, levelLabel, 
-                pointsLabel, linesClearedLabel, blocksClearedLabel, skillLabel);
+                pointsLabel, floorsClearedLabel, blocksClearedLabel, skillLabel);
         labelsVBox.setTranslateY(100);
         labelsVBox.setTranslateX(width/6);
         
@@ -146,7 +146,7 @@ public class GameStatsSidebar extends Group implements Updateable {
         Text cameraReset = new Text("Camera Reset: \t\t\t\t\t\t0");
         Text adjustCameraLight = new Text("Camera Light Adjustment: \t\t\t1 & 2");
         Text fastDrop = new Text("Fast/Slow Drop: \t\t\t\t\tSPACE/CTRL");
-        Text saveShapeLabel = new Text("Save Shape: \t\t\t\t\tENTER");
+        Text saveShapeLabel = new Text("Save Shape: \t\t\t\t\t\tENTER");
         Text wellViewToggle = new Text("Realistic / Gamer / Mesh View Switch: \t3");
         Text cameraViewToggle = new Text("Bird's Eye / Side Camera Switch: \t\tTAB");
         Text exitGameLabel = new Text("Exit to Main Menu: \t\t\t\t\tESCAPE");
@@ -187,7 +187,7 @@ public class GameStatsSidebar extends Group implements Updateable {
     
     private void setInitialStats() {
         statsVBox = new VBox(dimensions, time, level, 
-                points, linesCleared, blocksCleared, skill);
+                points, floorsCleared, blocksCleared, skill);
         statsVBox.setTranslateY(100);
         statsVBox.setTranslateX(width/2);
         
@@ -297,7 +297,7 @@ public class GameStatsSidebar extends Group implements Updateable {
         setBlocksClearedText(well.getBlocksCleared());
         setDimensionsText(well.getWidth(), well.getHeight(), well.getDepth());
         setLevelText(well.getLevel());
-        setLinesClearedText(well.getFloorsCleared());
+        setFloorsClearedText(well.getFloorsCleared());
         setPointsText(well.getPoints());
         setTimeText(well.getTime());    
         setStateText(well.getState());
