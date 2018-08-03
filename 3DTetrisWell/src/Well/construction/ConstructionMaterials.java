@@ -18,6 +18,10 @@ public final class ConstructionMaterials {
         Color.color(0.2, 0.1, 0), Color.GREEN, Color.color(0.5, 0, 0), Color.PURPLE, Color.DARKBLUE, 
         Color.color(0.7, 0.7, 0), Color.VIOLET, Color.AQUA 
     };
+    public static final Color[] fallenBlocksColors2D = {
+        Color.color(0.4, 0.2, 0), Color.LIMEGREEN, Color.RED, Color.PURPLE, Color.BLUE, 
+        Color.YELLOW, Color.VIOLET, Color.AQUA 
+    };
     
     public static final PhongMaterial realisticWallMaterial = new PhongMaterial(); 
     public static final PhongMaterial gamerWallMaterial = new PhongMaterial();

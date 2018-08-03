@@ -126,6 +126,25 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     public int getFloorsCleared() { return floorsCleared; }
     public int getBlocksCleared() { return blocksCleared; }
     public int getPoints() { return points; }
+    public int getHighestOccupiedFloor(){
+        int i;
+        for (i = 0; i < fallenBlocks.length; i++) {
+            boolean foundOccupiedBlock = false;
+            
+            for (int j = 0; j < fallenBlocks[i].length; j++) {
+                for (int k = 0; k < fallenBlocks[i][j].length; k++) {
+                    if (fallenBlocks[i][j][k] != null) {
+                        foundOccupiedBlock = true;
+                        break;
+                    }
+                }
+                if (foundOccupiedBlock) break;
+            }
+            if (foundOccupiedBlock) break;
+        }
+        
+        return depth - 1 - i;
+    }
     
     public Well(int initialLevel, Skill professionality,  int x, int y, int z) {
         this.skill = professionality;
