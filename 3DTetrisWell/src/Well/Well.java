@@ -115,6 +115,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     private Tetrimino savedTetrimino;
     public Tetrimino getNextTetrimino() { return nextTetrimino; }
     public Tetrimino getSavedTetrimino() { return savedTetrimino; }
+    private boolean fallingTetriminoSaved = false;
     
     private int level;
     private int floorsCleared;
@@ -194,7 +195,9 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     }
     
     private void setFallingTetrimino(Tetrimino tetrimino){
+        fallingTetriminoSaved = false;
         fallingTetrimino = new Tetrimino(tetrimino);
+        
         fallingTetrimino.getTransforms().add(new Rotate(180.0 * RANDOM.nextInt(2), Rotate.X_AXIS));
         fallingTetrimino.getTransforms().add(new Rotate(90.0 * RANDOM.nextInt(4), Rotate.Z_AXIS));
         this.addNodeToGridXYZ(fallingTetrimino, (width-1)/2, (height-1)/2, 0);
@@ -212,6 +215,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
                 skill == skill.PROFESSIONAL ? PROFESSIONAL : tetriminoes.length)];
     }
     private void saveTetrimino(){
+        if (fallingTetriminoSaved) return;
+        
         this.getChildren().remove(fallingTetrimino);
         if (savedTetrimino == null){
             savedTetrimino = fallingTetrimino;
@@ -224,6 +229,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             setFallingTetrimino(savedTetrimino);
             savedTetrimino = tempTetrimino;
         }
+        
+        fallingTetriminoSaved = true;
     }
     
     public void setWallProjection(Tetrimino tetrimino){
