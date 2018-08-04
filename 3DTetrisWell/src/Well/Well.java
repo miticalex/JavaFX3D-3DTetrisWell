@@ -183,8 +183,8 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         fallenBlocks = new Box[depth][width][height];
         
         savedTetrimino = null;
+        setFallingTetrimino(randomTetrimino());
         setNextTetrimino();
-        setFallingTetrimino(nextTetrimino);
         setLights();
         
         state = State.PLAYING;
@@ -209,8 +209,9 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         
         futureTetrimino = new Tetrimino(fallingTetrimino);
     }
-    private void setNextTetrimino(){
-        nextTetrimino = tetriminoes[RANDOM.nextInt( 
+    private void setNextTetrimino(){ nextTetrimino = randomTetrimino(); }
+    
+    private Tetrimino randomTetrimino(){ return tetriminoes[RANDOM.nextInt( 
                 skill == skill.ROOKIE ? ROOKIE: 
                 skill == skill.AMATEUR ? AMATEUR:
                 skill == skill.PROFESSIONAL ? PROFESSIONAL : tetriminoes.length)];
