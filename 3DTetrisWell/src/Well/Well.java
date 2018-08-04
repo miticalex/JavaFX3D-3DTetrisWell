@@ -211,6 +211,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             savedTetrimino = fallingTetrimino;
             savedTetrimino.getTransforms().clear();
             setFallingTetrimino(nextTetrimino);
+            setNextTetrimino();
         }
         else {
             Tetrimino tempTetrimino = fallingTetrimino;
