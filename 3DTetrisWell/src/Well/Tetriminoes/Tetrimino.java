@@ -64,13 +64,16 @@ public class Tetrimino extends Group {
     
     protected final void addSquare(int posX, int posY, int posZ){
         Rectangle rectangle = new Rectangle(posX * fieldSize, posY * fieldSize, fieldSize, fieldSize);
-        if (posZ!=0){
+        rectangle.setFill(Color.LIMEGREEN);
+        rectangle.setStroke(Color.BLUE);
+        
+        if (posZ==0)
+            tetrimino2D.getChildren().add(0, rectangle);
+        else {
             if (posZ==1) posZ= -2;
             rectangle.setScaleX(Math.pow(0.7, Math.abs(posZ)));
             rectangle.setScaleY(Math.pow(0.7, Math.abs(posZ)));
+            tetrimino2D.getChildren().add(rectangle);
         }
-        rectangle.setFill(Color.LIMEGREEN);
-        rectangle.setStroke(Color.BLUE);
-        tetrimino2D.getChildren().add(rectangle);
     }
 }
