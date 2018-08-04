@@ -104,6 +104,7 @@ public class LeftSidebar extends Group implements Updateable{
     
     public void setSavedTetrimino(Group newSavedTetrimino) {
         this.getChildren().remove(savedTetrimino);
+        if (newSavedTetrimino == null) return;
         
         savedTetrimino = newSavedTetrimino;
         savedTetrimino.setScaleX(3);savedTetrimino.setScaleY(3);
@@ -141,6 +142,7 @@ public class LeftSidebar extends Group implements Updateable{
     public void update() {
         if (well.getSavedTetrimino() != null)
             setSavedTetrimino(well.getSavedTetrimino().get2DAppearance());
+        else setSavedTetrimino(null);
         
         setHighestOccupiedFloor();
         setFallingTetriminoFloorIndicator();

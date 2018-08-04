@@ -182,6 +182,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
                 
         fallenBlocks = new Box[depth][width][height];
         
+        savedTetrimino = null;
         setNextTetrimino();
         setFallingTetrimino(nextTetrimino);
         setLights();
