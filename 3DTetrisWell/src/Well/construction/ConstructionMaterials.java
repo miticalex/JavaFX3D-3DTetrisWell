@@ -35,15 +35,16 @@ public final class ConstructionMaterials {
     public static final PhongMaterial[] fallenBlocksMaterials = new PhongMaterial[fallenBlocksColors.length];
     
     private static final void instantiateMaterials(){
-        realisticWallMaterial.setDiffuseMap(new Image("resources/WellBricksDiffuse.jpg"));
-        realisticWallMaterial.setBumpMap(new Image("resources/WellBricksBump.jpg"));
-        realisticWallMaterial.setSpecularMap(new Image("resources/WellBricksSpecular.jpg"));
+        realisticWallMaterial.setDiffuseMap(new Image("resources/WellBricksDiffuse.png"));
+        realisticWallMaterial.setBumpMap(new Image("resources/WellBricksBump.png"));
+        realisticWallMaterial.setSpecularMap(new Image("resources/WellBricksSpecular.png"));
         
         gamerWallMaterial.setDiffuseColor(GAMER_COLOR);
         gamerWallMaterial.setBumpMap(new Image("resources/cubeBumpMap.png"));
         
-        realisticShiningWallMaterial.setDiffuseMap(new Image("resources/WellBricksDiffuse.jpg"));
-        realisticShiningWallMaterial.setBumpMap(new Image("resources/WellBricksBump.jpg"));
+        realisticShiningWallMaterial.setDiffuseMap(new Image("resources/WellBricksDiffuse.png"));
+        realisticShiningWallMaterial.setBumpMap(new Image("resources/WellBricksBump.png"));
+        realisticShiningWallMaterial.setSpecularMap(new Image("resources/WellBricksSpecular.png"));
         realisticShiningWallMaterial.setSelfIlluminationMap(new Image("resources/transparentRed.png"));
         
         gamerShiningWallMaterial.setDiffuseColor(GAMER_COLOR);
