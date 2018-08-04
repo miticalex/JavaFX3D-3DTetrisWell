@@ -82,7 +82,7 @@ public class ParametersMenu extends Menu{
         levelText.setFont(new Font(20));
         levelText.setWrappingWidth(100);
         levelText.setFill(Color.YELLOW);
-        levelField = new TextField("0");
+        levelField = new TextField("5");
         levelField.setFont(new Font(20));
         levelField.setMaxWidth(130);
         menuButtons.getChildren().add(new HBox(20, levelText, levelField));
