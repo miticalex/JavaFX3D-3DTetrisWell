@@ -107,7 +107,7 @@ public class GameStatsSidebar extends Group implements Updateable {
         setBackGround();
         setInitialStats();
         setButtons();
-        setNextTetrimino(well.getNextTetrimino().get2DAppearance());
+        setNextTetrimino(well.getNextTetrimino().getTetrimino2D());
         setLabels();
     }
     
@@ -303,6 +303,6 @@ public class GameStatsSidebar extends Group implements Updateable {
         setPointsText(well.getPoints());
         setTimeText(well.getTime());    
         setStateText(well.getState());
-        setNextTetrimino(well.getNextTetrimino().get2DAppearance());
+        setNextTetrimino(well.getNextTetrimino().getTetrimino2D());
     }
 }

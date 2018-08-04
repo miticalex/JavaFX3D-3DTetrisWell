@@ -142,7 +142,7 @@ public class LeftSidebar extends Group implements Updateable{
     @Override
     public void update() {
         if (well.getSavedTetrimino() != null)
-            setSavedTetrimino(well.getSavedTetrimino().get2DAppearance());
+            setSavedTetrimino(well.getSavedTetrimino().getTetrimino2D());
         //else setSavedTetrimino(null);
         
         setHighestOccupiedFloor();

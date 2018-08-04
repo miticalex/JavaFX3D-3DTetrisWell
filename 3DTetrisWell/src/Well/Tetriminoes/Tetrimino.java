@@ -18,8 +18,8 @@ public class Tetrimino extends Group {
     final protected double fieldSize;
     
     public class Tetrimino2D extends Group {}
-    private Tetrimino2D appearance2D = new Tetrimino2D();
-    public Tetrimino2D get2DAppearance() { return appearance2D; }
+    protected  Tetrimino2D tetrimino2D = new Tetrimino2D();
+    public Tetrimino2D getTetrimino2D() { return tetrimino2D; }
     
     public Tetrimino(double fieldSize) {
         this.fieldSize = fieldSize;
@@ -71,6 +71,6 @@ public class Tetrimino extends Group {
         }
         rectangle.setFill(Color.LIMEGREEN);
         rectangle.setStroke(Color.BLUE);
-        appearance2D.getChildren().add(rectangle);
+        tetrimino2D.getChildren().add(rectangle);
     }
 }
