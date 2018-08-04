@@ -37,7 +37,7 @@ public class LeftSidebar extends Group implements Updateable{
         this.width = width;
         this.height = height;
         setBackGround();
-        //setSavedTetrimino(savedTetrimino);
+        setSavedTetrimino(savedTetrimino);
     }
     
     private void setBackGround(){
@@ -143,7 +143,7 @@ public class LeftSidebar extends Group implements Updateable{
     public void update() {
         if (well.getSavedTetrimino() != null)
             setSavedTetrimino(well.getSavedTetrimino().getTetrimino2D());
-        //else setSavedTetrimino(null);
+        else setSavedTetrimino(null);
         
         setHighestOccupiedFloor();
         setFallingTetriminoFloorIndicator();
