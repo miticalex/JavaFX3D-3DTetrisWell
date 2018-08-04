@@ -185,6 +185,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     private void setFallingTetrimino(Tetrimino tetrimino){
         fallingTetriminoSaved = false;
         fallingTetrimino = new Tetrimino(tetrimino);
+        timeUntilFallingTetriminoDrops = fallingPeriod;
         
         fallingTetrimino.getTransforms().add(new Rotate(180.0 * RANDOM.nextInt(2), Rotate.X_AXIS));
         fallingTetrimino.getTransforms().add(new Rotate(90.0 * RANDOM.nextInt(4), Rotate.Z_AXIS));
@@ -459,7 +460,6 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         
         setFallingTetrimino(nextTetrimino);
         setNextTetrimino();
-        timeUntilFallingTetriminoDrops = fallingPeriod;
         
         return true;
     }
