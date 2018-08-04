@@ -1,19 +1,6 @@
 package Well;
 
-import Well.Tetriminoes.CrossHoleTetrimino;
-import Well.Tetriminoes.CrossPolycube;
-import Well.Tetriminoes.ITetrimino;
-import Well.Tetriminoes.JCrossPolycube;
-import Well.Tetriminoes.LTetrimino;
-import Well.Tetriminoes.OTetrimino;
-import Well.Tetriminoes.SatelitePolycube;
-import Well.Tetriminoes.TTetrimino;
-import Well.Tetriminoes.TargetPolycube;
-import Well.Tetriminoes.Tetrimino;
-import Well.Tetriminoes.TowerLeftTetrimino;
-import Well.Tetriminoes.TowerRightTetrimino;
-import Well.Tetriminoes.TripodTetrimino;
-import Well.Tetriminoes.ZTetrimino;
+import Well.Tetriminoes.*;
 import Well.construction.ConstructionMaterials;
 import Well.construction.WellConstruction;
 import Well.construction.WellConstruction.WellView;
@@ -45,9 +32,9 @@ import pkg3dtetriswell.Main.CameraView;
  */
 public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     public static enum Skill {ROOKIE, AMATEUR, PROFESSIONAL, GURU}
-    private static final int ROOKIE = 5;
-    private static final int AMATEUR = 8;
-    private static final int PROFESSIONAL = 10;
+    private static final int ROOKIE = 7;
+    private static final int AMATEUR = 10;
+    private static final int PROFESSIONAL = 12;
     private final Skill skill;
     public String getSkill() { return skill.toString(); }
     
@@ -84,7 +71,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     public static final Random  RANDOM = new Random();
     
     public static final Tetrimino[] tetriminoes = {
-        new ITetrimino(), new LTetrimino(), new OTetrimino(), new TTetrimino(), new ZTetrimino(), //list of basic 2D tetriminoes
+        new ITetrimino(), new LTetrimino(), new OTetrimino(), new TTetrimino(), new ZTetrimino(), new OneTetrimino(), new CornerTetrimino(),  // new TwoTetrimino() basic 2D
         new TripodTetrimino(), new TowerLeftTetrimino(), new TowerRightTetrimino(), 
         new CrossPolycube(), new TargetPolycube(), 
         new CrossHoleTetrimino(), new JCrossPolycube(), new SatelitePolycube()
