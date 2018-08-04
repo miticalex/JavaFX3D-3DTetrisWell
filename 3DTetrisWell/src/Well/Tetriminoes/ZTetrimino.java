@@ -9,9 +9,9 @@ public class ZTetrimino extends Tetrimino {
         super(fieldSize);
         
         addBox(-1, 0, 0);
+        addBox(1, 1, 0);
         addBox(0, 0, 0);
         addBox(0, 1, 0);
-        addBox(1, 1, 0);
     }
     
     public ZTetrimino() {
