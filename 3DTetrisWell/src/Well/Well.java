@@ -258,7 +258,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         topLight.setTranslateZ(- 1.5*FIELD_SIZE);
         this.getChildren().addAll(ambientLight, topLight);
         
-        PointLight bottomLight = new PointLight(Color.LIGHTGRAY);
+        PointLight bottomLight = new PointLight(Color.DARKGREY);
         bottomLight.setTranslateZ(8*FIELD_SIZE);
         this.getChildren().add(bottomLight);
     }
