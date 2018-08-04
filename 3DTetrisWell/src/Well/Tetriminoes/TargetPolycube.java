@@ -30,5 +30,5 @@ public class TargetPolycube extends Tetrimino {
         addSquare(0, +1, 0);
         addSquare(0, 0, 0);
         addSquare(0, 0, -1);
-    }   
+    }
 }

@@ -23,7 +23,6 @@ public class SatelitePolycube extends Tetrimino {
         this(Well.Well.FIELD_SIZE);
     }
     
-    
     private void add2DAppearance() {
         tetrimino2D = new Tetrimino2D();
         
@@ -34,5 +33,5 @@ public class SatelitePolycube extends Tetrimino {
         addSquare(0, 0, 0);
         addSquare(0, 0, -1);
         addSquare(0, 0, +1);
-    }   
+    }
 }

@@ -13,12 +13,6 @@ public class CrossPolycube extends Tetrimino {
         addBox(-1, 0, 0);
         addBox(+1, 0, 0);
         addBox(0, +1, 0);
-        
-//        addBox(0, -1, 0);
-//        addBox(-1, 0, 0);
-//        addBox(+1, 0, 0);
-//        addBox(0, +1, 0);
-//        addBox(0, 0, 0);
     }
     
     public CrossPolycube() {
