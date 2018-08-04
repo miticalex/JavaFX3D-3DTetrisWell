@@ -171,7 +171,7 @@ public class Main extends Application implements Updateable{
         
         cameraHolder.setRotationAxis(Rotate.X_AXIS);
         cameraHolderRotateY.setPivotZ(SIDE_CAMERA_POSITION_Y);
-        cameraHolder.getTransforms().addAll(cameraHolderRotateZ, cameraHolderRotateY, cameraHolderRotateX, cameraHolderTranslate);
+        cameraHolder.getTransforms().addAll(cameraHolderTranslate, cameraHolderRotateZ, cameraHolderRotateY, cameraHolderRotateX);
         
         root.getChildren().add(cameraHolder);
         
@@ -423,10 +423,14 @@ public class Main extends Application implements Updateable{
             }
         }
         else if (mouseEvent.isSecondaryButtonDown()) {
-            // TODO: improve this translation
+            double sinZ = Math.sin(Math.toRadians(cameraHolderRotateZ.getAngle()));
+            double cosZ = Math.cos(Math.toRadians(cameraHolderRotateZ.getAngle()));
+            
             if (cameraView == CameraView.BIRDSEYE_VIEW){
-                cameraHolderTranslate.setX(cameraHolderTranslate.getX() + mouseMovedX*ROTATION_SPEED*speedModificator);
-                cameraHolderTranslate.setY(cameraHolderTranslate.getY() + mouseMovedY*ROTATION_SPEED*speedModificator);
+                cameraHolderTranslate.setX(cameraHolderTranslate.getX() + 
+                        (mouseMovedX*cosZ - mouseMovedY*sinZ)*ROTATION_SPEED*speedModificator); // + mouseMovedX*ROTATION_SPEED*speedModificator);
+                cameraHolderTranslate.setY(cameraHolderTranslate.getY() + 
+                        (mouseMovedX*sinZ + mouseMovedY*cosZ)*ROTATION_SPEED*speedModificator); // + mouseMovedY*ROTATION_SPEED*speedModificator);
             }
             else { } //SIDE_VIEW
         }
