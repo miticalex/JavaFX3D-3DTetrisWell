@@ -1,5 +1,6 @@
 package sidebars;
 
+import Well.Tetriminoes.Tetrimino.Tetrimino2D;
 import Well.Updateable;
 import Well.Well;
 import Well.Well.State;
@@ -83,9 +84,10 @@ public class GameStatsSidebar extends Group implements Updateable {
     private Text skillLabel = new Text("Skill: ");
     private Text skill = new Text("");
     
-    private Group nextTetrimino = new Group();
-    public void setNextTetrimino(Group newNextTetrimino) {
-        this.getChildren().remove(nextTetrimino);
+    private Tetrimino2D nextTetrimino;
+    public void setNextTetrimino(Tetrimino2D newNextTetrimino) {
+        if (nextTetrimino != null) 
+            this.getChildren().remove(nextTetrimino);
         
         nextTetrimino = newNextTetrimino;
         nextTetrimino.setScaleX(3);nextTetrimino.setScaleY(3);

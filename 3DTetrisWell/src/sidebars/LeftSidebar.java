@@ -1,5 +1,6 @@
 package sidebars;
 
+import Well.Tetriminoes.Tetrimino.Tetrimino2D;
 import Well.Updateable;
 import Well.Well;
 import Well.construction.ConstructionMaterials;
@@ -10,7 +11,6 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import static sidebars.GameStatsSidebar.gameName;
 
 /**
  *
@@ -29,7 +29,7 @@ public class LeftSidebar extends Group implements Updateable{
     
     private Group occupiedFloorsBracket;
     Rectangle[] occupiedFloors;
-    private Group savedTetrimino = new Group();
+    private Tetrimino2D savedTetrimino;
     private Circle fallingTetriminoFloorIndicator;
     
     public LeftSidebar(Well well, double width, double height) {
@@ -37,7 +37,7 @@ public class LeftSidebar extends Group implements Updateable{
         this.width = width;
         this.height = height;
         setBackGround();
-        setSavedTetrimino(savedTetrimino);
+        //setSavedTetrimino(savedTetrimino);
     }
     
     private void setBackGround(){
@@ -102,8 +102,9 @@ public class LeftSidebar extends Group implements Updateable{
             occupiedFloors[i].setVisible(false);
     }
     
-    public void setSavedTetrimino(Group newSavedTetrimino) {
-        this.getChildren().remove(savedTetrimino);
+    public void setSavedTetrimino(Tetrimino2D newSavedTetrimino) {
+        if (savedTetrimino != null)
+            this.getChildren().remove(savedTetrimino);
         if (newSavedTetrimino == null) return;
         
         savedTetrimino = newSavedTetrimino;
@@ -142,7 +143,7 @@ public class LeftSidebar extends Group implements Updateable{
     public void update() {
         if (well.getSavedTetrimino() != null)
             setSavedTetrimino(well.getSavedTetrimino().get2DAppearance());
-        else setSavedTetrimino(null);
+        //else setSavedTetrimino(null);
         
         setHighestOccupiedFloor();
         setFallingTetriminoFloorIndicator();

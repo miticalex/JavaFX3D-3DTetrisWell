@@ -17,8 +17,9 @@ import javafx.scene.transform.Transform;
 public class Tetrimino extends Group {
     final protected double fieldSize;
     
-    private Group appearance2D = new Group();
-    public Group get2DAppearance() { return appearance2D; }
+    public class Tetrimino2D extends Group {}
+    private Tetrimino2D appearance2D = new Tetrimino2D();
+    public Tetrimino2D get2DAppearance() { return appearance2D; }
     
     public Tetrimino(double fieldSize) {
         this.fieldSize = fieldSize;
@@ -58,7 +59,10 @@ public class Tetrimino extends Group {
         box.setTranslateZ(posZ * fieldSize);
         
         this.getChildren().add(box);
-        
+        this.addSquare(posX, posY, posZ);
+    }
+    
+    protected final void addSquare(int posX, int posY, int posZ){
         Rectangle rectangle = new Rectangle(posX * fieldSize, posY * fieldSize, fieldSize, fieldSize);
         if (posZ!=0){
             if (posZ==1) posZ= -2;
