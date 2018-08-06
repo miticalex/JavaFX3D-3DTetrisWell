@@ -1,6 +1,6 @@
 package sidebars;
 
-import Well.Tetriminoes.Tetrimino.Tetrimino2D;
+import Well.Tetriminoes.BaseTetrimino.Tetrimino2D;
 import Well.Updateable;
 import Well.Well;
 import Well.Well.State;

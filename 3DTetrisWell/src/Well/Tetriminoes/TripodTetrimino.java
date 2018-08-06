@@ -4,7 +4,7 @@ package Well.Tetriminoes;
  *
  * @author AM
  */
-public class TripodTetrimino extends Tetrimino {
+public class TripodTetrimino extends BaseTetrimino {
     public TripodTetrimino(double fieldSize) {
         super(fieldSize);
        

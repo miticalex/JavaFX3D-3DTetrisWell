@@ -9,7 +9,7 @@ package Well.Tetriminoes;
  *
  * @author AM
  */
-public class OneTetrimino extends Tetrimino{
+public class OneTetrimino extends BaseTetrimino{
     public OneTetrimino(double fieldSize) {
         super(fieldSize);
        

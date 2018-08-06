@@ -4,7 +4,7 @@ package Well.Tetriminoes;
  *
  * @author AM
  */
-public class CrossHoleTetrimino extends Tetrimino {
+public class CrossHoleTetrimino extends BaseTetrimino {
     public CrossHoleTetrimino(double fieldSize) {
         super(fieldSize);
        

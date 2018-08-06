@@ -4,7 +4,7 @@ package Well.Tetriminoes;
  *
  * @author AM
  */
-public class SatelitePolycube extends Tetrimino {
+public class SatelitePolycube extends BaseTetrimino {
     public SatelitePolycube(double fieldSize) {
         super(fieldSize);
        

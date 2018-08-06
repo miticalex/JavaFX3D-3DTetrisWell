@@ -14,20 +14,20 @@ import javafx.scene.transform.Transform;
  *
  * @author AM
  */
-public class Tetrimino extends Group {
+public class BaseTetrimino extends Group {
     final protected double fieldSize;
     
     public class Tetrimino2D extends Group {}
     protected  Tetrimino2D tetrimino2D = new Tetrimino2D();
     public Tetrimino2D getTetrimino2D() { return tetrimino2D; }
     
-    public Tetrimino(double fieldSize) {
+    protected BaseTetrimino(double fieldSize) {
         this.fieldSize = fieldSize;
     }
-    public Tetrimino(){
+    protected BaseTetrimino(){
         this(Well.Well.FIELD_SIZE);
     }
-    public Tetrimino(Tetrimino tetrimino){
+    public BaseTetrimino(BaseTetrimino tetrimino){
         this(tetrimino.fieldSize);
         
         for (Node node : tetrimino.getChildren()) {

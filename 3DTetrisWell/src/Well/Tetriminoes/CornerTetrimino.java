@@ -4,7 +4,7 @@ package Well.Tetriminoes;
  *
  * @author AM
  */
-public class CornerTetrimino extends Tetrimino {
+public class CornerTetrimino extends BaseTetrimino {
     public CornerTetrimino(double fieldSize) {
         super(fieldSize);
        

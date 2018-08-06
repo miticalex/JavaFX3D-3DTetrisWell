@@ -4,7 +4,7 @@ package Well.Tetriminoes;
  *
  * @author AM
  */
-public class CrossPolycube extends Tetrimino {
+public class CrossPolycube extends BaseTetrimino {
     public CrossPolycube(double fieldSize) {
         super(fieldSize);
        

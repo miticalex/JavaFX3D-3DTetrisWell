@@ -4,7 +4,7 @@ package Well.Tetriminoes;
  *
  * @author AM
  */
-public class TowerLeftTetrimino extends Tetrimino {
+public class TowerLeftTetrimino extends BaseTetrimino {
     public TowerLeftTetrimino(double fieldSize) {
         super(fieldSize);
        

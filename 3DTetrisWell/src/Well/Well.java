@@ -70,7 +70,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     
     public static final Random  RANDOM = new Random();
     
-    public static final Tetrimino[] tetriminoes = {
+    public static final BaseTetrimino[] tetriminoes = {
         new ITetrimino(), new LTetrimino(), new OTetrimino(), new TTetrimino(), new ZTetrimino(), new OneTetrimino(), new CornerTetrimino(),  // new TwoTetrimino() basic 2D
         new TripodTetrimino(), new TowerLeftTetrimino(), new TowerRightTetrimino(), 
         new CrossPolycube(), new TargetPolycube(), 
@@ -96,12 +96,12 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     private double fallingPeriod;
     private double timeUntilFallingTetriminoDrops;
     
-    private Tetrimino fallingTetrimino;
-    private Tetrimino futureTetrimino;
-    private Tetrimino nextTetrimino;
-    private Tetrimino savedTetrimino;
-    public Tetrimino getNextTetrimino() { return nextTetrimino; }
-    public Tetrimino getSavedTetrimino() { return savedTetrimino; }
+    private BaseTetrimino fallingTetrimino;
+    private BaseTetrimino futureTetrimino;
+    private BaseTetrimino nextTetrimino;
+    private BaseTetrimino savedTetrimino;
+    public BaseTetrimino getNextTetrimino() { return nextTetrimino; }
+    public BaseTetrimino getSavedTetrimino() { return savedTetrimino; }
     private boolean fallingTetriminoSaved = false;
     
     private int level;
@@ -182,9 +182,9 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         timeUntilFallingTetriminoDrops = fallingPeriod;
     }
     
-    private void setFallingTetrimino(Tetrimino tetrimino){
+    private void setFallingTetrimino(BaseTetrimino tetrimino){
         fallingTetriminoSaved = false;
-        fallingTetrimino = new Tetrimino(tetrimino);
+        fallingTetrimino = new BaseTetrimino(tetrimino);
         timeUntilFallingTetriminoDrops = fallingPeriod;
         
         fallingTetrimino.getTransforms().add(new Rotate(180.0 * RANDOM.nextInt(2), Rotate.X_AXIS));
@@ -195,11 +195,11 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         
         if (collidesWithFallenBlocks(fallingTetrimino)) state = State.GAMEOVER;
         
-        futureTetrimino = new Tetrimino(fallingTetrimino);
+        futureTetrimino = new BaseTetrimino(fallingTetrimino);
     }
     private void setNextTetrimino(){ nextTetrimino = randomTetrimino(); }
     
-    private Tetrimino randomTetrimino(){ return tetriminoes[RANDOM.nextInt( 
+    private BaseTetrimino randomTetrimino(){ return tetriminoes[RANDOM.nextInt( 
                 skill == skill.ROOKIE ? ROOKIE: 
                 skill == skill.AMATEUR ? AMATEUR:
                 skill == skill.PROFESSIONAL ? PROFESSIONAL : tetriminoes.length)];
@@ -215,7 +215,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             setNextTetrimino();
         }
         else {
-            Tetrimino tempTetrimino = fallingTetrimino;
+            BaseTetrimino tempTetrimino = fallingTetrimino;
             tempTetrimino.getTransforms().clear();
             setFallingTetrimino(savedTetrimino);
             savedTetrimino = tempTetrimino;
@@ -224,7 +224,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         fallingTetriminoSaved = true;
     }
     
-    public void setWallProjection(Tetrimino tetrimino){
+    public void setWallProjection(BaseTetrimino tetrimino){
         construction.resetWalls();
         
         for (Node node : tetrimino.getChildren()) {
@@ -407,7 +407,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         });
     }
     
-    public final boolean collidesWithFallenBlocks(Tetrimino tetrimino){
+    public final boolean collidesWithFallenBlocks(BaseTetrimino tetrimino){
         for (Node node : tetrimino.getChildren()) {
             Box box = (Box)node;
             Point3D boxCoordinatesInWell = tetrimino.localToParent(box.getTranslateX(), box.getTranslateY(), box.getTranslateZ());
