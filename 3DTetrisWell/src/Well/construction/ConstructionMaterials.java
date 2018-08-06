@@ -60,7 +60,7 @@ public final class ConstructionMaterials {
         
         realisticBottomMaterial.setDiffuseMap(new Image("resources/BottomDiffuse.jpg"));
         realisticBottomMaterial.setBumpMap(new Image("resources/BottomBump.jpg"));
-        realisticBottomMaterial.setSpecularMap(new Image("resources/BottomSpecular.jpg"));
+//        realisticBottomMaterial.setSpecularMap(new Image("resources/BottomSpecular.jpg"));
         
         gamerBottomMaterial.setDiffuseColor(GAMER_BOTTOM_COLOR);
         gamerBottomMaterial.setSpecularColor(Color.BLACK);
