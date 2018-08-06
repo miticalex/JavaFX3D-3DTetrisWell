@@ -337,7 +337,6 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
     }
     
     public void rotateFallingTetrimino(Point3D axis, double angle) {
-        if ((state!= State.PLAYING) || (paused)) return;
         if ((axis!=X_AXIS && axis!=Y_AXIS && axis!=Z_AXIS) || (Math.abs(angle) !=90.0)) return;
 
         futureTetrimino.getTransforms().add(0, new Rotate(angle, axis));
