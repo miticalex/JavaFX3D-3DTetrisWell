@@ -10,6 +10,7 @@ import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.ParallelTransition;
+import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
 import javafx.animation.TranslateTransition;
 import javafx.event.EventHandler;
@@ -516,8 +517,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
             }
         }
         
-//        state = State.PLAYING;
-        ParallelTransition dropping = new ParallelTransition();
+        ParallelTransition dropping = new ParallelTransition(new PauseTransition(Duration.millis(SECOND_IN_MILLIS)));
         for (int j = i; j >0; j--) {
             fallenBlocks[j] = fallenBlocks[j-1];
             for (int k = 0; k < fallenBlocks[j].length; k++) {
@@ -525,7 +525,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
                     if (fallenBlocks[j][k][l] == null) continue;
                     
                     TranslateTransition translateTransition = new TranslateTransition(Duration.millis(SECOND_IN_MILLIS), fallenBlocks[j][k][l]);
-                    translateTransition.setByZ(FIELD_SIZE);
+                    translateTransition.setToZ(j*FIELD_SIZE);
                     translateTransition.play();
                     
                     final int j1 = j, k1 = k, l1 = l;
