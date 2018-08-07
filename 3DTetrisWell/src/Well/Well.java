@@ -272,7 +272,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
         
         node.setTranslateX(-FIELD_SIZE*width/2d + (x+0.5)*FIELD_SIZE);
         node.setTranslateY(-FIELD_SIZE*height/2d + (y+0.5)*FIELD_SIZE);
-        node.setTranslateZ(FIELD_SIZE/2 + z*FIELD_SIZE);
+        node.setTranslateZ(FIELD_SIZE/2d + z*FIELD_SIZE);
     }
     
     public final void addNodeToGroupGridXYZ(Group group, Node node, double x, double y, double z){
@@ -525,7 +525,7 @@ public class Well extends Group implements Updateable, EventHandler<KeyEvent>{
                     if (fallenBlocks[j][k][l] == null) continue;
                     
                     TranslateTransition translateTransition = new TranslateTransition(Duration.millis(SECOND_IN_MILLIS), fallenBlocks[j][k][l]);
-                    translateTransition.setToZ(j*FIELD_SIZE);
+                    translateTransition.setToZ((j+0.5)*FIELD_SIZE);
                     translateTransition.play();
                     
                     final int j1 = j, k1 = k, l1 = l;
