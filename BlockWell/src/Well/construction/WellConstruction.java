@@ -2,7 +2,7 @@ package Well.construction;
 
 import javafx.scene.Group;
 import javafx.scene.paint.PhongMaterial;
-import pkg3dtetriswell.Main.CameraView;
+import application.BlockWell.CameraView;
 
 /**
  *

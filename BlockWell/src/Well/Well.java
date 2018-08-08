@@ -25,7 +25,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Box;
 import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
-import pkg3dtetriswell.Main.CameraView;
+import application.BlockWell.CameraView;
 
 /**
  *

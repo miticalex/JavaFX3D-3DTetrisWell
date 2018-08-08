@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package pkg3dtetriswell;
+package application;
 
 import Well.Updateable;
 import Well.Well;
@@ -41,7 +41,7 @@ import menus.*;
  *
  * @author AM
  */
-public class Main extends Application implements Updateable{
+public class BlockWell extends Application implements Updateable{
     public static enum CameraView {BIRDSEYE_VIEW, SIDE_VIEW};
     private static enum State {MAIN_MENU, PARAMETERS_MENU, GAMEPLAY}
     private State state;
