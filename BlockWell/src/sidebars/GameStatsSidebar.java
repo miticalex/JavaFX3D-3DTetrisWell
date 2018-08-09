@@ -4,6 +4,7 @@ import Well.Tetriminoes.BaseTetrimino.Tetrimino2D;
 import Well.Updateable;
 import Well.Well;
 import Well.Well.State;
+import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
@@ -21,8 +22,10 @@ import javafx.scene.transform.Rotate;
  */
 public class GameStatsSidebar extends Group implements Updateable {
     public static Text gameName = new Text("BlockWell");
+    private static final Color RELEASED_BUTTON_COLOR = Color.color(0.6,0.6,0.6);
+    private static final Color PRESSED_BUTTON_COLOR = Color.color(0.2,0.2,0.2);
     
-    private Well well;
+    private final Well well;
     
     private double width;
     private double height;
@@ -31,16 +34,16 @@ public class GameStatsSidebar extends Group implements Updateable {
         return background;
     }
     
-    VBox labelsVBox, statsVBox;
+    VBox gameStatsLabelsVBox, statsVBox;
     
-    private Text dimensionsLabel = new Text("Dimensions: ");
-    private Text dimensions = new Text("");
+    private final Text dimensionsLabel = new Text("Dimensions: ");
+    private final Text dimensions = new Text("");
     public void setDimensionsText(int x, int y, int z) { 
         dimensions.setText(x + "x" + y + "x" + z); 
     }
     
-    private Text timeLabel = new Text("Time: ");
-    private Text time = new Text("");
+    private final Text timeLabel = new Text("Time: ");
+    private final Text time = new Text("");
     public void setTimeText(double time) { 
         int seconds = ((int)time) % 60;
         int minutes = ((int)time) / 60;
@@ -51,23 +54,23 @@ public class GameStatsSidebar extends Group implements Updateable {
         else this.time.setText(minutes/60 + ":" + minutes%60 + ":" + seconds);
     }
     
-    private Text levelLabel = new Text("Level: ");
-    private Text level = new Text("");
+    private final Text levelLabel = new Text("Level: ");
+    private final Text level = new Text("");
     public void setLevelText(int level) { this.level.setText("" + level); }
     
-    private Text pointsLabel = new Text("Points: ");
-    private Text points = new Text("");
+    private final Text pointsLabel = new Text("Points: ");
+    private final Text points = new Text("");
     public void setPointsText(int points) { this.points.setText("" + points); }
     
-    private Text floorsClearedLabel = new Text("Floors Cleared: ");
-    private Text floorsCleared = new Text("");
+    private final Text floorsClearedLabel = new Text("Floors Cleared: ");
+    private final Text floorsCleared = new Text("");
     public void setFloorsClearedText(int floorsCleared) { this.floorsCleared.setText("" + floorsCleared); }
     
-    private Text blocksClearedLabel = new Text("Blocks Cleared: ");
-    private Text blocksCleared = new Text("");
+    private final Text blocksClearedLabel = new Text("Blocks Cleared: ");
+    private final Text blocksCleared = new Text("");
     public void setBlocksClearedText(int blocksCleared) { this.blocksCleared.setText("" + blocksCleared); }
     
-    private Text gameStateLabel = new Text("");
+    private final Text gameStateLabel = new Text("");
     private void setStateText(Well.State state) {
         gameStateLabel.setText(state.toString());
         if ((state != state.GAMEOVER) && (well.isPaused()))
@@ -81,11 +84,22 @@ public class GameStatsSidebar extends Group implements Updateable {
             gameStateLabel.setVisible(false);
     }
     
-    private Text skillLabel = new Text("Skill: ");
-    private Text skill = new Text("");
+    private final Text newGameLabel = new Text("New Game Button: \t\t\t\t\tF2");
+    private final Text pauseLabel = new Text("Pause Button: \t\t\t\t\t\tPause/P/F3");
+    private final Text cameraManeuvring = new Text("Camera Maneuvring: \t\t\t\tMouse Drag&Scroll");
+    private final Text cameraReset = new Text("Camera Reset: \t\t\t\t\t\t0");
+    private final Text adjustCameraLight = new Text("Camera Light Adjustment: \t\t\t1 & 2");
+    private final Text fastDrop = new Text("Fast/Slow Drop: \t\t\t\t\tSPACE/CTRL");
+    private final Text saveShapeLabel = new Text("Save/Restore Shape: \t\t\t\tENTER");
+    private final Text wellViewToggle = new Text("Realistic / Gamer / Mesh View Switch: \t3");
+    private final Text cameraViewToggle = new Text("Bird's Eye / Side Camera Switch: \t\tTAB");
+    private final Text exitGameLabel = new Text("Exit to Main Menu: \t\t\t\t\tESCAPE");
+    
+    private final Text skillLabel = new Text("Skill: ");
+    private final Text skill = new Text("");
     
     private Tetrimino2D nextTetrimino;
-    public void setNextTetrimino(Tetrimino2D newNextTetrimino) {
+    public final void setNextTetrimino(Tetrimino2D newNextTetrimino) {
         if (nextTetrimino != null) 
             this.getChildren().remove(nextTetrimino);
         
@@ -96,7 +110,6 @@ public class GameStatsSidebar extends Group implements Updateable {
         
         this.getChildren().add(3, nextTetrimino);
     }
-    
     
     public GameStatsSidebar(Well well, double width, double height) { 
         this.well = well;
@@ -121,72 +134,6 @@ public class GameStatsSidebar extends Group implements Updateable {
         this.getChildren().addAll(background, gameName);
     }
     
-    private void setLabels() {
-        labelsVBox = new VBox(dimensionsLabel, timeLabel, levelLabel, 
-                pointsLabel, floorsClearedLabel, blocksClearedLabel, skillLabel);
-        labelsVBox.setTranslateY(100);
-        labelsVBox.setTranslateX(width/6);
-        
-        for (Node node : labelsVBox.getChildren()) {
-            Text label = (Text)node;
-            label.setFont(Font.font(19));
-            label.setFill(Color.YELLOW);
-        }
-        
-        this.getChildren().addAll(labelsVBox);
-        
-        Text nextTetriminoLabel = new Text("Next shape:");
-        nextTetriminoLabel.setFont(Font.font(20));
-        nextTetriminoLabel.setFill(Color.YELLOW);
-        nextTetriminoLabel.setTranslateX(width/6);
-        nextTetriminoLabel.setTranslateY(330);
-        this.getChildren().add(nextTetriminoLabel);
-        
-        Text newGameLabel = new Text("New Game Button: \t\t\t\t\tF2");
-        Text pauseLabel = new Text("Pause Button: \t\t\t\t\t\tPause/P/F3");
-        Text cameraManeuvring = new Text("Camera Maneuvring: \t\t\t\tMouse Drag&Scroll");
-        Text cameraReset = new Text("Camera Reset: \t\t\t\t\t\t0");
-        Text adjustCameraLight = new Text("Camera Light Adjustment: \t\t\t1 & 2");
-        Text fastDrop = new Text("Fast/Slow Drop: \t\t\t\t\tSPACE/CTRL");
-        Text saveShapeLabel = new Text("Save/Restore Shape: \t\t\t\tENTER");
-        Text wellViewToggle = new Text("Realistic / Gamer / Mesh View Switch: \t3");
-        Text cameraViewToggle = new Text("Bird's Eye / Side Camera Switch: \t\tTAB");
-        Text exitGameLabel = new Text("Exit to Main Menu: \t\t\t\t\tESCAPE");
-        
-        newGameLabel.setFont(Font.font(15));
-        newGameLabel.setFill(Color.YELLOW);
-        pauseLabel.setFont(Font.font(15));
-        pauseLabel.setFill(Color.YELLOW);
-        cameraManeuvring.setFont(Font.font(15));
-        cameraManeuvring.setFill(Color.YELLOW);
-        cameraReset.setFont(Font.font(15));
-        cameraReset.setFill(Color.YELLOW);
-        adjustCameraLight.setFont(Font.font(15));
-        adjustCameraLight.setFill(Color.YELLOW);
-        fastDrop.setFont(Font.font(15));
-        fastDrop.setFill(Color.YELLOW);
-        saveShapeLabel.setFont(Font.font(15));
-        saveShapeLabel.setFill(Color.YELLOW);
-        wellViewToggle.setFont(Font.font(15));
-        wellViewToggle.setFill(Color.YELLOW);
-        cameraViewToggle.setFont(Font.font(15));
-        cameraViewToggle.setFill(Color.YELLOW);
-        exitGameLabel.setFont(Font.font(15));
-        exitGameLabel.setFill(Color.YELLOW);
-        
-        VBox otherControls = new VBox(newGameLabel, pauseLabel, cameraManeuvring, 
-                cameraReset, adjustCameraLight, fastDrop, saveShapeLabel, wellViewToggle, cameraViewToggle, exitGameLabel);
-        otherControls.setTranslateX(width/6);otherControls.setTranslateY(600);
-        this.getChildren().addAll(otherControls);
-        
-        gameStateLabel.setTranslateY(2*height/3);
-        gameStateLabel.setFont(Font.font(80));
-        gameStateLabel.setFill(Color.RED);
-        gameStateLabel.setStroke(Color.YELLOW);
-        gameStateLabel.setVisible(false);
-        this.getChildren().add(gameStateLabel);
-    }
-    
     private void setInitialStats() {
         statsVBox = new VBox(dimensions, time, level, 
                 points, floorsCleared, blocksCleared, skill);
@@ -202,96 +149,84 @@ public class GameStatsSidebar extends Group implements Updateable {
         
         this.getChildren().add(statsVBox);
     }
-
+    
     private void setButtons() {
-        Text rotationButtonsLabel = new Text("Rotation Buttons:");
-        rotationButtonsLabel.setTranslateX(width/6);
-        rotationButtonsLabel.setTranslateY(400);
-        rotationButtonsLabel.setFont(Font.font(20));
-        rotationButtonsLabel.setFill(Color.YELLOW);
+        setLabel(width/6d, 400, Font.font(20), Color.YELLOW, "Rotation Buttons:");
+        setLabel(0.62*width, 400, Font.font(20), Color.YELLOW, "Alternative controls:");
         
-        Rectangle positiveZ = new Rectangle(width/12, 420, width/8, width/8);
-        positiveZ.setFill(new ImagePattern(new Image("resources/positiveZ.png")));
-        positiveZ.setStroke(Color.color(0.6,0.6,0.6));
-        positiveZ.setOnMouseClicked(e-> well.rotateFallingTetrimino(Rotate.Z_AXIS, +90));
-        positiveZ.setOnMousePressed(e-> positiveZ.setStroke(Color.color(0.2,0.2,0.2)));
-        positiveZ.setOnMouseReleased(e-> positiveZ.setStroke(Color.color(0.6,0.6,0.6)));
+        setRotationButton(width/12, 420, width/8, width/8, "resources/positiveZ.png", Rotate.Z_AXIS, +90.0);
+        setRotationButton(width/12, 520, width/8, width/8, "resources/negativeZ.png", Rotate.Z_AXIS, -90.0);
+        setRotationButton(3*width/12, 420, width/8, width/8, "resources/positiveY.png", Rotate.Y_AXIS, +90.0);
+        setRotationButton(3*width/12, 520, width/8, width/8, "resources/negativeY.png", Rotate.Y_AXIS, -90.0);
+        setRotationButton(5*width/12, 420, width/8, width/8, "resources/positiveX.png", Rotate.X_AXIS, +90.0);
+        setRotationButton(5*width/12, 520, width/8, width/8, "resources/negativeX.png", Rotate.X_AXIS, -90.0);
         
-        Rectangle negativeZ = new Rectangle(width/12, 520, width/8, width/8);
-        negativeZ.setFill(new ImagePattern(new Image("resources/negativeZ.png")));
-        negativeZ.setStroke(Color.color(0.6,0.6,0.6));
-        negativeZ.setOnMouseClicked(e-> well.rotateFallingTetrimino(Rotate.Z_AXIS, -90));
-        negativeZ.setOnMousePressed(e-> negativeZ.setStroke(Color.color(0.2,0.2,0.2)));
-        negativeZ.setOnMouseReleased(e-> negativeZ.setStroke(Color.color(0.6,0.6,0.6)));
+        setLabel(7*width/12, 435, Font.font(15), Color.YELLOW, "INS \\\n U");
+        setLabel(7*width/12, 535, Font.font(15), Color.YELLOW, "DEL \\\n J");
+        setLabel(9*width/12, 435, Font.font(15), Color.YELLOW, "HOME \\\n I");
+        setLabel(9*width/12, 535, Font.font(15), Color.YELLOW, "END \\\n K");
+        setLabel(11*width/12, 435, Font.font(15), Color.YELLOW, "PGUP \\\n O");
+        setLabel(11*width/12, 535, Font.font(15), Color.YELLOW, "PGDN \\\n L");
+    }
+    
+    private void setLabels() {
+        gameStatsLabelsVBox = new VBox(dimensionsLabel, timeLabel, levelLabel, 
+                pointsLabel, floorsClearedLabel, blocksClearedLabel, skillLabel);
+        gameStatsLabelsVBox.setTranslateY(100);
+        gameStatsLabelsVBox.setTranslateX(width/6);
         
-        Rectangle positiveY = new Rectangle(3*width/12, 420, width/8, width/8);
-        positiveY.setFill(new ImagePattern(new Image("resources/positiveY.png")));
-        positiveY.setStroke(Color.color(0.6,0.6,0.6));
-        positiveY.setOnMouseClicked(e-> well.rotateFallingTetrimino(Rotate.Y_AXIS, +90));
-        positiveY.setOnMousePressed(e-> positiveY.setStroke(Color.color(0.2,0.2,0.2)));
-        positiveY.setOnMouseReleased(e-> positiveY.setStroke(Color.color(0.6,0.6,0.6)));
+        for (Node node : gameStatsLabelsVBox.getChildren()) {
+            Text label = (Text)node;
+            label.setFont(Font.font(19));
+            label.setFill(Color.YELLOW);
+        }
         
-        Rectangle negativeY = new Rectangle(3*width/12, 520, width/8, width/8);
-        negativeY.setFill(new ImagePattern(new Image("resources/negativeY.png")));
-        negativeY.setStroke(Color.color(0.6,0.6,0.6));
-        negativeY.setOnMouseClicked(e-> well.rotateFallingTetrimino(Rotate.Y_AXIS, -90));
-        negativeY.setOnMousePressed(e-> negativeY.setStroke(Color.color(0.2,0.2,0.2)));
-        negativeY.setOnMouseReleased(e-> negativeY.setStroke(Color.color(0.6,0.6,0.6)));
+        this.getChildren().addAll(gameStatsLabelsVBox);
         
-        Rectangle positiveX = new Rectangle(5*width/12, 420, width/8, width/8);
-        positiveX.setFill(new ImagePattern(new Image("resources/positiveX.png")));
-        positiveX.setStroke(Color.color(0.6,0.6,0.6));
-        positiveX.setOnMouseClicked(e-> well.rotateFallingTetrimino(Rotate.X_AXIS, +90));
-        positiveX.setOnMousePressed(e-> positiveX.setStroke(Color.color(0.2,0.2,0.2)));
-        positiveX.setOnMouseReleased(e-> positiveX.setStroke(Color.color(0.6,0.6,0.6)));
+        Text nextTetriminoLabel = new Text("Next shape:");
+        nextTetriminoLabel.setFont(Font.font(20));
+        nextTetriminoLabel.setFill(Color.YELLOW);
+        nextTetriminoLabel.setTranslateX(width/6);
+        nextTetriminoLabel.setTranslateY(330);
+        this.getChildren().add(nextTetriminoLabel);
         
-        Rectangle negativeX = new Rectangle(5*width/12, 520, width/8, width/8);
-        negativeX.setFill(new ImagePattern(new Image("resources/negativeX.png")));
-        negativeX.setStroke(Color.color(0.6,0.6,0.6));
-        negativeX.setOnMouseClicked(e-> well.rotateFallingTetrimino(Rotate.X_AXIS, -90));
-        negativeX.setOnMousePressed(e-> negativeX.setStroke(Color.color(0.2,0.2,0.2)));
-        negativeX.setOnMouseReleased(e-> negativeX.setStroke(Color.color(0.6,0.6,0.6)));
+        VBox controlsLabelsVBox = new VBox(newGameLabel, pauseLabel, cameraManeuvring, 
+                cameraReset, adjustCameraLight, fastDrop, saveShapeLabel, wellViewToggle, cameraViewToggle, exitGameLabel);
         
-        Text alternativeRotationButtonsLabel = new Text("Alternative controls:");
-        alternativeRotationButtonsLabel.setTranslateX(0.62*width);
-        alternativeRotationButtonsLabel.setTranslateY(400);
-        alternativeRotationButtonsLabel.setFont(Font.font(20));
-        alternativeRotationButtonsLabel.setFill(Color.YELLOW);
+        controlsLabelsVBox.getChildren().forEach(node -> {
+            Text label = (Text)node;
+            label.setFont(Font.font(15));
+            label.setFill(Color.YELLOW);
+        });
+        controlsLabelsVBox.setTranslateX(width/6);controlsLabelsVBox.setTranslateY(600);
+        this.getChildren().addAll(controlsLabelsVBox);
         
-        Text positiveZLabel = new Text("INS \\\n U");
-        positiveZLabel.setTranslateX(7*width/12);positiveZLabel.setTranslateY(435);
-        positiveZLabel.setFont(Font.font(15));
-        positiveZLabel.setFill(Color.YELLOW);
+        gameStateLabel.setTranslateY(2*height/3);
+        gameStateLabel.setFont(Font.font(80));
+        gameStateLabel.setFill(Color.RED);
+        gameStateLabel.setStroke(Color.YELLOW);
+        gameStateLabel.setVisible(false);
+        this.getChildren().add(gameStateLabel);
+    }
+    
+    private void setRotationButton(double x, double y, double width, double height, String imagePath, Point3D axis, double angle){
+        Rectangle rotationButton = new Rectangle(x, y, width, height);
+        rotationButton.setFill(new ImagePattern(new Image(imagePath)));
+        rotationButton.setStroke(RELEASED_BUTTON_COLOR);
+        rotationButton.setOnMouseClicked(e-> well.rotateFallingTetrimino(axis, angle));
+        rotationButton.setOnMousePressed(e-> rotationButton.setStroke(PRESSED_BUTTON_COLOR));
+        rotationButton.setOnMouseReleased(e-> rotationButton.setStroke(RELEASED_BUTTON_COLOR));
         
-        Text negativeZLabel = new Text("DEL \\\n J");
-        negativeZLabel.setTranslateX(7*width/12);negativeZLabel.setTranslateY(535);
-        negativeZLabel.setFont(Font.font(15));
-        negativeZLabel.setFill(Color.YELLOW);
-        
-        Text positiveYLabel = new Text("HOME \\\n I");
-        positiveYLabel.setTranslateX(9*width/12-15);positiveYLabel.setTranslateY(435);
-        positiveYLabel.setFont(Font.font(15));
-        positiveYLabel.setFill(Color.YELLOW);
-        
-        Text negativeYLabel = new Text("END \\\n K");
-        negativeYLabel.setTranslateX(9*width/12-15);negativeYLabel.setTranslateY(535);
-        negativeYLabel.setFont(Font.font(15));
-        negativeYLabel.setFill(Color.YELLOW);
-        
-        Text positiveXLabel = new Text("PGUP \\\n O");
-        positiveXLabel.setTranslateX(11*width/12-15);positiveXLabel.setTranslateY(435);
-        positiveXLabel.setFont(Font.font(15));
-        positiveXLabel.setFill(Color.YELLOW);
-        
-        Text negativeXLabel = new Text("PGDN \\\n L");
-        negativeXLabel.setTranslateX(11*width/12-15);negativeXLabel.setTranslateY(535);
-        negativeXLabel.setFont(Font.font(15));
-        negativeXLabel.setFill(Color.YELLOW);
-        
-        
-        this.getChildren().addAll(rotationButtonsLabel, alternativeRotationButtonsLabel, 
-            positiveZ, negativeZ, positiveY, negativeY, positiveX, negativeX, 
-            positiveZLabel, negativeZLabel, positiveYLabel, negativeYLabel, positiveXLabel, negativeXLabel);
+        this.getChildren().add(rotationButton);
+    }
+    
+    private void setLabel(double x, double y, Font font, Color color, String text){
+        Text label = new Text(text);
+        label.setTranslateX(x);
+        label.setTranslateY(y);
+        label.setFont(font);
+        label.setFill(color);
+        this.getChildren().add(label);
     }
 
     @Override
