@@ -18,12 +18,12 @@ public class MainMenu extends Menu {
         Button newGame = new Button("New Game");
         newGame.setFont(new Font(20));
         newGame.setMinWidth(150);
-        newGame.setOnMouseClicked(e-> choice = NEW_GAME);
+        newGame.setOnAction(e-> choice = NEW_GAME);
         
         Button exit = new Button("Exit");
         exit.setFont(new Font(20));
         exit.setMinWidth(150);
-        exit.setOnMouseClicked(e-> choice = EXIT);
+        exit.setOnAction(e-> choice = EXIT);
         
         menuButtons.getChildren().addAll(newGame, exit);
     }

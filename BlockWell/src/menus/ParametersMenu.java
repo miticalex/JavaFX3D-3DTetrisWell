@@ -48,7 +48,7 @@ public class ParametersMenu extends Menu{
         Button exitButton = new Button("Back To Main Menu");
         exitButton.setFont(new Font(20));
         exitButton.setMinWidth(100);
-        exitButton.setOnMouseClicked(e -> choice = EXIT);
+        exitButton.setOnAction(e -> choice = EXIT);
         menuButtons.getChildren().add(exitButton);
         
         Text widthText =  new Text ("Field Width: ");
@@ -110,7 +110,7 @@ public class ParametersMenu extends Menu{
         Button enterButton = new Button("Start New Game");
         enterButton.setFont(new Font(20));
         enterButton.setMinWidth(100);
-        enterButton.setOnMouseClicked(e -> choice = PARAMETERS_ENTERED);
+        enterButton.setOnAction(e -> choice = PARAMETERS_ENTERED);
         menuButtons.getChildren().add(enterButton);
         
         warning = new Text("Ranges must be:\n"
